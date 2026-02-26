@@ -106,15 +106,15 @@ https://docs.google.com/document/d/1PKiI14StUhimst7y1OY1sUwMewMR5jcuXPa4BZmgoGc/
 
 El modelo relacional incluye las siguientes tablas principales:
 
-Usuarios (id, nombre, correo, contraseña)
+-Usuarios (id, nombre, correo, contraseña)
 
-Productos (id_producto, nombre, marca, categoría)
+-Productos (id_producto, nombre, marca, categoría)
 
-Tiendas (id_tienda, nombre, url)
+-Tiendas (id_tienda, nombre, url)
 
-Precios (id_precio, id_producto, id_tienda, precio_actual, fecha)
+-Precios (id_precio, id_producto, id_tienda, precio_actual, fecha)
 
-Historial_Precios (id_historial, id_producto, precio, fecha_registro)
+-Historial_Precios (id_historial, id_producto, precio, fecha_registro)
 
 El diseño permite mantener trazabilidad histórica de variaciones de precio y relaciones entre productos y tiendas.
 
