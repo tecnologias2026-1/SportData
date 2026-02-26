@@ -54,13 +54,43 @@ RNF05: La interfaz debe ser clara, minimalista y centrada en objetos.
 
 🧠 4. Diagramas UML
 
+https://docs.google.com/document/d/1PKiI14StUhimst7y1OY1sUwMewMR5jcuXPa4BZmgoGc/edit?usp=sharing
 
+Diagrama de Casos de Uso
 
-Explicar brevemente qué muestra el diagrama.
+Representa la interacción entre el usuario y el sistema SportData.
+Muestra funcionalidades como:
+
+-Buscar producto
+
+-Filtrar resultados
+
+-Comparar precios
+
+-Visualizar historial
+
+-Redirigir a tienda
+
+El actor principal es el Usuario, quien interactúa con el sistema web.
+
 
 Diagrama de Secuencia
 
-Explicar qué proceso representa.
+Representa el proceso de consulta de precios:
+
+-Usuario ingresa búsqueda.
+
+-Interfaz envía solicitud al sistema.
+
+-El sistema realiza petición HTTP a tiendas externas.
+
+-Se recibe respuesta (HTML).
+
+-Se analiza y se extraen datos.
+
+-Se almacenan en base de datos.
+
+-Se muestran resultados al usuario.
 
 🎨 5. URL del Prototipo
 
@@ -72,7 +102,21 @@ https://figma.com/xxxxx
 🗄️ 6. Diseño de Base de Datos
 
 Agregar imagen del modelo.
-Tablas principales
+https://docs.google.com/document/d/1PKiI14StUhimst7y1OY1sUwMewMR5jcuXPa4BZmgoGc/edit?usp=sharing
+
+El modelo relacional incluye las siguientes tablas principales:
+
+Usuarios (id, nombre, correo, contraseña)
+
+Productos (id_producto, nombre, marca, categoría)
+
+Tiendas (id_tienda, nombre, url)
+
+Precios (id_precio, id_producto, id_tienda, precio_actual, fecha)
+
+Historial_Precios (id_historial, id_producto, precio, fecha_registro)
+
+El diseño permite mantener trazabilidad histórica de variaciones de precio y relaciones entre productos y tiendas.
 
 🧩 7. Documentación del Sistema
 Estructura de Carpetas
