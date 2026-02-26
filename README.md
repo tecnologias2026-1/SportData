@@ -96,7 +96,7 @@ Representa el proceso de consulta de precios:
 
 Colocar aquí el enlace público de Figma:
 
-https://figma.com/xxxxx
+[https://figma.com/xxxxx](https://www.figma.com/site/6gWgSafzFAygS9DQF2eQTg/TI_2?node-id=0-1&t=X0PpCHFYHFlJITlX-1)
 
 
 🗄️ 6. Diseño de Base de Datos
