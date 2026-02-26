@@ -1,43 +1,60 @@
-Para Completar por grupo
 
-🌐 Nombre del Proyecto
 
-Escribe aquí una descripción corta del proyecto.
+🌐 SportData
+
+SportData es una plataforma web de precios de ropa deportiva en múltiples tiendas online. El sistema utiliza técnicas de Web Scraping para extraer, procesar y visualizar información actualizada de productos, facilitando decisiones de compra rápidas, objetivas y optimizadas.
 
 👥 Integrantes
 
-Nombre completo – Código
-Nombre completo – Código
+Santiago Ballesteros Moreno-1202644
+Daniela Rojas Ortiz-1202773
+Jose Miguel Bernal Muñoz-1202803
 
 🎯 1. Objetivo General
 
-Escribir un solo párrafo donde expliquen:
-Qué quieren lograr con el sistema.
-Qué problema buscan solucionar.
+Desarrollar un sistema web de comparación de precios enfocado en ropa deportiva que a travez de técnicas de Web Scraping, permita extraer información de múltiples tiendas online, procesarla y presentarla de forma clara y estructurada al usuario. El sistema busca solucionar la dificultad de encontrar el mejor precio y comparar múltiples proveedores de manera eficiente, evitando la consulta manual en diferentes sitios web.
 
 🌍 2. Contexto de Uso
 
-¿Quién va a usar el sistema?
-¿Cómo se va a utilizar el sistema?
+¿Quién lo usará?
+Deportistas, compradores digitales, analistas de mercado y usuarios interesados en encontrar el mejor precio de ropa deportiva.
+
+¿Cómo se utilizará?
+El usuario ingresará un producto en la barra de búsqueda.El sistema actuará en consecuencia extrayendo la información y presentando los resultados comparados en una interfaz optimizada.
 
 📋 3. Requerimientos del Sistema
 3.1 Requerimientos Funcionales
 
-Escriban lo que el sistema debe hacer.
+RF01: El sistema debe permitir buscar productos de ropa deportiva mediante una barra de búsqueda inteligente.
 
-Ejemplo:
-RF01: El sistema debe permitir registrar usuarios.
+RF02: El sistema debe extraer información de múltiples tiendas online utilizando Web Scraping.
+
+RF03: El sistema debe mostrar una lista comparativa de precios entre diferentes proveedores.
+
+RF04: El sistema debe permitir filtrar productos por precio, marca, categoría y valoración.
+
+RF05: El sistema debe mostrar el historial de variación de precios.
+
+RF06: El sistema debe redirigir al usuario al comercio original para finalizar la compra.
+
+RF07: El sistema debe permitir marcar productos para compararlos posteriormente.
+
 
 3.2 Requerimientos No Funcionales
 
-Escriban cómo debe comportarse el sistema.
+RNF01: El sistema debe tener alta velocidad de carga.
 
-Ejemplo:
-RNF01: La página debe ser responsive.
+RNF02: La página debe ser responsive (adaptable a dispositivos móviles).
+
+RNF03: El sistema debe actualizar periódicamente los precios.
+
+RNF04: Debe implementar buenas prácticas SEO.
+
+RNF05: La interfaz debe ser clara, minimalista y centrada en objetos.
 
 🧠 4. Diagramas UML
 
-Diagrama de Casos de Uso
+
 
 Explicar brevemente qué muestra el diagrama.
 
