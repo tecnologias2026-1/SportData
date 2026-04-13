@@ -96,7 +96,7 @@ Representa el proceso de consulta de precios:
 
 Colocar aquí el enlace público de Figma:
 
-[https://figma.com/xxxxx](https://www.figma.com/site/6gWgSafzFAygS9DQF2eQTg/TI_2?node-id=0-1&t=X0PpCHFYHFlJITlX-1)
+[https://figma.com/xxxxx](https://www.figma.com/design/cL5fGoQNHjwQOYGSwge8U1/SportData---Pagina-web?node-id=0-1&t=VHg2Y5dkpcwVI4nt-1)
 
 
 🗄️ 6. Diseño de Base de Datos
