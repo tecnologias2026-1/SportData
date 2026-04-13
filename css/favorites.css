@@ -89,6 +89,47 @@ img {
     width: auto;
 }
 
+/* Hamburger Menu Button */
+
+.hamburger-menu {
+    display: none;
+    flex-direction: column;
+    gap: 0.4rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.5rem;
+    position: absolute;
+    right: 3.5rem;
+    z-index: 1001;
+}
+
+.hamburger-line {
+    width: 1.5rem;
+    height: 2px;
+    background-color: #0a0a0a;
+    border-radius: 2px;
+    transition: all 0.3s ease;
+}
+
+.hamburger-menu[aria-expanded="true"] .hamburger-line:nth-child(1) {
+    transform: rotate(45deg) translate(0.65rem, 0.65rem);
+}
+
+.hamburger-menu[aria-expanded="true"] .hamburger-line:nth-child(2) {
+    opacity: 0;
+}
+
+.hamburger-menu[aria-expanded="true"] .hamburger-line:nth-child(3) {
+    transform: rotate(-45deg) translate(0.5rem, -0.5rem);
+}
+
+.hamburger-menu:focus-visible {
+    outline: 2px solid #38a8c7;
+    outline-offset: 2px;
+    border-radius: 0.375rem;
+}
+
 /* Header Navigation */
 
 .header__nav {
@@ -114,6 +155,22 @@ img {
     padding: 0.5rem 0;
     border-bottom: 2px solid transparent;
     transition: border-color 0.3s ease;
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.nav-list__link svg {
+    width: 1rem;
+    height: 1rem;
+    flex-shrink: 0;
+}
+
+.nav-icon {
+    width: 1rem;
+    height: 1rem;
+    flex-shrink: 0;
 }
 
 .nav-list__link:hover {
@@ -132,9 +189,17 @@ img {
     gap: 0.5rem;
 }
 
-.nav-list__link--badge img {
+.nav-list__link--badge svg {
     width: 1rem;
     height: 1rem;
+}
+
+.nav-list__item--auth-mobile {
+    display: none;
+}
+
+.nav-list__link--auth {
+    text-decoration: none;
 }
 
 /* Login Button */
@@ -396,28 +461,71 @@ img {
 
 /* Tablet (768px and up) */
 @media (max-width: 768px) {
+    .hamburger-menu {
+        display: flex;
+    }
+
     .header__container {
         padding: 0 1rem;
+        height: 3.5rem;
         gap: 1rem;
+    }
+
+    .logo-image {
+        height: 2.5rem;
     }
 
     .header__logo {
         left: 1rem;
     }
 
-    .login-btn {
-        right: 1rem;
-        padding: 0.5rem;
-        font-size: 0.7rem;
+    .header__nav {
+        display: none;
+        position: fixed;
+        top: 3.5rem;
+        left: 0;
+        right: 0;
+        background-color: #ffffff;
+        border-bottom: 1px solid #e5e7eb;
+        z-index: 1000;
+        flex-direction: column;
+        padding: 1rem 2rem;
+        justify-content: flex-start;
     }
 
-    .login-btn span {
-        display: none;
+    .header__nav.active {
+        display: flex;
     }
 
     .nav-list {
+        flex-direction: column;
         gap: 1rem;
-        font-size: 0.85rem;
+        align-items: stretch;
+    }
+
+    .nav-list__link {
+        font-size: 0.95rem;
+        padding: 0.75rem 1rem;
+        border-bottom: none;
+        display: flex;
+        align-items: center;
+        gap: 0.625rem;
+        justify-content: flex-start;
+    }
+
+    .nav-list__link svg {
+        display: flex;
+        width: 1.125rem;
+        height: 1.125rem;
+    }
+
+    .nav-list__item--auth-mobile {
+        display: flex;
+        align-items: center;
+    }
+
+    .login-btn {
+        display: none;
     }
 
     .empty-favorites {
@@ -440,34 +548,54 @@ img {
 
 /* Mobile (480px and down) */
 @media (max-width: 480px) {
+    .hamburger-menu {
+        right: 3rem;
+    }
+
     .header__container {
-        height: 3.5rem;
-        justify-content: center;
         padding: 0 0.5rem;
+        height: 3rem;
+    }
+
+    .logo-image {
+        height: 2rem;
     }
 
     .header__logo {
         left: 0.5rem;
     }
 
-    .login-btn {
-        right: 0.5rem;
-        padding: 0.4rem;
-        font-size: 0.6rem;
+    .header__nav {
+        top: 3rem;
+        padding: 0.75rem 1rem;
     }
 
-    .login-btn img {
-        width: 0.9rem;
-        height: 0.9rem;
+    .nav-list__item--auth-mobile {
+        display: flex;
+        align-items: center;
+    }
+
+    .login-btn {
+        display: none;
     }
 
     .nav-list {
         flex-wrap: wrap;
-        gap: 0.75rem;
+        gap: 1rem;
     }
 
     .nav-list__link {
-        font-size: 0.75rem;
+        font-size: 0.85rem;
+        padding: 0.75rem 1rem;
+        border-radius: 0.375rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .nav-list__link svg {
+        width: 1.125rem;
+        height: 1.125rem;
     }
 
     .empty-favorites {
