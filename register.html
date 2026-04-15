@@ -13,7 +13,9 @@
         <div class="header__container">
             <!-- Logo -->
             <div class="header__logo">
-                <img src="https://www.figma.com/api/mcp/asset/a3aa5f5b-5f22-41f1-90bb-53d3f1ab65f9" alt="Logo de SportData" class="logo-image">
+                <a href="index.html" aria-label="Ir al inicio">
+                    <img src="https://www.figma.com/api/mcp/asset/a3aa5f5b-5f22-41f1-90bb-53d3f1ab65f9" alt="Logo de SportData" class="logo-image">
+                </a>
             </div>
 
             <!-- Hamburger Menu Button -->
@@ -27,13 +29,13 @@
             <nav class="header__nav" id="navMenu" aria-label="Navegación principal">
                 <ul class="nav-list">
                     <li class="nav-list__item">
-                        <a href="/" class="nav-list__link">Inicio</a>
+                        <a href="index.html" class="nav-list__link">Inicio</a>
                     </li>
                     <li class="nav-list__item">
-                        <a href="/catalog" class="nav-list__link">Catálogo</a>
+                        <a href="catalog.html" class="nav-list__link">Catálogo</a>
                     </li>
                     <li class="nav-list__item">
-                        <a href="/favorites" class="nav-list__link">
+                        <a href="favorites.html" class="nav-list__link">
                             Favoritos
                             <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                                 <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
@@ -41,7 +43,7 @@
                         </a>
                     </li>
                     <li class="nav-list__item">
-                        <a href="/cart" class="nav-list__link nav-list__link--badge">
+                        <a href="cart.html" class="nav-list__link nav-list__link--badge">
                             <span>Carrito</span>
                             <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                                 <circle cx="9" cy="21" r="1"></circle>
@@ -51,7 +53,7 @@
                         </a>
                     </li>
                     <li class="nav-list__item nav-list__item--auth-mobile">
-                        <a href="/login" class="nav-list__link nav-list__link--auth">
+                        <a href="register.html" class="nav-list__link nav-list__link--auth">
                             <span>Ingresar</span>
                             <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                                 <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
@@ -63,7 +65,7 @@
             </nav>
 
             <!-- Auth Button -->
-            <button class="login-btn" aria-label="Ingresar a tu cuenta">
+            <button class="login-btn" aria-label="Ingresar a tu cuenta" onclick="window.location.href='register.html'">
                 <img src="https://www.figma.com/api/mcp/asset/32be382b-310c-44c5-9807-c316fb2d4b7f" alt="" aria-hidden="true">
                 <span>Ingresar</span>
             </button>
@@ -154,7 +156,7 @@
 
                         <!-- Back Link -->
                         <div style="text-align: center; margin-top: 1rem;">
-                            <a href="/" class="back-link" style="color: #0a0a0a; text-decoration: none; font-size: 0.875rem;">← Volver al inicio</a>
+                            <a href="index.html" class="back-link" style="color: #0a0a0a; text-decoration: none; font-size: 0.875rem;">← Volver al inicio</a>
                         </div>
                     </form>
                 </div>
@@ -235,7 +237,7 @@
 
                         <!-- Back Link -->
                         <div class="form-footer">
-                            <a href="/" class="back-link">← Volver al inicio</a>
+                            <a href="index.html" class="back-link">← Volver al inicio</a>
                         </div>
                     </form>
                 </div>
@@ -263,10 +265,10 @@
                     <h3 id="footer-nav" class="footer__subtitle">Navegación</h3>
                     <nav aria-label="Navegación del pie de página">
                         <ul class="footer-links">
-                            <li><a href="/" class="footer-links__item">Inicio</a></li>
-                            <li><a href="/catalog" class="footer-links__item">Catálogo</a></li>
-                            <li><a href="/favorites" class="footer-links__item">Favoritos</a></li>
-                            <li><a href="/cart" class="footer-links__item">Carrito</a></li>
+                            <li><a href="index.html" class="footer-links__item">Inicio</a></li>
+                            <li><a href="catalog.html" class="footer-links__item">Catálogo</a></li>
+                            <li><a href="favorites.html" class="footer-links__item">Favoritos</a></li>
+                            <li><a href="cart.html" class="footer-links__item">Carrito</a></li>
                         </ul>
                     </nav>
                 </section>
@@ -276,10 +278,10 @@
                     <h3 id="footer-service" class="footer__subtitle">Atención al Cliente</h3>
                     <nav aria-label="Atención al cliente">
                         <ul class="footer-links">
-                            <li><a href="/contact" class="footer-links__item">Contacto</a></li>
-                            <li><a href="/shipping" class="footer-links__item">Envios</a></li>
-                            <li><a href="/faq" class="footer-links__item">Devoluciones</a></li>
-                            <li><a href="/faq" class="footer-links__item">Preguntas Frecuentes</a></li>
+                            <li><a href="#" class="footer-links__item">Contacto</a></li>
+                            <li><a href="#" class="footer-links__item">Envios</a></li>
+                            <li><a href="#" class="footer-links__item">Devoluciones</a></li>
+                            <li><a href="#" class="footer-links__item">Preguntas Frecuentes</a></li>
                         </ul>
                     </nav>
                 </section>

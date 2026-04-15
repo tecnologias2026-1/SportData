@@ -8,7 +8,7 @@
             "name": "Abrir archivo local",
             "type": "chrome",
             "request": "launch",
-            "file": "${workspaceFolder}/favorites.html" 
+            "file": "${workspaceFolder}/catalog.html" 
         }
     ]
 }

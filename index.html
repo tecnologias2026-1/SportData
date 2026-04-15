@@ -4,71 +4,110 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>SportData - UI Mejorada</title>
+<title>SportData - Equipamiento Deportivo de Élite</title>
 
+<link rel="stylesheet" href="css/cart.css">
 <link rel="stylesheet" href="css/styles.css">
 </head>
 
 <body>
 
-<header>
-  <div class="container navbar">
+<header class="header">
+    <div class="header__container">
+        <!-- Logo -->
+        <div class="header__logo">
+            <a href="index.html" aria-label="Ir al inicio">
+                <img src="https://www.figma.com/api/mcp/asset/a3aa5f5b-5f22-41f1-90bb-53d3f1ab65f9" alt="Logo de SportData" class="logo-image">
+            </a>
+        </div>
 
-    <!-- LOGO -->
-    <div class="logo">
-        <img src="assets/img/main_hero_banner.jpg" alt="Jugador de baloncesto elevándose hacia la canasta en una cancha de estadio iluminada, con expresión concentrada y energía competitiva" />
+        <!-- Hamburger Menu Button -->
+        <button class="hamburger-menu" id="hamburgerBtn" aria-label="Menú de navegación" aria-expanded="false">
+            <span class="hamburger-line"></span>
+            <span class="hamburger-line"></span>
+            <span class="hamburger-line"></span>
+        </button>
+
+        <!-- Navigation -->
+        <nav class="header__nav" id="navMenu" aria-label="Navegación principal">
+            <ul class="nav-list">
+                <li class="nav-list__item">
+                    <a href="index.html" class="nav-list__link nav-list__link--active">Inicio</a>
+                </li>
+                <li class="nav-list__item">
+                    <a href="catalog.html" class="nav-list__link">Catálogo</a>
+                </li>
+                <li class="nav-list__item">
+                    <a href="favorites.html" class="nav-list__link">
+                        Favoritos
+                        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                        </svg>
+                    </a>
+                </li>
+                <li class="nav-list__item">
+                    <a href="cart.html" class="nav-list__link nav-list__link--badge">
+                        <span>Carrito</span>
+                        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <circle cx="9" cy="21" r="1"></circle>
+                            <circle cx="20" cy="21" r="1"></circle>
+                            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                        </svg>
+                    </a>
+                </li>
+                <li class="nav-list__item nav-list__item--auth-mobile">
+                    <a href="register.html" class="nav-list__link nav-list__link--auth">
+                        <span>Ingresar</span>
+                        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="12" cy="7" r="4"></circle>
+                        </svg>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
+        <!-- Auth Button -->
+        <button class="login-btn" aria-label="Ingresar a tu cuenta" onclick="window.location.href='register.html'">
+            <img src="https://www.figma.com/api/mcp/asset/32be382b-310c-44c5-9807-c316fb2d4b7f" alt="" aria-hidden="true">
+            <span>Ingresar</span>
+        </button>
     </div>
-
-    <!-- MENÚ -->
-    <nav class="nav-center">
-        <ul>
-            <li><a href="#">Inicio</a></li>
-            <li><a href="#">Catálogo</a></li>
-            <li><a href="#">♡ Favoritos</a></li>
-            <li><a href="#">🛒 Carrito</a></li>
-        </ul>
-    </nav>
-
-    <!-- ACCIONES -->
-    <div class="nav-right">
-      <a href="#" class="login"> Ingresar</a>
-    </div>
-
-  </div>
 </header>
 
+<main class="main-content">
 <section class="hero">
   <div class="container hero-content">
     <div>
       <h1>Equipamiento Deportivo de Élite</h1>
       <p>Encuentra lo mejor para tu rendimiento deportivo</p>
-      <button class="btn btn-primary">Ver Catálogo</button>
+      <a href="catalog.html" class="btn btn-primary" style="text-decoration: none; display: inline-block;">Ver Catálogo</a>
       <button class="btn btn-secondary">Ver Productos</button>
     </div>
-    <img src="../assets/img/main_hero_banner.jpg" alt="Jugador de baloncesto elevándose hacia la canasta en una cancha de estadio iluminada, con expresión concentrada y energía competitiva" />
+    <img src="assets/img/main_hero_banner.jpg" alt="Jugador de baloncesto" />
   </div>
 </section>
 
 <section class="benefits">
   <div class="container benefits-grid">
 
-    <div class="benefit">
-      <div class="icon blue">📦</div>
+    <article class="benefit">
+      <div class="icon blue" role="img" aria-label="Envío">📦</div>
       <h3>Envío Gratis</h3>
       <p>En compras superiores a $50</p>
-    </div>
+    </article>
 
-    <div class="benefit">
-      <div class="icon green">📈</div>
+    <article class="benefit">
+      <div class="icon green" role="img" aria-label="Precios">📈</div>
       <h3>Mejor Precio</h3>
       <p>Garantía de precio más bajo</p>
-    </div>
+    </article>
 
-    <div class="benefit">
-      <div class="icon purple">🛡️</div>
+    <article class="benefit">
+      <div class="icon purple" role="img" aria-label="Seguridad">🛡️</div>
       <h3>Compra Segura</h3>
       <p>Protección total en tus pagos</p>
-    </div>
+    </article>
 
   </div>
 </section>
@@ -81,78 +120,152 @@
         <h2>Productos Destacados</h2>
         <p>Los favoritos de nuestros clientes</p>
       </div>
-      <button class="btn-outline">Ver Todos →</button>
+      <a href="catalog.html" class="btn-outline" style="text-decoration: none; display: inline-block;">Ver Todos →</a>
     </div>
 
-    <div class="grid">
+    <div class="products-grid">
 
       <!-- CARD -->
-      <div class="card">
-        <div class="card-img">
-          <img src="../assets/img/main_produc_zapatillas.jpg" alt="Zapatillas Running Pro de Nike">
-          <span class="fav">♡</span>
+      <article class="product-card">
+        <div class="product-card__image-container">
+          <img src="assets/img/main_produc_zapatillas.jpg" alt="Zapatillas Running Pro de Nike" class="product-card__image">
+          <button class="product-card__favorite" aria-label="Añadir Zapatillas Running Pro a favoritos" data-favorite="false">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+            </svg>
+          </button>
         </div>
 
-        <div class="card-body">
-          <span class="brand">Nike</span>
-          <h3>Zapatillas Running Pro</h3>
-
-          <div class="rating">
-            ⭐⭐⭐⭐☆
-            <span>(4.5)</span>
+        <div class="product-card__content">
+          <p class="product-card__category">Nike</p>
+          <h3 class="product-card__title">Zapatillas Running Pro</h3>
+          <div class="product-card__rating">
+            <div class="star-rating" aria-label="Calificación: 4.5 de 5 estrellas">
+              <span class="star star--filled"></span>
+              <span class="star star--filled"></span>
+              <span class="star star--filled"></span>
+              <span class="star star--filled"></span>
+              <span class="star star--half"></span>
+            </div>
+            <span class="product-card__reviews">(4.5)</span>
           </div>
-
-          <div class="price">$89.99</div>
-
-          <button class="btn-cart">🛒 Agregar al Carrito</button>
+          <p class="product-card__price">$89.99</p>
+          <button class="product-card__btn" aria-label="Agregar Zapatillas Running Pro al carrito">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="margin-right: 8px; vertical-align: middle;">
+              <circle cx="9" cy="21" r="1"></circle>
+              <circle cx="20" cy="21" r="1"></circle>
+              <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+            </svg>
+            Agregar al Carrito
+          </button>
         </div>
-      </div>
+      </article>
 
       <!-- DUPLICA CARDS -->
-      <div class="card">
-        <div class="card-img">
-          <img src="../assets/img/main_produc_basquet.jpg" alt="Balón de Baloncesto Spalding">
-          <span class="fav">♡</span>
+      <article class="product-card">
+        <div class="product-card__image-container">
+          <img src="assets/img/main_produc_basquet.jpg" alt="Balón de Baloncesto Spalding" class="product-card__image">
+          <button class="product-card__favorite" aria-label="Añadir Balón de Baloncesto a favoritos" data-favorite="false">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+            </svg>
+          </button>
         </div>
 
-        <div class="card-body">
-          <span class="brand">Spalding</span>
-          <h3>Balón de Baloncesto</h3>
-          <div class="rating">⭐⭐⭐⭐☆ <span>(4.8)</span></div>
-          <div class="price">$45.00</div>
-          <button class="btn-cart">🛒 Agregar al Carrito</button>
+        <div class="product-card__content">
+          <p class="product-card__category">Spalding</p>
+          <h3 class="product-card__title">Balón de Baloncesto</h3>
+          <div class="product-card__rating">
+            <div class="star-rating" aria-label="Calificación: 4.8 de 5 estrellas">
+              <span class="star star--filled"></span>
+              <span class="star star--filled"></span>
+              <span class="star star--filled"></span>
+              <span class="star star--filled"></span>
+              <span class="star star--filled"></span>
+            </div>
+            <span class="product-card__reviews">(4.8)</span>
+          </div>
+          <p class="product-card__price">$45.00</p>
+          <button class="product-card__btn" aria-label="Agregar Balón de Baloncesto al carrito">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="margin-right: 8px; vertical-align: middle;">
+              <circle cx="9" cy="21" r="1"></circle>
+              <circle cx="20" cy="21" r="1"></circle>
+              <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+            </svg>
+            Agregar al Carrito
+          </button>
         </div>
-      </div>
+      </article>
 
-      <div class="card">
-        <div class="card-img">
-          <img src="../assets/img/main_produc_estirilla.jpg" alt="Esterilla de yoga premium enrollada en una tienda deportiva, mostrada como producto destacado sobre un fondo neutro que transmite calma y motivación para el ejercicio">
-          <span class="fav">♡</span>
+      <article class="product-card">
+        <div class="product-card__image-container">
+          <img src="assets/img/main_produc_estirilla.jpg" alt="Esterilla de yoga premium" class="product-card__image">
+          <button class="product-card__favorite" aria-label="Añadir Esterilla de Yoga a favoritos" data-favorite="false">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+            </svg>
+          </button>
         </div>
 
-        <div class="card-body">
-          <span class="brand">Manduka</span>
-          <h3>Esterilla de Yoga Premium</h3>
-          <div class="rating">⭐⭐⭐⭐☆ <span>(4.7)</span></div>
-          <div class="price">$35.99</div>
-          <button class="btn-cart">🛒 Agregar al Carrito</button>
+        <div class="product-card__content">
+          <p class="product-card__category">Manduka</p>
+          <h3 class="product-card__title">Esterilla de Yoga Premium</h3>
+          <div class="product-card__rating">
+            <div class="star-rating" aria-label="Calificación: 4.7 de 5 estrellas">
+              <span class="star star--filled"></span>
+              <span class="star star--filled"></span>
+              <span class="star star--filled"></span>
+              <span class="star star--filled"></span>
+              <span class="star star--half"></span>
+            </div>
+            <span class="product-card__reviews">(4.7)</span>
+          </div>
+          <p class="product-card__price">$35.99</p>
+          <button class="product-card__btn" aria-label="Agregar Esterilla de Yoga al carrito">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="margin-right: 8px; vertical-align: middle;">
+              <circle cx="9" cy="21" r="1"></circle>
+              <circle cx="20" cy="21" r="1"></circle>
+              <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+            </svg>
+            Agregar al Carrito
+          </button>
         </div>
-      </div>
+      </article>
 
-      <div class="card">
-        <div class="card-img">
-          <img src="../assets/img/main_produc_camiseta.jpg" alt="Camiseta Deportiva Adidas de manga corta en una tienda deportiva, destacada como producto destacado sobre un fondo neutro que resalta su diseño moderno y funcionalidad para el entrenamiento">
-          <span class="fav">♡</span>
+      <article class="product-card">
+        <div class="product-card__image-container">
+          <img src="assets/img/main_produc_camiseta.jpg" alt="Camiseta Deportiva Adidas" class="product-card__image">
+          <button class="product-card__favorite" aria-label="Añadir Camiseta Deportiva a favoritos" data-favorite="false">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+            </svg>
+          </button>
         </div>
 
-        <div class="card-body">
-          <span class="brand">Adidas</span>
-          <h3>Camiseta Deportiva</h3>
-          <div class="rating">⭐⭐⭐⭐☆ <span>(4.3)</span></div>
-          <div class="price">$29.99</div>
-          <button class="btn-cart">🛒 Agregar al Carrito</button>
+        <div class="product-card__content">
+          <p class="product-card__category">Adidas</p>
+          <h3 class="product-card__title">Camiseta Deportiva</h3>
+          <div class="product-card__rating">
+            <div class="star-rating" aria-label="Calificación: 4.3 de 5 estrellas">
+              <span class="star star--filled"></span>
+              <span class="star star--filled"></span>
+              <span class="star star--filled"></span>
+              <span class="star star--filled"></span>
+              <span class="star"></span>
+            </div>
+            <span class="product-card__reviews">(4.3)</span>
+          </div>
+          <p class="product-card__price">$29.99</p>
+          <button class="product-card__btn" aria-label="Agregar Camiseta Deportiva al carrito">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="margin-right: 8px; vertical-align: middle;">
+              <circle cx="9" cy="21" r="1"></circle>
+              <circle cx="20" cy="21" r="1"></circle>
+              <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+            </svg>
+            Agregar al Carrito
+          </button>
         </div>
-      </div>
+      </article>
 
     </div>
   </div>
@@ -164,73 +277,92 @@
     <h2>Explora por Categoría</h2>
     <p>Encuentra exactamente lo que necesitas</p>
 
-    <div class="categorias-grid">
-      <button>Calzado</button>
-      <button>Ropa</button>
-      <button>Fitness</button>
-      <button>Balones</button>
-      <button>Gimnasio</button>
-    </div>
+    <nav class="categorias-grid" aria-label="Categorías de productos">
+      <a href="catalog.html?cat=calzado" class="btn-category">Calzado</a>
+      <a href="catalog.html?cat=ropa" class="btn-category">Ropa</a>
+      <a href="catalog.html?cat=fitness" class="btn-category">Fitness</a>
+      <a href="catalog.html?cat=balones" class="btn-category">Balones</a>
+      <a href="catalog.html?cat=gimnasio" class="btn-category">Gimnasio</a>
+    </nav>
 
   </div>
 </section>
+</main>
 
 <section class="newsletter">
   <h2>Suscríbete</h2>
-  <input type="email" placeholder="Correo">
-  <button>Enviar</button>
+  <label for="newsletter-email" class="sr-only">Correo electrónico para suscripción</label>
+  <input type="email" id="newsletter-email" placeholder="Correo" required>
+  <button type="submit">Enviar</button>
 </section>
 
-<footer>
-  <div class="container footer-grid">
+<footer class="footer">
+    <div class="footer__container">
+        <!-- Footer Grid -->
+        <div class="footer__grid">
+            <!-- Company Info Column -->
+            <section class="footer__column" aria-labelledby="footer-company">
+                <h2 id="footer-company" class="footer__title">SportData</h2>
+                <p class="footer__description">
+                    Tu tienda deportiva de confianza. Encuentra<br>
+                    los mejores productos deportivos al mejor<br>
+                    precio.
+                </p>
+            </section>
 
-    <!-- MARCA -->
-    <div>
-      <h3>SportData</h3>
-      <p class="footer-desc">
-        Tu tienda deportiva de confianza. Encuentra los mejores productos deportivos al mejor precio.
-      </p>
+            <!-- Navigation Column -->
+            <section class="footer__column" aria-labelledby="footer-nav">
+                <h3 id="footer-nav" class="footer__subtitle">Navegación</h3>
+                <nav aria-label="Navegación del pie de página">
+                    <ul class="footer-links">
+                        <li><a href="index.html" class="footer-links__item">Inicio</a></li>
+                        <li><a href="catalog.html" class="footer-links__item">Catálogo</a></li>
+                        <li><a href="favorites.html" class="footer-links__item">Favoritos</a></li>
+                        <li><a href="cart.html" class="footer-links__item">Carrito</a></li>
+                    </ul>
+                </nav>
+            </section>
+
+            <!-- Customer Service Column -->
+            <section class="footer__column" aria-labelledby="footer-service">
+                <h3 id="footer-service" class="footer__subtitle">Atención al Cliente</h3>
+                <nav aria-label="Atención al cliente">
+                    <ul class="footer-links">
+                        <li><a href="#" class="footer-links__item">Contacto</a></li>
+                        <li><a href="#" class="footer-links__item">Envios</a></li>
+                        <li><a href="#" class="footer-links__item">Devoluciones</a></li>
+                        <li><a href="#" class="footer-links__item">Preguntas Frecuentes</a></li>
+                    </ul>
+                </nav>
+            </section>
+
+            <!-- Social Media Column -->
+            <section class="footer__column" aria-labelledby="footer-social">
+                <h3 id="footer-social" class="footer__subtitle">Síguenos</h3>
+                <div class="social-links" role="list">
+                    <a href="https://facebook.com/sportdata" class="social-links__item" aria-label="Facebook" role="listitem">
+                        <img src="https://www.figma.com/api/mcp/asset/4c54c5e0-5c59-422e-8845-e08d663c96fd" alt="Facebook">
+                    </a>
+                    <a href="https://twitter.com/sportdata" class="social-links__item" aria-label="Twitter" role="listitem">
+                        <img src="https://www.figma.com/api/mcp/asset/87a60f6d-a790-4d94-9eea-200785979869" alt="Twitter">
+                    </a>
+                    <a href="https://instagram.com/sportdata" class="social-links__item" aria-label="Instagram" role="listitem">
+                        <img src="https://www.figma.com/api/mcp/asset/a268f09e-86f1-4490-876f-a72460ec791e" alt="Instagram">
+                    </a>
+                    <a href="https://youtube.com/sportdata" class="social-links__item" aria-label="YouTube" role="listitem">
+                        <img src="https://www.figma.com/api/mcp/asset/f4d0d585-fbb3-46f9-b693-7fafffe09811" alt="YouTube">
+                    </a>
+                </div>
+            </section>
+        </div>
+
+        <!-- Footer Copyright -->
+        <div class="footer__copyright">
+            <p>&copy; 2026 SportData. Todos los derechos reservados.</p>
+        </div>
     </div>
-
-    <!-- NAVEGACIÓN -->
-    <div>
-      <h4>Navegación</h4>
-      <ul>
-        <li><a href="#">Inicio</a></li>
-        <li><a href="#">Catálogo</a></li>
-        <li><a href="#">Favoritos</a></li>
-        <li><a href="#">Carrito</a></li>
-      </ul>
-    </div>
-
-    <!-- SOPORTE -->
-    <div>
-      <h4>Atención al Cliente</h4>
-      <ul>
-        <li><a href="#">Contacto</a></li>
-        <li><a href="#">Envíos</a></li>
-        <li><a href="#">Devoluciones</a></li>
-        <li><a href="#">Preguntas Frecuentes</a></li>
-      </ul>
-    </div>
-
-    <!-- REDES -->
-    <div>
-      <h4>Síguenos</h4>
-      <div class="socials">
-        <a href="#">f</a>
-        <a href="#">t</a>
-        <a href="#">ig</a>
-        <a href="#">yt</a>
-      </div>
-    </div>
-
-  </div>
-
-  <!-- BARRA INFERIOR -->
-  <div class="footer-bottom">
-    © 2026 SportData. Todos los derechos reservados.
-  </div>
 </footer>
+
+<script src="js/favorites.js"></script>
 </body>
 </html>
