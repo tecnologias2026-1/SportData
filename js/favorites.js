@@ -12,10 +12,56 @@
      * Initialize the application
      */
     function init() {
+        setupHamburgerMenu();
         setupNavigation();
         setupButtons();
         setupEventListeners();
         trackPageView();
+    }
+
+    function setupHamburgerMenu() {
+        const hamburgerBtn = document.getElementById('hamburgerBtn');
+        const navMenu = document.getElementById('navMenu');
+        const navLinks = document.querySelectorAll('.nav-list__link');
+
+        if (!hamburgerBtn || !navMenu) return;
+
+        // Toggle menu on hamburger click
+        hamburgerBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const isExpanded = hamburgerBtn.getAttribute('aria-expanded') === 'true';
+            
+            hamburgerBtn.setAttribute('aria-expanded', !isExpanded);
+            navMenu.classList.toggle('active');
+        });
+
+        // Close menu when clicking on a link
+        navLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                hamburgerBtn.setAttribute('aria-expanded', 'false');
+                navMenu.classList.remove('active');
+            });
+        });
+
+        // Close menu when clicking outside
+        document.addEventListener('click', (e) => {
+            const isClickInsideNav = navMenu.contains(e.target);
+            const isClickOnHamburger = hamburgerBtn.contains(e.target);
+
+            if (!isClickInsideNav && !isClickOnHamburger && navMenu.classList.contains('active')) {
+                hamburgerBtn.setAttribute('aria-expanded', 'false');
+                navMenu.classList.remove('active');
+            }
+        });
+
+        // Close menu with Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && navMenu.classList.contains('active')) {
+                hamburgerBtn.setAttribute('aria-expanded', 'false');
+                navMenu.classList.remove('active');
+                hamburgerBtn.focus();
+            }
+        });
     }
 
     /**

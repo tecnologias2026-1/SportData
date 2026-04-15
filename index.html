@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>SportData - UI Mejorada</title>
+
+<link rel="stylesheet" href="css/styles.css">
+</head>
+
+<body>
+
+<header>
+  <div class="container navbar">
+
+    <!-- LOGO -->
+    <div class="logo">
+        <img src="assets/img/main_hero_banner.jpg" alt="Jugador de baloncesto elevándose hacia la canasta en una cancha de estadio iluminada, con expresión concentrada y energía competitiva" />
+    </div>
+
+    <!-- MENÚ -->
+    <nav class="nav-center">
+        <ul>
+            <li><a href="#">Inicio</a></li>
+            <li><a href="#">Catálogo</a></li>
+            <li><a href="#">♡ Favoritos</a></li>
+            <li><a href="#">🛒 Carrito</a></li>
+        </ul>
+    </nav>
+
+    <!-- ACCIONES -->
+    <div class="nav-right">
+      <a href="#" class="login"> Ingresar</a>
+    </div>
+
+  </div>
+</header>
+
+<section class="hero">
+  <div class="container hero-content">
+    <div>
+      <h1>Equipamiento Deportivo de Élite</h1>
+      <p>Encuentra lo mejor para tu rendimiento deportivo</p>
+      <button class="btn btn-primary">Ver Catálogo</button>
+      <button class="btn btn-secondary">Ver Productos</button>
+    </div>
+    <img src="../assets/img/main_hero_banner.jpg" alt="Jugador de baloncesto elevándose hacia la canasta en una cancha de estadio iluminada, con expresión concentrada y energía competitiva" />
+  </div>
+</section>
+
+<section class="benefits">
+  <div class="container benefits-grid">
+
+    <div class="benefit">
+      <div class="icon blue">📦</div>
+      <h3>Envío Gratis</h3>
+      <p>En compras superiores a $50</p>
+    </div>
+
+    <div class="benefit">
+      <div class="icon green">📈</div>
+      <h3>Mejor Precio</h3>
+      <p>Garantía de precio más bajo</p>
+    </div>
+
+    <div class="benefit">
+      <div class="icon purple">🛡️</div>
+      <h3>Compra Segura</h3>
+      <p>Protección total en tus pagos</p>
+    </div>
+
+  </div>
+</section>
+
+<section class="productos">
+  <div class="container">
+
+    <div class="productos-header">
+      <div>
+        <h2>Productos Destacados</h2>
+        <p>Los favoritos de nuestros clientes</p>
+      </div>
+      <button class="btn-outline">Ver Todos →</button>
+    </div>
+
+    <div class="grid">
+
+      <!-- CARD -->
+      <div class="card">
+        <div class="card-img">
+          <img src="../assets/img/main_produc_zapatillas.jpg" alt="Zapatillas Running Pro de Nike">
+          <span class="fav">♡</span>
+        </div>
+
+        <div class="card-body">
+          <span class="brand">Nike</span>
+          <h3>Zapatillas Running Pro</h3>
+
+          <div class="rating">
+            ⭐⭐⭐⭐☆
+            <span>(4.5)</span>
+          </div>
+
+          <div class="price">$89.99</div>
+
+          <button class="btn-cart">🛒 Agregar al Carrito</button>
+        </div>
+      </div>
+
+      <!-- DUPLICA CARDS -->
+      <div class="card">
+        <div class="card-img">
+          <img src="../assets/img/main_produc_basquet.jpg" alt="Balón de Baloncesto Spalding">
+          <span class="fav">♡</span>
+        </div>
+
+        <div class="card-body">
+          <span class="brand">Spalding</span>
+          <h3>Balón de Baloncesto</h3>
+          <div class="rating">⭐⭐⭐⭐☆ <span>(4.8)</span></div>
+          <div class="price">$45.00</div>
+          <button class="btn-cart">🛒 Agregar al Carrito</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-img">
+          <img src="../assets/img/main_produc_estirilla.jpg" alt="Esterilla de yoga premium enrollada en una tienda deportiva, mostrada como producto destacado sobre un fondo neutro que transmite calma y motivación para el ejercicio">
+          <span class="fav">♡</span>
+        </div>
+
+        <div class="card-body">
+          <span class="brand">Manduka</span>
+          <h3>Esterilla de Yoga Premium</h3>
+          <div class="rating">⭐⭐⭐⭐☆ <span>(4.7)</span></div>
+          <div class="price">$35.99</div>
+          <button class="btn-cart">🛒 Agregar al Carrito</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-img">
+          <img src="../assets/img/main_produc_camiseta.jpg" alt="Camiseta Deportiva Adidas de manga corta en una tienda deportiva, destacada como producto destacado sobre un fondo neutro que resalta su diseño moderno y funcionalidad para el entrenamiento">
+          <span class="fav">♡</span>
+        </div>
+
+        <div class="card-body">
+          <span class="brand">Adidas</span>
+          <h3>Camiseta Deportiva</h3>
+          <div class="rating">⭐⭐⭐⭐☆ <span>(4.3)</span></div>
+          <div class="price">$29.99</div>
+          <button class="btn-cart">🛒 Agregar al Carrito</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<section class="categorias">
+  <div class="container">
+    
+    <h2>Explora por Categoría</h2>
+    <p>Encuentra exactamente lo que necesitas</p>
+
+    <div class="categorias-grid">
+      <button>Calzado</button>
+      <button>Ropa</button>
+      <button>Fitness</button>
+      <button>Balones</button>
+      <button>Gimnasio</button>
+    </div>
+
+  </div>
+</section>
+
+<section class="newsletter">
+  <h2>Suscríbete</h2>
+  <input type="email" placeholder="Correo">
+  <button>Enviar</button>
+</section>
+
+<footer>
+  <div class="container footer-grid">
+
+    <!-- MARCA -->
+    <div>
+      <h3>SportData</h3>
+      <p class="footer-desc">
+        Tu tienda deportiva de confianza. Encuentra los mejores productos deportivos al mejor precio.
+      </p>
+    </div>
+
+    <!-- NAVEGACIÓN -->
+    <div>
+      <h4>Navegación</h4>
+      <ul>
+        <li><a href="#">Inicio</a></li>
+        <li><a href="#">Catálogo</a></li>
+        <li><a href="#">Favoritos</a></li>
+        <li><a href="#">Carrito</a></li>
+      </ul>
+    </div>
+
+    <!-- SOPORTE -->
+    <div>
+      <h4>Atención al Cliente</h4>
+      <ul>
+        <li><a href="#">Contacto</a></li>
+        <li><a href="#">Envíos</a></li>
+        <li><a href="#">Devoluciones</a></li>
+        <li><a href="#">Preguntas Frecuentes</a></li>
+      </ul>
+    </div>
+
+    <!-- REDES -->
+    <div>
+      <h4>Síguenos</h4>
+      <div class="socials">
+        <a href="#">f</a>
+        <a href="#">t</a>
+        <a href="#">ig</a>
+        <a href="#">yt</a>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- BARRA INFERIOR -->
+  <div class="footer-bottom">
+    © 2026 SportData. Todos los derechos reservados.
+  </div>
+</footer>
+</body>
+</html>
