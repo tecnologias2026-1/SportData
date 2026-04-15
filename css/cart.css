@@ -448,6 +448,38 @@ img {
     height: 1.25rem;
 }
 
+.social-links {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.social-links__item {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    background-color: #1e2939;
+    border-radius: 50%;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.social-links__item:hover {
+    background-color: #38a8c7;
+    transform: translateY(-2px);
+}
+
+.social-links__item:focus-visible {
+    outline: 2px solid #38a8c7;
+    outline-offset: 2px;
+}
+
+.social-links__item img {
+    width: 1.25rem;
+    height: 1.25rem;
+}
+
 /* Footer Copyright */
 
 .footer__copyright {
