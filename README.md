@@ -117,13 +117,28 @@ El modelo relacional incluye las siguientes tablas principales:
 El diseño permite mantener trazabilidad histórica de variaciones de precio y relaciones entre productos y tiendas.
 
 🧩 7. Documentación del Sistema
-Estructura de Carpetas
-/css
-/js
-/assets
 
-Explicar brevemente qué contiene cada carpeta.
+Descripción de carpetas
+/assets
+Carpeta destinada a recursos estáticos reutilizables.
+
+/assets/img
+Almacena todas las imágenes utilizadas en el sitio web.
+
+/css
+Contiene las hojas de estilo del proyecto. Aquí se define la apariencia visual, incluyendo layout, responsividad (media queries) y estilos globales o específicos por componente.
+
+/html
+Incluye las páginas secundarias del sitio web. Permite desacoplar el contenido del archivo principal (index.html) y organizar mejor las distintas vistas o secciones.
+
+/js
+Contiene los scripts de JavaScript encargados de algunas animaciones,interacciones del usuario,validaciones y comportamiento dinámico.
+
+index.html
+Es el punto de entrada principal del proyecto. Desde este archivo se enlazan los recursos CSS, JavaScript y se navega hacia las demás páginas dentro de /html.
 
 🚀 8. Instalación y Ejecución
+El proyecto se encuentra desplegado mediante GitHub Pages, lo que permite acceder a la aplicación sin necesidad de instalación.
 
-Explicar cómo correr el proyecto.
+Solo debes ingresar al enlace público del repositorio (GitHub Pages).
+El sistema cargará automáticamente el index.html como punto de entrada.
