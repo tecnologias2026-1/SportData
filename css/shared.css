@@ -273,10 +273,11 @@
     right: 0;
     flex-direction: column;
     background-color: #ffffff;
-    border-bottom: 1px solid #e5e7eb;
+    border-bottom: none;
     max-height: 0;
     overflow: hidden;
     transition: max-height 0.3s ease;
+    ;
   }
 
   .header__nav.active {
