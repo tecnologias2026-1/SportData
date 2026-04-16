@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="SportData - Zapatillas Running Pro Nike. Compra este producto deportivo de alta calidad.">
+    <title>Zapatillas Running Pro - SportData</title>
+    <link rel="stylesheet" href="../css/shared.css">
+    <link rel="stylesheet" href="../css/catalog.css">
+    <link rel="stylesheet" href="../css/product.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header__container">
+            <!-- Logo -->
+            <div class="header__logo">
+                <a href="../index.html" aria-label="Ir al inicio">
+                    <img src="https://www.figma.com/api/mcp/asset/a3aa5f5b-5f22-41f1-90bb-53d3f1ab65f9" alt="Logo de SportData" class="logo-image">
+                </a>
+            </div>
+
+            <!-- Hamburger Menu Button -->
+            <button class="hamburger-menu" id="hamburgerBtn" aria-label="Menú de navegación" aria-expanded="false">
+                <span class="hamburger-line"></span>
+                <span class="hamburger-line"></span>
+                <span class="hamburger-line"></span>
+            </button>
+
+            <!-- Navigation -->
+            <nav class="header__nav" id="navMenu" aria-label="Navegación principal">
+                <ul class="nav-list">
+                    <li class="nav-list__item">
+                        <a href="../index.html" class="nav-list__link">Inicio</a>
+                    </li>
+                    <li class="nav-list__item">
+                        <a href="catalog.html" class="nav-list__link nav-list__link--active" aria-current="page">Catálogo</a>
+                    </li>
+                    <li class="nav-list__item">
+                        <a href="favorites.html" class="nav-list__link">
+                            Favoritos
+                            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                            </svg>
+                        </a>
+                    </li>
+                    <li class="nav-list__item">
+                        <a href="cart.html" class="nav-list__link ">
+                            <span>Carrito</span>
+                            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <circle cx="9" cy="21" r="1"></circle>
+                                <circle cx="20" cy="21" r="1"></circle>
+                                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                            </svg>
+                        </a>
+                    </li>
+                    <li class="nav-list__item nav-list__item--auth-mobile">
+                        <a href="register.html" class="nav-list__link nav-list__link--auth">
+                            <span>Ingresar</span>
+                            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="12" cy="7" r="4"></circle>
+                            </svg>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+
+            <!-- Auth Link -->
+            <a href="register.html" class="login-btn" aria-label="Ingresar a tu cuenta">
+                <img src="https://www.figma.com/api/mcp/asset/32be382b-310c-44c5-9807-c316fb2d4b7f" alt="" aria-hidden="true">
+                <span>Ingresar</span>
+            </a>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <section class="product-detail" aria-labelledby="product-title">
+            <!-- Breadcrumb -->
+            <div class="breadcrumb">
+                <a href="../index.html" class="breadcrumb__link">Inicio</a>
+                <span class="breadcrumb__separator">/</span>
+                <a href="catalog.html" class="breadcrumb__link">Catálogo</a>
+                <span class="breadcrumb__separator">/</span>
+                <span class="breadcrumb__current">Zapatillas Running Pro</span>
+            </div>
+
+            <!-- Product Container -->
+            <div class="product-container">
+                <!-- Product Image -->
+                <div class="product-image-section">
+                    <div class="product-image-main">
+                        <img src="../assets/img/main_produc_zapatillas.jpg" alt="Zapatillas Running Pro Nike" class="product-image">
+                        <button class="product-favorite-btn" aria-label="Añadir a favoritos" data-favorite="false">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Product Info -->
+                <div class="product-info-section">
+                    <!-- Category and Brand -->
+                    <div class="product-meta">
+                        <span class="product-category">Calzado Deportivo</span>
+                        <span class="product-brand">Nike</span>
+                    </div>
+
+                    <!-- Title -->
+                    <h1 id="product-title" class="product-title">Zapatillas Running Pro</h1>
+
+                    <!-- Rating -->
+                    <div class="product-rating">
+                        <div class="star-rating" aria-label="Calificación: 4.5 de 5 estrellas">
+                            <span class="star star--filled"></span>
+                            <span class="star star--filled"></span>
+                            <span class="star star--filled"></span>
+                            <span class="star star--filled"></span>
+                            <span class="star star--half"></span>
+                        </div>
+                        <span class="rating-value">4.5 de 5</span>
+                        <span class="review-count">(128 reseñas)</span>
+                    </div>
+
+                    <!-- Price -->
+                    <div class="product-price-section">
+                        <span class="product-price">$89.99</span>
+                        <span class="price-currency">USD</span>
+                    </div>
+
+                    <!-- Description -->
+                    <p class="product-description">
+                        Diseñadas para corredores que buscan máximo rendimiento y comodidad. Las Zapatillas Running Pro de Nike combinan tecnología avanzada con un diseño moderno. Perfectas para entrenamientos diarios y competencias.
+                    </p>
+
+                    <!-- Quantity Selector -->
+                    <div class="quantity-selector">
+                        <label for="quantity" class="quantity-label">Cantidad:</label>
+                        <div class="quantity-control">
+                            <button class="quantity-btn" id="decreaseQty" aria-label="Disminuir cantidad">−</button>
+                            <input type="number" id="quantity" class="quantity-input" value="1" min="1" max="10">
+                            <button class="quantity-btn" id="increaseQty" aria-label="Aumentar cantidad">+</button>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="product-actions">
+                        <button class="btn-add-cart" aria-label="Agregar al carrito">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <circle cx="9" cy="21" r="1"></circle>
+                                <circle cx="20" cy="21" r="1"></circle>
+                                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                            </svg>
+                            Agregar al Carrito
+                        </button>
+                    </div>
+
+                    <!-- Shipping Info -->
+                    <div class="shipping-info">
+                        <div class="shipping-item">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <polyline points="12 6 12 12 16 14"></polyline>
+                            </svg>
+                            <span>Envío gratis para compras superiores a $50</span>
+                        </div>
+                        <div class="shipping-item">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                                <path d="M9 11l3 3L22 4"></path>
+                                <path d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <span>Devolución gratuita en 30 días</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Specifications Section -->
+            <section class="product-specifications" aria-labelledby="specs-title">
+                <h2 id="specs-title" class="specs-title">Especificaciones del Producto</h2>
+                
+                <div class="specs-grid">
+                    <!-- General Info -->
+                    <div class="specs-category">
+                        <h3 class="specs-category-title">Información General</h3>
+                        <ul class="specs-list">
+                            <li class="spec-item">
+                                <span class="spec-label">Marca:</span>
+                                <span class="spec-value">Nike</span>
+                            </li>
+                            <li class="spec-item">
+                                <span class="spec-label">Modelo:</span>
+                                <span class="spec-value">Running Pro 2024</span>
+                            </li>
+                            <li class="spec-item">
+                                <span class="spec-label">Código de Producto:</span>
+                                <span class="spec-value">NK-RNP-001</span>
+                            </li>
+                            <li class="spec-item">
+                                <span class="spec-label">Categoría:</span>
+                                <span class="spec-value">Calzado Deportivo</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- Technical Specs -->
+                    <div class="specs-category">
+                        <h3 class="specs-category-title">Características Técnicas</h3>
+                        <ul class="specs-list">
+                            <li class="spec-item">
+                                <span class="spec-label">Peso:</span>
+                                <span class="spec-value">245g (tamaño 42)</span>
+                            </li>
+                            <li class="spec-item">
+                                <span class="spec-label">Material Principal:</span>
+                                <span class="spec-value">Mesh de nylon y poliéster</span>
+                            </li>
+                            <li class="spec-item">
+                                <span class="spec-label">Suela:</span>
+                                <span class="spec-value">Goma de carbono</span>
+                            </li>
+                            <li class="spec-item">
+                                <span class="spec-label">Amortiguación:</span>
+                                <span class="spec-value">Air Max Cushioning System</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- Sizing -->
+                    <div class="specs-category">
+                        <h3 class="specs-category-title">Tallas Disponibles</h3>
+                        <div class="size-options">
+                            <button class="size-btn">36</button>
+                            <button class="size-btn">37</button>
+                            <button class="size-btn">38</button>
+                            <button class="size-btn">39</button>
+                            <button class="size-btn">40</button>
+                            <button class="size-btn">41</button>
+                            <button class="size-btn active">42</button>
+                            <button class="size-btn">43</button>
+                            <button class="size-btn">44</button>
+                            <button class="size-btn">45</button>
+                        </div>
+                    </div>
+
+                    <!-- Colors -->
+                    <div class="specs-category">
+                        <h3 class="specs-category-title">Colores Disponibles</h3>
+                        <div class="color-options">
+                            <div class="color-btn" style="background-color: #000000;" title="Negro"></div>
+                            <div class="color-btn active" style="background-color: #3B82F6;" title="Azul Eléctrico"></div>
+                            <div class="color-btn" style="background-color: #EF4444;" title="Rojo"></div>
+                            <div class="color-btn" style="background-color: #F59E0B;" title="Naranja"></div>
+                            <div class="color-btn" style="background-color: #FFFFFF; border: 1px solid #E5E7EB;" title="Blanco"></div>
+                        </div>
+                    </div>
+
+                    <!-- Performance -->
+                    <div class="specs-category">
+                        <h3 class="specs-category-title">Características de Desempeño</h3>
+                        <ul class="specs-list">
+                            <li class="spec-item">
+                                <span class="spec-label">Tipo de Pie:</span>
+                                <span class="spec-value">Neutral</span>
+                            </li>
+                            <li class="spec-item">
+                                <span class="spec-label">Drop:</span>
+                                <span class="spec-value">10mm</span>
+                            </li>
+                            <li class="spec-item">
+                                <span class="spec-label">Uso Recomendado:</span>
+                                <span class="spec-value">Correr en carretera</span>
+                            </li>
+                            <li class="spec-item">
+                                <span class="spec-label">Nivel de Experiencia:</span>
+                                <span class="spec-value">Principiante a Avanzado</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- Care -->
+                    <div class="specs-category">
+                        <h3 class="specs-category-title">Cuidado y Mantenimiento</h3>
+                        <ul class="specs-list">
+                            <li class="spec-item">
+                                <span class="spec-label">Limpieza:</span>
+                                <span class="spec-value">Lavar a mano con agua tibia</span>
+                            </li>
+                            <li class="spec-item">
+                                <span class="spec-label">Secado:</span>
+                                <span class="spec-value">Al aire libre, no exponer al sol directo</span>
+                            </li>
+                            <li class="spec-item">
+                                <span class="spec-label">Almacenamiento:</span>
+                                <span class="spec-value">Lugar fresco y seco</span>
+                            </li>
+                            <li class="spec-item">
+                                <span class="spec-label">Durabilidad:</span>
+                                <span class="spec-value">500-800 km de uso</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+            <!-- Reviews Section -->
+            <section class="product-reviews" aria-labelledby="reviews-title">
+                <h2 id="reviews-title" class="reviews-title">Reseñas de Clientes</h2>
+                
+                <div class="reviews-summary">
+                    <div class="rating-summary">
+                        <span class="average-rating">4.5</span>
+                        <div class="summary-stars" aria-label="Calificación promedio: 4.5 de 5 estrellas">
+                            <span class="star star--filled"></span>
+                            <span class="star star--filled"></span>
+                            <span class="star star--filled"></span>
+                            <span class="star star--filled"></span>
+                            <span class="star star--half"></span>
+                        </div>
+                        <span class="total-reviews">Basado en 128 reseñas</span>
+                    </div>
+                    <div class="rating-breakdown">
+                        <div class="breakdown-item">
+                            <span class="breakdown-label">5 ★</span>
+                            <div class="breakdown-bar">
+                                <div class="breakdown-fill" style="width: 65%;"></div>
+                            </div>
+                            <span class="breakdown-count">83</span>
+                        </div>
+                        <div class="breakdown-item">
+                            <span class="breakdown-label">4 ★</span>
+                            <div class="breakdown-bar">
+                                <div class="breakdown-fill" style="width: 20%;"></div>
+                            </div>
+                            <span class="breakdown-count">26</span>
+                        </div>
+                        <div class="breakdown-item">
+                            <span class="breakdown-label">3 ★</span>
+                            <div class="breakdown-bar">
+                                <div class="breakdown-fill" style="width: 10%;"></div>
+                            </div>
+                            <span class="breakdown-count">13</span>
+                        </div>
+                        <div class="breakdown-item">
+                            <span class="breakdown-label">2 ★</span>
+                            <div class="breakdown-bar">
+                                <div class="breakdown-fill" style="width: 3%;"></div>
+                            </div>
+                            <span class="breakdown-count">4</span>
+                        </div>
+                        <div class="breakdown-item">
+                            <span class="breakdown-label">1 ★</span>
+                            <div class="breakdown-bar">
+                                <div class="breakdown-fill" style="width: 2%;"></div>
+                            </div>
+                            <span class="breakdown-count">2</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="reviews-list">
+                    <article class="review-card">
+                        <div class="review-header">
+                            <div class="reviewer-info">
+                                <h4 class="reviewer-name">Juan Martinez</h4>
+                                <span class="review-date">Verificado - 15 Marzo 2026</span>
+                            </div>
+                            <div class="review-stars" aria-label="Calificación: 5 de 5 estrellas">
+                                <span class="star star--filled"></span>
+                                <span class="star star--filled"></span>
+                                <span class="star star--filled"></span>
+                                <span class="star star--filled"></span>
+                                <span class="star star--filled"></span>
+                            </div>
+                        </div>
+                        <h5 class="review-title">Excelente calidad y comodidad</h5>
+                        <p class="review-text">
+                            Estas zapatillas son increíbles. Después de 2 meses usándolas para correr diariamente, puedo decir que la comodidad es excepcional. El soporte es excelente y no me causa rozaduras.
+                        </p>
+                    </article>
+                    <article class="review-card">
+                        <div class="review-header">
+                            <div class="reviewer-info">
+                                <h4 class="reviewer-name">María González</h4>
+                                <span class="review-date">Verificado - 8 Marzo 2026</span>
+                            </div>
+                            <div class="review-stars" aria-label="Calificación: 4 de 5 estrellas">
+                                <span class="star star--filled"></span>
+                                <span class="star star--filled"></span>
+                                <span class="star star--filled"></span>
+                                <span class="star star--filled"></span>
+                                <span class="star"></span>
+                            </div>
+                        </div>
+                        <h5 class="review-title">Muy buenas, aunque caras</h5>
+                        <p class="review-text">
+                            La calidad es indudable, pero el precio es bastante alto. Dicho esto, la durabilidad y el rendimiento justifican el costo. Recomendado para corredores serios.
+                        </p>
+                    </article>
+                </div>
+            </section>
+        </section>
+    </main>
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer__container">
+            <!-- Footer Grid -->
+            <div class="footer__grid">
+                <!-- Company Info Column -->
+                <section class="footer__column" aria-labelledby="footer-company">
+                    <h2 id="footer-company" class="footer__title">SportData</h2>
+                    <p class="footer__description">
+                        Tu tienda deportiva de confianza. Encuentra<br>
+                        los mejores productos deportivos al mejor<br>
+                        precio.
+                    </p>
+                </section>
+                <!-- Navigation Column -->
+                <section class="footer__column" aria-labelledby="footer-nav">
+                    <h3 id="footer-nav" class="footer__subtitle">Navegación</h3>
+                    <nav aria-label="Navegación del pie de página">
+                        <ul class="footer-links">
+                            <li><a href="../index.html" class="footer-links__item">Inicio</a></li>
+                            <li><a href="catalog.html" class="footer-links__item">Catálogo</a></li>
+                            <li><a href="favorites.html" class="footer-links__item">Favoritos</a></li>
+                            <li><a href="cart.html" class="footer-links__item">Carrito</a></li>
+                        </ul>
+                    </nav>
+                </section>
+                <!-- Customer Service Column -->
+                <section class="footer__column" aria-labelledby="footer-service">
+                    <h3 id="footer-service" class="footer__subtitle">Atención al Cliente</h3>
+                    <nav aria-label="Atención al cliente">
+                        <ul class="footer-links">
+                            <li><a href="#" class="footer-links__item">Contacto</a></li>
+                            <li><a href="#" class="footer-links__item">Envios</a></li>
+                            <li><a href="#" class="footer-links__item">Devoluciones</a></li>
+                            <li><a href="#" class="footer-links__item">Preguntas Frecuentes</a></li>
+                        </ul>
+                    </nav>
+                </section>
+                <!-- Social Media Column -->
+                <section class="footer__column" aria-labelledby="footer-social">
+                <h3 id="footer-social" class="footer__subtitle">Síguenos</h3>
+                <div class="social-links" role="list">
+                    <a href="https://facebook.com/sportdata" class="social-links__item" aria-label="Facebook" role="listitem">
+                        <svg width="11" height="19" viewBox="0 0 11 19" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M9.99998 0.833313H7.49998C6.39491 0.833313 5.3351 1.2723 4.5537 2.0537C3.7723 2.8351 3.33331 3.89491 3.33331 4.99998V7.49998H0.833313V10.8333H3.33331V17.5H6.66665V10.8333H9.16665L9.99998 7.49998H6.66665V4.99998C6.66665 4.77897 6.75444 4.567 6.91072 4.41072C7.067 4.25444 7.27897 4.16665 7.49998 4.16665H9.99998V0.833313Z" stroke="#D1D5DC" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </a>
+                    <a href="https://twitter.com/sportdata" class="social-links__item" aria-label="Twitter" role="listitem">
+                        <svg width="19" height="16" viewBox="0 0 19 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M17.5 0.839598C17.5 0.839598 16.9167 2.5896 15.8334 3.67293C17.1667 12.0063 8.00004 18.0896 0.833374 13.3396C2.66671 13.4229 4.50004 12.8396 5.83337 11.6729C1.66671 10.4229 -0.416626 5.50626 1.66671 1.67293C3.50004 3.8396 6.33337 5.0896 9.16671 5.00626C8.41671 1.50627 12.5 -0.493735 15 1.8396C15.9167 1.8396 17.5 0.839598 17.5 0.839598Z" stroke="#D1D5DC" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </a>
+                    <a href="https://instagram.com/sportdata" class="social-links__item" aria-label="Instagram" role="listitem">
+                        <svg width="19" height="19" viewBox="0 0 19 19" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M13.3333 0.833313H4.99998C2.69879 0.833313 0.833313 2.69879 0.833313 4.99998V13.3333C0.833313 15.6345 2.69879 17.5 4.99998 17.5H13.3333C15.6345 17.5 17.5 15.6345 17.5 13.3333V4.99998C17.5 2.69879 15.6345 0.833313 13.3333 0.833313Z" stroke="#D1D5DC" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M12.4999 8.64163C12.6028 9.33517 12.4843 10.0435 12.1614 10.6658C11.8385 11.2881 11.3276 11.7928 10.7013 12.108C10.075 12.4232 9.36531 12.533 8.67309 12.4216C7.98088 12.3102 7.34141 11.9834 6.84564 11.4876C6.34987 10.9918 6.02305 10.3524 5.91166 9.66014C5.80027 8.96793 5.90999 8.25821 6.22521 7.63194C6.54043 7.00568 7.04509 6.49475 7.66743 6.17183C8.28976 5.84892 8.99807 5.73046 9.69161 5.8333C10.399 5.9382 11.054 6.26785 11.5597 6.77356C12.0654 7.27926 12.395 7.9342 12.4999 8.64163Z" stroke="#D1D5DC" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M13.7499 4.58331H13.7583" stroke="#D1D5DC" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </a>
+                    <a href="https://youtube.com/sportdata" class="social-links__item" aria-label="YouTube" role="listitem">
+                        <svg width="19" height="14" viewBox="0 0 19 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M1.26992 10.8887C0.687776 8.14137 0.687776 5.30259 1.26992 2.55532C1.34641 2.27633 1.49421 2.02205 1.69876 1.81749C1.90332 1.61293 2.1576 1.46514 2.43659 1.38865C6.90613 0.6482 11.4671 0.6482 15.9366 1.38865C16.2156 1.46514 16.4699 1.61293 16.6744 1.81749C16.879 2.02205 17.0268 2.27633 17.1033 2.55532C17.6854 5.30259 17.6854 8.14137 17.1033 10.8887C17.0268 11.1676 16.879 11.4219 16.6744 11.6265C16.4699 11.831 16.2156 11.9788 15.9366 12.0553C11.4671 12.7959 6.90612 12.7959 2.43659 12.0553C2.1576 11.9788 1.90332 11.831 1.69876 11.6265C1.49421 11.4219 1.34641 11.1676 1.26992 10.8887Z" stroke="#D1D5DC" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M7.5199 9.22198L11.6866 6.72198L7.5199 4.22198V9.22198Z" stroke="#D1D5DC" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </a>
+                </div>
+            </section>
+            </div>
+
+            <!-- Copyright -->
+            <div class="footer__copyright">
+                <p>&copy; 2025 SportData. Todos los derechos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script src="../js/products.js"></script>
+    <script src="../js/catalog.js"></script>
+    <script src="../js/product.js"></script>
+</body>
+</html>
