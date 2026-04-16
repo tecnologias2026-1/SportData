@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="SportData - Carrito de Compras. Tu tienda deportiva de confianza. Encuentra los mejores productos deportivos al mejor precio.">
+    <title>Carrito - SportData</title>
+    <link rel="stylesheet" href="../css/shared.css">
+    <link rel="stylesheet" href="../css/cart.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header__container">
+            <!-- Logo -->
+            <div class="header__logo">
+                <a href="../index.html" aria-label="Ir al inicio">
+                    <img src="https://www.figma.com/api/mcp/asset/a3aa5f5b-5f22-41f1-90bb-53d3f1ab65f9" alt="Logo de SportData" class="logo-image">
+                </a>
+            </div>
+
+            <!-- Hamburger Menu Button -->
+            <button class="hamburger-menu" id="hamburgerBtn" aria-label="Menú de navegación" aria-expanded="false">
+                <span class="hamburger-line"></span>
+                <span class="hamburger-line"></span>
+                <span class="hamburger-line"></span>
+            </button>
+
+            <!-- Navigation -->
+            <nav class="header__nav" id="navMenu" aria-label="Navegación principal">
+                <ul class="nav-list">
+                    <li class="nav-list__item">
+                        <a href="../index.html" class="nav-list__link">Inicio</a>
+                    </li>
+                    <li class="nav-list__item">
+                        <a href="./catalog.html" class="nav-list__link">Catálogo</a>
+                    </li>
+                    <li class="nav-list__item">
+                        <a href="./favorites.html" class="nav-list__link">
+                            Favoritos
+                            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                            </svg>
+                        </a>
+                    </li>
+                    <li class="nav-list__item">
+                        <a href="cart.html" class="nav-list__link " aria-current="page">
+                            <span>Carrito</span>
+                            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <circle cx="9" cy="21" r="1"></circle>
+                                <circle cx="20" cy="21" r="1"></circle>
+                                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                            </svg>
+                        </a>
+                    </li>
+                    <li class="nav-list__item nav-list__item--auth-mobile">
+                        <a href="./register.html" class="nav-list__link nav-list__link--auth">
+                            <span>Ingresar</span>
+                            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="12" cy="7" r="4"></circle>
+                            </svg>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+
+            <!-- Auth Button -->
+            <button class="login-btn" aria-label="Ingresar a tu cuenta" onclick="window.location.href='./register.html'">
+                <img src="https://www.figma.com/api/mcp/asset/32be382b-310c-44c5-9807-c316fb2d4b7f" alt="" aria-hidden="true">
+                <span>Ingresar</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <section class="empty-cart" aria-labelledby="empty-cart-title">
+            <!-- Empty Cart Icon -->
+            <div class="empty-cart__icon" aria-hidden="true">
+                <svg class="cart-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="9" cy="21" r="1"></circle>
+                    <circle cx="20" cy="21" r="1"></circle>
+                    <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                </svg>
+            </div>
+
+            <!-- Empty State Message -->
+            <div class="empty-cart__content">
+                <h1 id="empty-cart-title" class="empty-cart__title">Tu carrito está vacío</h1>
+                <p class="empty-cart__description">Agrega productos para comenzar tu compra</p>
+                <a href="catalog.html" class="empty-cart__button">Ir al catálogo</a>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer__container">
+            <!-- Footer Grid -->
+            <div class="footer__grid">
+                <!-- Company Info Column -->
+                <section class="footer__column" aria-labelledby="footer-company">
+                    <h2 id="footer-company" class="footer__title">SportData</h2>
+                    <p class="footer__description">
+                        Tu tienda deportiva de confianza. Encuentra<br>
+                        los mejores productos deportivos al mejor<br>
+                        precio.
+                    </p>
+                </section>
+
+                <!-- Navigation Column -->
+                <section class="footer__column" aria-labelledby="footer-nav">
+                    <h3 id="footer-nav" class="footer__subtitle">Navegación</h3>
+                    <nav aria-label="Navegación del pie de página">
+                        <ul class="footer-links">
+                        <li><a href="../index.html" class="footer-links__item">Inicio</a></li>
+                        <li><a href="./catalog.html" class="footer-links__item">Catálogo</a></li>
+                        <li><a href="./favorites.html" class="footer-links__item">Favoritos</a></li>
+                        <li><a href="./cart.html" class="footer-links__item">Carrito</a></li>
+                        </ul>
+                    </nav>
+                </section>
+
+                <!-- Customer Service Column -->
+                <section class="footer__column" aria-labelledby="footer-service">
+                    <h3 id="footer-service" class="footer__subtitle">Atención al Cliente</h3>
+                    <nav aria-label="Atención al cliente">
+                        <ul class="footer-links">
+                        <li><a href="#" class="footer-links__item">Contacto</a></li>
+                        <li><a href="#" class="footer-links__item">Envios</a></li>
+                        <li><a href="#" class="footer-links__item">Devoluciones</a></li>
+                        <li><a href="#" class="footer-links__item">Preguntas Frecuentes</a></li>
+                        </ul>
+                    </nav>
+                </section>
+
+                <!-- Social Media Column -->
+                <section class="footer__column" aria-labelledby="footer-social">
+                    <h3 id="footer-social" class="footer__subtitle">Síguenos</h3>
+                    <div class="social-links" role="list">
+                        <a href="https://facebook.com/sportdata" class="social-links__item" aria-label="Facebook" role="listitem">
+                            <img src="https://www.figma.com/api/mcp/asset/4c54c5e0-5c59-422e-8845-e08d663c96fd" alt="Facebook">
+                        </a>
+                        <a href="https://twitter.com/sportdata" class="social-links__item" aria-label="Twitter" role="listitem">
+                            <img src="https://www.figma.com/api/mcp/asset/87a60f6d-a790-4d94-9eea-200785979869" alt="Twitter">
+                        </a>
+                        <a href="https://instagram.com/sportdata" class="social-links__item" aria-label="Instagram" role="listitem">
+                            <img src="https://www.figma.com/api/mcp/asset/a268f09e-86f1-4490-876f-a72460ec791e" alt="Instagram">
+                        </a>
+                        <a href="https://youtube.com/sportdata" class="social-links__item" aria-label="YouTube" role="listitem">
+                            <img src="https://www.figma.com/api/mcp/asset/f4d0d585-fbb3-46f9-b693-7fafffe09811" alt="YouTube">
+                        </a>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Footer Copyright -->
+            <div class="footer__copyright">
+                <p>&copy; 2026 SportData. Todos los derechos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="../js/cart.js"></script>
+</body>
+</html>
