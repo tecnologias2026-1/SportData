@@ -8,9 +8,9 @@
     <link rel="stylesheet" href="../css/shared.css">
     <link rel="stylesheet" href="../css/catalog.css">
 </head>
-<body>
+<body class="secondary-page catalog-page">
     <!-- Header -->
-    <header class="header">
+    <header class="site-header header">
         <div class="header__container">
             <!-- Logo -->
             <div class="header__logo">
@@ -75,12 +75,37 @@
 
     <!-- Main Content -->
     <main class="main-content">
+        <section class="catalog-hero" aria-labelledby="catalog-hero-title">
+            <div class="catalog-hero__content">
+                <span class="catalog-hero__eyebrow">Catálogo inteligente</span>
+                <h1 id="catalog-hero-title" class="catalog-hero__title">Explora productos deportivos con filtros inteligentes</h1>
+                <p class="catalog-hero__description">Filtra por categoría, marca y precio en una experiencia diseñada para productos deportivos. Navega rápido y encuentra ofertas con mayor claridad.</p>
+                <div class="catalog-hero__badges">
+                    <span class="catalog-hero__badge">+500 productos</span>
+                    <span class="catalog-hero__badge">Filtros avanzados</span>
+                    <span class="catalog-hero__badge">Resultados instantáneos</span>
+                </div>
+            </div>
+            <div class="catalog-hero__visual" aria-hidden="true">
+                <div class="catalog-hero__card">
+                    <span class="catalog-hero__card-tag">Búsqueda rápida</span>
+                    <p class="catalog-hero__card-copy">Accede a los filtros más útiles y encuentra el producto ideal sin complicaciones.</p>
+                    <div class="catalog-hero__card-controls">
+                        <input type="search" class="catalog-hero__card-input" placeholder="Buscar productos..." disabled>
+                        <button class="catalog-hero__card-button" type="button" disabled>Ordenar productos</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <section class="catalog-section" aria-labelledby="catalog-title">
             <!-- Page Header -->
             <div class="catalog-header">
-                <h1 id="catalog-title" class="catalog-header__title">Catálogo de Productos</h1>
-                
-                <!-- Search and Sort -->
+                <div>
+                    <p class="catalog-header__eyebrow">Explora y compara</p>
+                    <h1 id="catalog-title" class="catalog-header__title">Catálogo de productos deportivos</h1>
+                    <p class="catalog-header__subtitle">Encuentra el mejor equipo según tu deporte, marca y presupuesto.</p>
+                </div>
                 <div class="catalog-header__controls">
                     <!-- Search Bar -->
                     <div class="search-bar">
@@ -108,6 +133,11 @@
                         <option value="rating">Mejor Calificación</option>
                     </select>
                 </div>
+            </div>
+            <div class="catalog-summary">
+                <span class="catalog-summary__item">9 resultados</span>
+                <span class="catalog-summary__item">Desde $24.99</span>
+                <span class="catalog-summary__item">Actualizado recientemente</span>
             </div>
 
             <!-- Catalog Container -->
