@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="SportData - Registro. Tu tienda deportiva de confianza. Encuentra los mejores productos deportivos al mejor precio.">
+    <title>Registro - SportData</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/shared.css">
+    <link rel="stylesheet" href="../css/register.css">
+</head>
+<body class="secondary-page">
+    <header id="site-header" data-scope="html" data-active="register"></header>
+    <script src="../js/navbar.js"></script>
+    <!-- Main Content -->
+    <main class="main-content">
+        <section class="register-section" aria-labelledby="register-title">
+            <!-- Welcome Message -->
+            <div class="register-welcome">
+                <h1 id="register-title" class="register-welcome__title">Bienvenido a SportData</h1>
+                <p class="register-welcome__subtitle">Inicia sesión o crea una cuenta para continuar</p>
+            </div>
+
+            <!-- Register Card -->
+            <div class="register-card">
+                <!-- Tab Navigation -->
+                <div class="tab-navigation" role="tablist" aria-label="Opciones de autenticación">
+                    <button 
+                        class="tab-button tab-button--active" 
+                        id="tab-login" 
+                        role="tab" 
+                        aria-selected="true" 
+                        aria-controls="login-panel"
+                        data-tab="login">
+                        Iniciar Sesión
+                    </button>
+                    <button 
+                        class="tab-button" 
+                        id="tab-register" 
+                        role="tab" 
+                        aria-selected="false" 
+                        aria-controls="register-panel"
+                        data-tab="register">
+                        Registrarse
+                    </button>
+                </div>
+
+                <!-- Login Form -->
+                <div 
+                    class="tab-panel tab-panel--active" 
+                    id="login-panel" 
+                    role="tabpanel" 
+                    aria-labelledby="tab-login">
+                    <form class="register-form" id="loginForm" novalidate>
+                        <h2 class="sr-only">Formulario de Inicio de Sesión</h2>
+
+                        <!-- Email Field -->
+                        <div class="form-group">
+                            <label for="login-email" class="form-label">Correo Electrónico</label>
+                            <input 
+                                type="email" 
+                                id="login-email" 
+                                name="email" 
+                                class="form-input" 
+                                placeholder="tu@email.com"
+                                required
+                                aria-required="true"
+                                aria-describedby="login-email-error">
+                            <span id="login-email-error" class="form-error" role="alert" aria-live="polite"></span>
+                        </div>
+
+                        <!-- Password Field -->
+                        <div class="form-group">
+                            <label for="login-password" class="form-label">Contraseña</label>
+                            <input 
+                                type="password" 
+                                id="login-password" 
+                                name="password" 
+                                class="form-input" 
+                                placeholder="••••••••"
+                                required
+                                aria-required="true"
+                                aria-describedby="login-password-error">
+                            <span id="login-password-error" class="form-error" role="alert" aria-live="polite"></span>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <button type="submit" class="submit-button">
+                            Iniciar sesión
+                        </button>
+
+                        <!-- Forgot Password Link -->
+                        <div style="text-align: center; margin-top: 1rem;">
+                            <a href="#" class="forgot-password-link" style="color: #38a8c7; text-decoration: none; font-size: 0.875rem;">¿Olvidaste tu contraseña?</a>
+                        </div>
+
+                        <!-- Back Link -->
+                        <div style="text-align: center; margin-top: 1rem;">
+                            <a href="index.html" class="back-link" style="color: #0a0a0a; text-decoration: none; font-size: 0.875rem;">← Volver al inicio</a>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Register Form -->
+                <div 
+                    class="tab-panel" 
+                    id="register-panel" 
+                    role="tabpanel" 
+                    aria-labelledby="tab-register">
+                    <form class="register-form" id="registerForm" novalidate>
+                        <h2 class="sr-only">Formulario de Registro</h2>
+
+                        <!-- Full Name Field -->
+                        <div class="form-group">
+                            <label for="register-name" class="form-label">Nombre Completo</label>
+                            <input 
+                                type="text" 
+                                id="register-name" 
+                                name="fullName" 
+                                class="form-input" 
+                                placeholder="Juan Pérez"
+                                required
+                                aria-required="true"
+                                aria-describedby="name-error">
+                            <span id="name-error" class="form-error" role="alert" aria-live="polite"></span>
+                        </div>
+
+                        <!-- Email Field -->
+                        <div class="form-group">
+                            <label for="register-email" class="form-label">Correo Electrónico</label>
+                            <input 
+                                type="email" 
+                                id="register-email" 
+                                name="email" 
+                                class="form-input" 
+                                placeholder="tu@email.com"
+                                required
+                                aria-required="true"
+                                aria-describedby="email-error">
+                            <span id="email-error" class="form-error" role="alert" aria-live="polite"></span>
+                        </div>
+
+                        <!-- Password Field -->
+                        <div class="form-group">
+                            <label for="register-password" class="form-label">Contraseña</label>
+                            <input 
+                                type="password" 
+                                id="register-password" 
+                                name="password" 
+                                class="form-input" 
+                                placeholder="••••••••"
+                                required
+                                aria-required="true"
+                                aria-describedby="password-error">
+                            <span id="password-error" class="form-error" role="alert" aria-live="polite"></span>
+                        </div>
+
+                        <!-- Confirm Password Field -->
+                        <div class="form-group">
+                            <label for="register-confirm" class="form-label">Confirmar Contraseña</label>
+                            <input 
+                                type="password" 
+                                id="register-confirm" 
+                                name="confirmPassword" 
+                                class="form-input" 
+                                placeholder="••••••••"
+                                required
+                                aria-required="true"
+                                aria-describedby="confirm-error">
+                            <span id="confirm-error" class="form-error" role="alert" aria-live="polite"></span>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <button type="submit" class="submit-button">
+                            Registrarse
+                        </button>
+
+                        <!-- Back Link -->
+                        <div class="form-footer">
+                            <a href="index.html" class="back-link">← Volver al inicio</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer id="site-footer" data-scope="html"></footer>
+    <script src="../js/footer.js"></script>
+    <script src="../js/register.js"></script>
+</body>
+</html>
