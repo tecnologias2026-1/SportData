@@ -31,6 +31,7 @@
         setupSort();
         setupFavorites();
         setupProducts();
+        setupCompare();
         setupSidebarToggle();
         loadFavorites();
         trackPageView();
@@ -265,7 +266,7 @@
         productCards.forEach(card => {
             card.addEventListener('click', (e) => {
                 // Don't navigate if clicking the favorite or add to cart button
-                if (e.target.closest('.product-card__favorite') || e.target.closest('.product-card__btn')) {
+                if (e.target.closest('.product-card__favorite') || e.target.closest('.product-card__btn') || e.target.closest('.product-card__compare')) {
                     return;
                 }
                 
@@ -295,7 +296,43 @@
      * Navigate to product detail page
      */
     function navigateToProductDetail(productId) {
-        window.location.href = `product.html?id=${productId}`;
+        const inHtmlFolder = window.location.pathname.includes('/html/');
+        const prefix = inHtmlFolder ? '' : 'html/';
+        window.location.href = `${prefix}product.html?id=${productId}`;
+    }
+
+    /**
+     * Setup compare button (adds to compare list in localStorage)
+     */
+    function setupCompare() {
+        const compareButtons = document.querySelectorAll('.product-card__compare');
+        if (!compareButtons.length) return;
+
+        compareButtons.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+
+                const productCard = btn.closest('.product-card');
+                const productId = productCard.getAttribute('data-product-id');
+                const productTitle = productCard.querySelector('.product-card__title').textContent;
+                const key = productId || productTitle;
+
+                const compareList = JSON.parse(localStorage.getItem('compare') || '[]');
+                if (!compareList.includes(key)) {
+                    compareList.push(key);
+                }
+                localStorage.setItem('compare', JSON.stringify(compareList));
+
+                const originalHtml = btn.innerHTML;
+                btn.innerHTML = '✓ En lista';
+                btn.disabled = true;
+                setTimeout(() => {
+                    btn.innerHTML = originalHtml;
+                    btn.disabled = false;
+                }, 2000);
+            });
+        });
     }
 
     /**
