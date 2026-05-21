@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="SportData - Tu tienda deportiva de confianza. Encuentra los mejores productos deportivos al mejor precio.">
+    <title>Favoritos - SportData</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/shared.css">
+    <link rel="stylesheet" href="../css/favorites.css">
+</head>
+<body class="secondary-page">
+        <header id="site-header" data-active="favorites" class="header site-header header--home">
+                <div class="header__container">
+                        <div class="header__logo">
+                                <a href="../index.html" aria-label="Ir al inicio">
+                                        <img src="https://www.figma.com/api/mcp/asset/4333c8d7-1c2f-46d4-be97-b4d5b794feb3" alt="SportData" class="logo-image logo-image--home">
+                                </a>
+                        </div>
+                        <button class="hamburger-menu" id="hamburgerBtn" aria-label="Menú de navegación" aria-expanded="false">
+                            <span class="hamburger-line"></span>
+                            <span class="hamburger-line"></span>
+                            <span class="hamburger-line"></span>
+                        </button>
+                        <nav class="header__nav" id="navMenu" aria-label="Navegación principal">
+                                <ul class="nav-list">
+                                        <li class="nav-list__item">
+                                            <a href="../index.html" class="nav-list__link">Inicio</a>
+                                        </li>
+                                        <li class="nav-list__item">
+                                            <a href="catalog.html" class="nav-list__link">Buscar Productos</a>
+                                        </li>
+                                        <li class="nav-list__item">
+                                            <a href="favorites.html" class="nav-list__link nav-list__link--active">Favoritos</a>
+                                        </li>
+                                        <li class="nav-list__item">
+                                            <a href="cart.html" class="nav-list__link">Comparar</a>
+                                        </li>
+                                        <li class="nav-list__item nav-list__item--auth-mobile">
+                                            <a href="register.html" class="nav-list__link">Ingresar</a>
+                                        </li>
+                                </ul>
+                        </nav>
+                        <button class="login-btn login-btn--home" type="button" aria-label="Ingresar a tu cuenta" data-href="register.html">
+                                <svg class="login-btn__icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                        <circle cx="12" cy="7" r="4"></circle>
+                                </svg>
+                                <span>Ingresar</span>
+                        </button>
+                </div>
+        </header>
+        <script src="../js/navbar.js"></script>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <section class="empty-favorites" aria-labelledby="empty-title">
+            <!-- Heart Icon -->
+            <div class="empty-favorites__icon" aria-hidden="true">
+                <svg class="heart-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                </svg>
+            </div>
+
+            <!-- Empty State Message -->
+            <div class="empty-favorites__content">
+                <h1 id="empty-title" class="empty-favorites__title">No tienes productos favoritos</h1>
+                <p class="empty-favorites__description">
+                    Explora nuestro catálogo y agrega productos a tu lista de favoritos
+                </p>
+
+                <!-- CTA Button -->
+                <a href="catalog.html" class="cta-button" role="button">
+                    Explorar catálogo
+                </a>
+            </div>
+        </section>
+    </main>
+
+    <footer id="site-footer" data-scope="html"></footer>
+    <script src="../js/footer.js"></script>
+    <script src="../js/favorites.js"></script>
+</body>
+</html>
