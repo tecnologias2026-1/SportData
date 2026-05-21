@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+https://www.figma.com/design/cL5fGoQNHjwQOYGSwge8U1/SportData---Pagina-web?node-id=460-1811&m=dev<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -10,66 +10,48 @@
 </head>
 <body>
     <!-- Header -->
-    <header class="header">
+    <header class="header header--home">
         <div class="header__container">
-            <!-- Logo -->
             <div class="header__logo">
                 <a href="../index.html" aria-label="Ir al inicio">
-                    <img src="https://www.figma.com/api/mcp/asset/a3aa5f5b-5f22-41f1-90bb-53d3f1ab65f9" alt="Logo de SportData" class="logo-image">
+                    <img src="https://www.figma.com/api/mcp/asset/4333c8d7-1c2f-46d4-be97-b4d5b794feb3" alt="SportData" class="logo-image logo-image--home">
                 </a>
             </div>
 
-            <!-- Hamburger Menu Button -->
             <button class="hamburger-menu" id="hamburgerBtn" aria-label="Menú de navegación" aria-expanded="false">
                 <span class="hamburger-line"></span>
                 <span class="hamburger-line"></span>
                 <span class="hamburger-line"></span>
             </button>
 
-            <!-- Navigation -->
             <nav class="header__nav" id="navMenu" aria-label="Navegación principal">
                 <ul class="nav-list">
                     <li class="nav-list__item">
                         <a href="../index.html" class="nav-list__link">Inicio</a>
                     </li>
                     <li class="nav-list__item">
-                        <a href="catalog.html" class="nav-list__link nav-list__link--active" aria-current="page">Catálogo</a>
+                        <a href="catalog.html" class="nav-list__link nav-list__link--active" aria-current="page">Buscar Productos</a>
                     </li>
                     <li class="nav-list__item">
                         <a href="favorites.html" class="nav-list__link">
-                            Favoritos
                             <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                                 <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
                             </svg>
+                            Favoritos
                         </a>
-                    </li>
-                    <li class="nav-list__item">
-                        <a href="cart.html" class="nav-list__link ">
-                            <span>Carrito</span>
-                            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                                <circle cx="9" cy="21" r="1"></circle>
-                                <circle cx="20" cy="21" r="1"></circle>
-                                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
-                            </svg>
-                        </a>
-                    </li>
-                    <li class="nav-list__item nav-list__item--auth-mobile">
-                        <a href="register.html" class="nav-list__link nav-list__link--auth">
-                            <span>Ingresar</span>
-                            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                                <circle cx="12" cy="7" r="4"></circle>
-                            </svg>
-                        </a>
+                    </li>                    <li class="nav-list__item nav-list__item--auth-mobile">
+                        <a href="register.html" class="nav-list__link">Ingresar</a>
                     </li>
                 </ul>
             </nav>
 
-            <!-- Auth Link -->
-            <a href="./register.html" class="login-btn" aria-label="Ingresar a tu cuenta">
-                <img src="https://www.figma.com/api/mcp/asset/32be382b-310c-44c5-9807-c316fb2d4b7f" alt="" aria-hidden="true">
+            <button class="login-btn login-btn--home" type="button" aria-label="Ingresar a tu cuenta" onclick="window.location.href='register.html'">
+                <svg class="login-btn__icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="12" cy="7" r="4"></circle>
+                </svg>
                 <span>Ingresar</span>
-            </a>
+            </button>
         </div>
     </header>
 
@@ -78,7 +60,8 @@
         <section class="catalog-section" aria-labelledby="catalog-title">
             <!-- Page Header -->
             <div class="catalog-header">
-                <h1 id="catalog-title" class="catalog-header__title">Catálogo de Productos</h1>
+                <h1 id="catalog-title" class="catalog-header__title">Comparador de Precios Deportivos</h1>
+                <p class="catalog-header__subtitle">Explora, filtra y compara los mejores artículos deportivos en un solo lugar.</p>
                 
                 <!-- Search and Sort -->
                 <div class="catalog-header__controls">
@@ -220,10 +203,11 @@
 
                 <!-- Products Grid -->
                 <div class="products-grid">
-                    <!-- Product Card 1 -->
                     <article class="product-card" data-category="calzado" data-brand="nike" data-product-id="NK-RNP-001">
                         <div class="product-card__image-container">
                             <img src="../assets/img/main_produc_zapatillas.jpg" alt="Zapatillas Running Pro" class="product-card__image">
+                            <span class="product-card__store">Amazon Sports</span>
+                            <span class="product-card__stock">En Stock</span>
                             <button class="product-card__favorite" aria-label="Agregar a favoritos" data-favorite="false">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                     <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
@@ -231,29 +215,43 @@
                             </button>
                         </div>
                         <div class="product-card__content">
-                            <p class="product-card__category">Calzado</p>
+                            <p class="product-card__category">Nike</p>
                             <h3 class="product-card__title">Zapatillas Running Pro</h3>
                             <div class="product-card__rating">
-                                <div class="star-rating" aria-label="Calificación: 4 de 5 estrellas">
+                                <div class="star-rating" aria-label="Calificación: 4.5 de 5 estrellas">
                                     <span class="star star--filled"></span>
                                     <span class="star star--filled"></span>
                                     <span class="star star--filled"></span>
                                     <span class="star star--filled"></span>
-                                    <span class="star"></span>
+                                    <span class="star star--half"></span>
                                 </div>
-                                <span class="product-card__reviews">(4.2)</span>
-                            </div>
-                            <p class="product-card__price">$89.99</p>
-                            <button class="product-card__btn" aria-label="Agregar Zapatillas Running Pro al carrito">
-                                Agregar al Carrito
-                            </button>
-                        </div>
+                                <span class="product-card__reviews">(4.5)</span></div>
+            <div class="product-card__meta">
+                <div class="product-card__meta-left">
+                    <p class="product-card__updated">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <circle cx="12" cy="12" r="10"/>
+              <path d="M12 6v6l4 2"/>
+            </svg>
+            Actualizado hace 1h
+          </p>
+                </div>
+                <p class="product-card__price">$89.99</p>
+            </div>
+                        <div class="product-card__actions">
+                            <button type="button" class="product-card__btn" aria-label="Ver en tienda de Zapatillas Running Pro">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14 21 3"/>
+            </svg>
+            Ver en tienda
+          </button>                        </div>
                     </article>
 
-                    <!-- Product Card 2 -->
                     <article class="product-card" data-category="calzado" data-brand="adidas" data-product-id="AD-BOT-002">
                         <div class="product-card__image-container">
                             <img src="../assets/img/botin_skateboarding.jpg" alt="Botín de Skateboarding" class="product-card__image">
+                            <span class="product-card__store">Decathlon</span>
+                            <span class="product-card__stock">En Stock</span>
                             <button class="product-card__favorite" aria-label="Agregar a favoritos" data-favorite="false">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                     <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
@@ -261,7 +259,7 @@
                             </button>
                         </div>
                         <div class="product-card__content">
-                            <p class="product-card__category">Calzado</p>
+                            <p class="product-card__category">Adidas</p>
                             <h3 class="product-card__title">Botín de Skateboarding</h3>
                             <div class="product-card__rating">
                                 <div class="star-rating" aria-label="Calificación: 4.5 de 5 estrellas">
@@ -271,19 +269,33 @@
                                     <span class="star star--filled"></span>
                                     <span class="star star--half"></span>
                                 </div>
-                                <span class="product-card__reviews">(4.5)</span>
-                            </div>
-                            <p class="product-card__price">$45.00</p>
-                            <button class="product-card__btn" aria-label="Agregar Botín de Skateboarding al carrito">
-                                Agregar al Carrito
-                            </button>
-                        </div>
+                                <span class="product-card__reviews">(4.5)</span></div>
+            <div class="product-card__meta">
+                <div class="product-card__meta-left">
+                    <p class="product-card__updated">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <circle cx="12" cy="12" r="10"/>
+              <path d="M12 6v6l4 2"/>
+            </svg>
+            Actualizado hace 1h
+          </p>
+                </div>
+                <p class="product-card__price">$45.00</p>
+            </div>
+                        <div class="product-card__actions">
+                            <button type="button" class="product-card__btn" aria-label="Ver en tienda de Botín de Skateboarding">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14 21 3"/>
+            </svg>
+            Ver en tienda
+          </button>                        </div>
                     </article>
 
-                    <!-- Product Card 3 -->
                     <article class="product-card" data-category="ropa" data-brand="nike" data-product-id="NK-MOCH-003">
                         <div class="product-card__image-container">
                             <img src="../assets/img/mochila de yoga.jpg" alt="Mochila de Yoga Premium" class="product-card__image">
+                            <span class="product-card__store">MarketPlace</span>
+                            <span class="product-card__stock">En Stock</span>
                             <button class="product-card__favorite" aria-label="Agregar a favoritos" data-favorite="false">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                     <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
@@ -291,29 +303,43 @@
                             </button>
                         </div>
                         <div class="product-card__content">
-                            <p class="product-card__category">Ropa</p>
+                            <p class="product-card__category">Nike</p>
                             <h3 class="product-card__title">Mochila de Yoga Premium</h3>
                             <div class="product-card__rating">
-                                <div class="star-rating" aria-label="Calificación: 5 de 5 estrellas">
+                                <div class="star-rating" aria-label="Calificación: 4.8 de 5 estrellas">
                                     <span class="star star--filled"></span>
                                     <span class="star star--filled"></span>
                                     <span class="star star--filled"></span>
                                     <span class="star star--filled"></span>
                                     <span class="star star--filled"></span>
                                 </div>
-                                <span class="product-card__reviews">(4.8)</span>
-                            </div>
-                            <p class="product-card__price">$35.99</p>
-                            <button class="product-card__btn" aria-label="Agregar Mochila de Yoga Premium al carrito">
-                                Agregar al Carrito
-                            </button>
-                        </div>
+                                <span class="product-card__reviews">(4.8)</span></div>
+            <div class="product-card__meta">
+                <div class="product-card__meta-left">
+                    <p class="product-card__updated">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <circle cx="12" cy="12" r="10"/>
+              <path d="M12 6v6l4 2"/>
+            </svg>
+            Actualizado hace 1h
+          </p>
+                </div>
+                <p class="product-card__price">$35.99</p>
+            </div>
+                        <div class="product-card__actions">
+                            <button type="button" class="product-card__btn" aria-label="Ver en tienda de Mochila de Yoga Premium">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14 21 3"/>
+            </svg>
+            Ver en tienda
+          </button>                        </div>
                     </article>
 
-                    <!-- Product Card 4 -->
                     <article class="product-card" data-category="ropa" data-brand="puma" data-product-id="PU-CAM-004">
                         <div class="product-card__image-container">
                             <img src="../assets/img/main_produc_camiseta.jpg" alt="Camiseta Deportiva" class="product-card__image">
+                            <span class="product-card__store">SportHouse</span>
+                            <span class="product-card__stock product-card__stock--limited">Últimas unidades</span>
                             <button class="product-card__favorite" aria-label="Agregar a favoritos" data-favorite="false">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                     <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
@@ -321,29 +347,43 @@
                             </button>
                         </div>
                         <div class="product-card__content">
-                            <p class="product-card__category">Ropa</p>
+                            <p class="product-card__category">Puma</p>
                             <h3 class="product-card__title">Camiseta Deportiva</h3>
                             <div class="product-card__rating">
-                                <div class="star-rating" aria-label="Calificación: 4 de 5 estrellas">
+                                <div class="star-rating" aria-label="Calificación: 3.9 de 5 estrellas">
                                     <span class="star star--filled"></span>
                                     <span class="star star--filled"></span>
                                     <span class="star star--filled"></span>
                                     <span class="star star--filled"></span>
                                     <span class="star"></span>
                                 </div>
-                                <span class="product-card__reviews">(3.9)</span>
-                            </div>
-                            <p class="product-card__price">$29.99</p>
-                            <button class="product-card__btn" aria-label="Agregar Camiseta Deportiva al carrito">
-                                Agregar al Carrito
-                            </button>
-                        </div>
+                                <span class="product-card__reviews">(3.9)</span></div>
+            <div class="product-card__meta">
+                <div class="product-card__meta-left">
+                    <p class="product-card__updated">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <circle cx="12" cy="12" r="10"/>
+              <path d="M12 6v6l4 2"/>
+            </svg>
+            Actualizado hace 1h
+          </p>
+                </div>
+                <p class="product-card__price">$29.99</p>
+            </div>
+                        <div class="product-card__actions">
+                            <button type="button" class="product-card__btn" aria-label="Ver en tienda de Camiseta Deportiva">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14 21 3"/>
+            </svg>
+            Ver en tienda
+          </button>                        </div>
                     </article>
 
-                    <!-- Product Card 5 -->
                     <article class="product-card" data-category="balones" data-brand="adidas" data-product-id="AD-BAL-005">
                         <div class="product-card__image-container">
                             <img src="../assets/img/balon de futbol.jpg" alt="Balón de Futbol" class="product-card__image">
+                            <span class="product-card__store">Gol Shop</span>
+                            <span class="product-card__stock">En Stock</span>
                             <button class="product-card__favorite" aria-label="Agregar a favoritos" data-favorite="false">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                     <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
@@ -351,7 +391,7 @@
                             </button>
                         </div>
                         <div class="product-card__content">
-                            <p class="product-card__category">Balones</p>
+                            <p class="product-card__category">Adidas</p>
                             <h3 class="product-card__title">Balón de Futbol</h3>
                             <div class="product-card__rating">
                                 <div class="star-rating" aria-label="Calificación: 4.2 de 5 estrellas">
@@ -361,19 +401,33 @@
                                     <span class="star star--filled"></span>
                                     <span class="star star--half"></span>
                                 </div>
-                                <span class="product-card__reviews">(4.2)</span>
-                            </div>
-                            <p class="product-card__price">$35.99</p>
-                            <button class="product-card__btn" aria-label="Agregar Balón de Futbol al carrito">
-                                Agregar al Carrito
-                            </button>
-                        </div>
+                                <span class="product-card__reviews">(4.2)</span></div>
+            <div class="product-card__meta">
+                <div class="product-card__meta-left">
+                    <p class="product-card__updated">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <circle cx="12" cy="12" r="10"/>
+              <path d="M12 6v6l4 2"/>
+            </svg>
+            Actualizado hace 1h
+          </p>
+                </div>
+                <p class="product-card__price">$35.99</p>
+            </div>
+                        <div class="product-card__actions">
+                            <button type="button" class="product-card__btn" aria-label="Ver en tienda de Balón de Futbol">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14 21 3"/>
+            </svg>
+            Ver en tienda
+          </button>                        </div>
                     </article>
 
-                    <!-- Product Card 6 -->
                     <article class="product-card" data-category="fitness" data-brand="nike" data-product-id="NK-MANC-006">
                         <div class="product-card__image-container">
                             <img src="../assets/img/mancuerna ajustable.jpg" alt="Mancuerna Ajustable" class="product-card__image">
+                            <span class="product-card__store">FitZone</span>
+                            <span class="product-card__stock">En Stock</span>
                             <button class="product-card__favorite" aria-label="Agregar a favoritos" data-favorite="false">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                     <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
@@ -381,57 +435,43 @@
                             </button>
                         </div>
                         <div class="product-card__content">
-                            <p class="product-card__category">Fitness</p>
+                            <p class="product-card__category">Nike</p>
                             <h3 class="product-card__title">Mancuerna Ajustable</h3>
                             <div class="product-card__rating">
-                                <div class="star-rating" aria-label="Calificación: 4 de 5 estrellas">
+                                <div class="star-rating" aria-label="Calificación: 4.1 de 5 estrellas">
                                     <span class="star star--filled"></span>
                                     <span class="star star--filled"></span>
                                     <span class="star star--filled"></span>
                                     <span class="star star--filled"></span>
                                     <span class="star"></span>
                                 </div>
-                                <span class="product-card__reviews">(4.1)</span>
-                            </div>
-                            <p class="product-card__price">$120.00</p>
-                            <button class="product-card__btn" aria-label="Agregar Mancuerna Ajustable al carrito">
-                                Agregar al Carrito
-                            </button>
-                        </div>
+                                <span class="product-card__reviews">(4.1)</span></div>
+            <div class="product-card__meta">
+                <div class="product-card__meta-left">
+                    <p class="product-card__updated">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <circle cx="12" cy="12" r="10"/>
+              <path d="M12 6v6l4 2"/>
+            </svg>
+            Actualizado hace 1h
+          </p>
+                </div>
+                <p class="product-card__price">$120.00</p>
+            </div>
+                        <div class="product-card__actions">
+                            <button type="button" class="product-card__btn" aria-label="Ver en tienda de Mancuerna Ajustable">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14 21 3"/>
+            </svg>
+            Ver en tienda
+          </button>                        </div>
                     </article>
-                    <!-- Product Card 7 -->
-                    <article class="product-card" data-category="gimnasio" data-brand="hummel" data-product-id="HM-BAND-007">
-                        <div class="product-card__image-container">
-                            <img src="../assets/img/banda entrenamiento.jpg" alt="Banda de Entrenamiento" class="product-card__image">
-                            <button class="product-card__favorite" aria-label="Agregar a favoritos" data-favorite="false">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-                                </svg>
-                            </button>
-                        </div>
-                        <div class="product-card__content">
-                            <p class="product-card__category">Gimnasio</p>
-                            <h3 class="product-card__title">Banda de Entrenamiento</h3>
-                            <div class="product-card__rating">
-                                <div class="star-rating" aria-label="Calificación: 4.5 de 5 estrellas">
-                                    <span class="star star--filled"></span>
-                                    <span class="star star--filled"></span>
-                                    <span class="star star--filled"></span>
-                                    <span class="star star--filled"></span>
-                                    <span class="star star--half"></span>
-                                </div>
-                                <span class="product-card__reviews">(4.5)</span>
-                            </div>
-                            <p class="product-card__price">$24.99</p>
-                            <button class="product-card__btn" aria-label="Agregar Banda de Entrenamiento al carrito">
-                                Agregar al Carrito
-                            </button>
-                        </div>
-                    </article>
-                    <!-- Product Card 8 -->
+
                     <article class="product-card" data-category="natacion" data-brand="puma" data-product-id="PU-GAF-008">
                         <div class="product-card__image-container">
                             <img src="../assets/img/gafas natacion.jpg" alt="Gafas de Natación" class="product-card__image">
+                            <span class="product-card__store">SwimClub</span>
+                            <span class="product-card__stock">En Stock</span>
                             <button class="product-card__favorite" aria-label="Agregar a favoritos" data-favorite="false">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                     <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
@@ -439,7 +479,7 @@
                             </button>
                         </div>
                         <div class="product-card__content">
-                            <p class="product-card__category">Natación</p>
+                            <p class="product-card__category">Puma</p>
                             <h3 class="product-card__title">Gafas de Natación</h3>
                             <div class="product-card__rating">
                                 <div class="star-rating" aria-label="Calificación: 4.3 de 5 estrellas">
@@ -449,49 +489,33 @@
                                     <span class="star star--filled"></span>
                                     <span class="star star--half"></span>
                                 </div>
-                                <span class="product-card__reviews">(4.3)</span>
-                            </div>
-                            <p class="product-card__price">$79.99</p>
-                            <button class="product-card__btn" aria-label="Agregar Gafas de Natación al carrito">
-                                Agregar al Carrito
-                            </button>
-                        </div>
-                    </article>
-                    <!-- Product Card 9 -->
-                    <article class="product-card" data-category="calzado" data-brand="nike" data-product-id="NK-ZAP-009">
-                        <div class="product-card__image-container">
-                            <img src="../assets/img/zapatillas running.jpg" alt="Zapatillas Training" class="product-card__image">
-                            <button class="product-card__favorite" aria-label="Agregar a favoritos" data-favorite="false">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-                                </svg>
-                            </button>
-                        </div>
-                        <div class="product-card__content">
-                            <p class="product-card__category">Calzado</p>
-                            <h3 class="product-card__title">Zapatillas Training</h3>
-                            <div class="product-card__rating">
-                                <div class="star-rating" aria-label="Calificación: 4.7 de 5 estrellas">
-                                    <span class="star star--filled"></span>
-                                    <span class="star star--filled"></span>
-                                    <span class="star star--filled"></span>
-                                    <span class="star star--filled"></span>
-                                    <span class="star star--half"></span>
-                                </div>
-                                <span class="product-card__reviews">(4.7)</span>
-                            </div>
-                            <p class="product-card__price">$75.00</p>
-                            <button class="product-card__btn" aria-label="Agregar Zapatillas Training al carrito">
-                                Agregar al Carrito
-                            </button>
-                        </div>
+                                <span class="product-card__reviews">(4.3)</span></div>
+            <div class="product-card__meta">
+                <div class="product-card__meta-left">
+                    <p class="product-card__updated">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <circle cx="12" cy="12" r="10"/>
+              <path d="M12 6v6l4 2"/>
+            </svg>
+            Actualizado hace 1h
+          </p>
+                </div>
+                <p class="product-card__price">$79.99</p>
+            </div>
+                        <div class="product-card__actions">
+                            <button type="button" class="product-card__btn" aria-label="Ver en tienda de Gafas de Natación">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14 21 3"/>
+            </svg>
+            Ver en tienda
+          </button>                        </div>
                     </article>
                 </div>
             </div>
         </section>
     </main>
     <!-- Footer -->
-    <footer class="footer">
+    <footer class="site-footer footer">
         <div class="footer__container">
             <!-- Footer Grid -->
             <div class="footer__grid">
@@ -499,9 +523,7 @@
                 <section class="footer__column" aria-labelledby="footer-company">
                     <h2 id="footer-company" class="footer__title">SportData</h2>
                     <p class="footer__description">
-                        Tu tienda deportiva de confianza. Encuentra<br>
-                        los mejores productos deportivos al mejor<br>
-                        precio.
+                        Comparamos precios de artículos deportivos de múltiples tiendas online para ayudarte a encontrar las mejores ofertas.
                     </p>
                 </section>
 
@@ -510,22 +532,21 @@
                     <h3 id="footer-nav" class="footer__subtitle">Navegación</h3>
                     <nav aria-label="Navegación del pie de página">
                         <ul class="footer-links">
-                        <li><a href="../index.html" class="footer-links__item">Inicio</a></li>
-                        <li><a href="./catalog.html" class="footer-links__item">Catálogo</a></li>
-                        <li><a href="./favorites.html" class="footer-links__item">Favoritos</a></li>
-                        <li><a href="./cart.html" class="footer-links__item">Carrito</a></li>
+                            <li><a href="../index.html" class="footer-links__item">Inicio</a></li>
+                            <li><a href="./catalog.html" class="footer-links__item">Buscar Productos</a></li>
+                            <li><a href="./favorites.html" class="footer-links__item">Favoritos</a></li>
                         </ul>
                     </nav>
                 </section>
 
                 <!-- Customer Service Column -->
-                <section class="footer__column" aria-labelledby="footer-service">
-                    <h3 id="footer-service" class="footer__subtitle">Atención al Cliente</h3>
-                    <nav aria-label="Atención al cliente">
+                <section class="footer__column" aria-labelledby="footer-info">
+                    <h3 id="footer-info" class="footer__subtitle">Información</h3>
+                    <nav aria-label="Información">
                         <ul class="footer-links">
-                            <li><a href="#" class="footer-links__item">Contacto</a></li>
-                            <li><a href="#" class="footer-links__item">Envios</a></li>
-                            <li><a href="#" class="footer-links__item">Devoluciones</a></li>
+                            <li><a href="#" class="footer-links__item">Cómo Funciona</a></li>
+                            <li><a href="#" class="footer-links__item">Tiendas Asociadas</a></li>
+                            <li><a href="#alertas-title" class="footer-links__item">Alertas de Precio</a></li>
                             <li><a href="#" class="footer-links__item">Preguntas Frecuentes</a></li>
                         </ul>
                     </nav>
@@ -552,10 +573,11 @@
                         <path d="M13.7499 4.58331H13.7583" stroke="#D1D5DC" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/>
                         </svg>
                     </a>
-                    <a href="https://youtube.com/sportdata" class="social-links__item" aria-label="YouTube" role="listitem">
-                        <svg width="19" height="14" viewBox="0 0 19 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M1.26992 10.8887C0.687776 8.14137 0.687776 5.30259 1.26992 2.55532C1.34641 2.27633 1.49421 2.02205 1.69876 1.81749C1.90332 1.61293 2.1576 1.46514 2.43659 1.38865C6.90613 0.6482 11.4671 0.6482 15.9366 1.38865C16.2156 1.46514 16.4699 1.61293 16.6744 1.81749C16.879 2.02205 17.0268 2.27633 17.1033 2.55532C17.6854 5.30259 17.6854 8.14137 17.1033 10.8887C17.0268 11.1676 16.879 11.4219 16.6744 11.6265C16.4699 11.831 16.2156 11.9788 15.9366 12.0553C11.4671 12.7959 6.90612 12.7959 2.43659 12.0553C2.1576 11.9788 1.90332 11.831 1.69876 11.6265C1.49421 11.4219 1.34641 11.1676 1.26992 10.8887Z" stroke="#D1D5DC" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/>
-                        <path d="M7.5199 9.22198L11.6866 6.72198L7.5199 4.22198V9.22198Z" stroke="#D1D5DC" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/>
+                    <a href="https://linkedin.com/company/sportdata" class="social-links__item" aria-label="LinkedIn" role="listitem">
+                        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4v-12h4v2" stroke="#D1D5DC" stroke-width="1.67" stroke-linecap="round" stroke-linejoin="round"/>
+                            <rect x="2" y="9" width="4" height="12" stroke="#D1D5DC" stroke-width="1.67" stroke-linecap="round" stroke-linejoin="round"/>
+                            <circle cx="4" cy="4" r="2" stroke="#D1D5DC" stroke-width="1.67" stroke-linecap="round" stroke-linejoin="round"/>
                         </svg>
                     </a>
                 </div>

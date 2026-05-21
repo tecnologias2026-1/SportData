@@ -13,17 +13,13 @@
       return {
         home: '../index.html',
         catalog: 'catalog.html',
-        favorites: 'favorites.html',
-        cart: 'cart.html',
-        register: 'register.html'
+        favorites: 'favorites.html',        register: 'register.html'
       };
     }
     return {
       home: 'index.html',
       catalog: 'html/catalog.html',
-      favorites: 'html/favorites.html',
-      cart: 'html/cart.html',
-      register: 'html/register.html'
+      favorites: 'html/favorites.html',      register: 'html/register.html'
     };
   }
 
@@ -51,11 +47,7 @@
                 </li>
                 <li class="nav-list__item">
                   <a href="${links.favorites}" class="nav-list__link">Favoritos</a>
-                </li>
-                <li class="nav-list__item">
-                  <a href="${links.cart}" class="nav-list__link">Comparar</a>
-                </li>
-                <li class="nav-list__item nav-list__item--auth-mobile">
+                </li>                <li class="nav-list__item nav-list__item--auth-mobile">
                   <a href="${links.register}" class="nav-list__link">Ingresar</a>
                 </li>
             </ul>

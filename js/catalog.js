@@ -265,7 +265,7 @@
         // Add click listeners to navigate to product detail page
         productCards.forEach(card => {
             card.addEventListener('click', (e) => {
-                // Don't navigate if clicking the favorite or add to cart button
+                // Don't navigate if clicking the favorite or product action button
                 if (e.target.closest('.product-card__favorite') || e.target.closest('.product-card__btn') || e.target.closest('.product-card__compare')) {
                     return;
                 }
@@ -280,16 +280,7 @@
 
             // Make the card cursor indicate it's clickable
             card.style.cursor = 'pointer';
-        });
-
-        // Keep add to cart functionality
-        addCartButtons.forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                addToCart(btn);
-            });
-        });
+        });        });
     }
 
     /**
@@ -333,53 +324,6 @@
                 }, 2000);
             });
         });
-    }
-
-    /**
-     * Add product to cart
-     */
-    function addToCart(btn) {
-        const productCard = btn.closest('.product-card');
-        const productId = productCard.getAttribute('data-product-id');
-        const productTitle = productCard.querySelector('.product-card__title').textContent;
-        const productPrice = productCard.querySelector('.product-card__price').textContent;
-        const productImg = productCard.querySelector('.product-card__image').src;
-
-        // Get product info from PRODUCTS array
-        const product = productId ? getProductById(productId) : null;
-
-        // Create cart item object
-        const cartItem = {
-            id: productId || 'unknown-' + Date.now(),
-            name: productTitle,
-            price: product ? product.price : parseFloat(productPrice.replace('$', '')),
-            quantity: 1,
-            image: productImg,
-            addedAt: new Date().toISOString()
-        };
-
-        // Store in localStorage
-        const cart = JSON.parse(localStorage.getItem('cart')) || [];
-        
-        // Check if product already in cart and increase quantity
-        const existingItem = cart.find(item => item.id === cartItem.id);
-        if (existingItem) {
-            existingItem.quantity += 1;
-        } else {
-            cart.push(cartItem);
-        }
-        
-        localStorage.setItem('cart', JSON.stringify(cart));
-
-        // Visual feedback
-        const originalText = btn.innerHTML;
-        btn.innerHTML = '✓ ¡Agregado!';
-        btn.style.backgroundColor = '#10b981';
-        
-        setTimeout(() => {
-            btn.innerHTML = originalText;
-            btn.style.backgroundColor = '';
-        }, 2000);
     }
 
     /**

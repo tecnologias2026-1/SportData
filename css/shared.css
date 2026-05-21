@@ -73,7 +73,7 @@ body {
    HEADER STYLES (All Pages)
    ============================================ */
 
-.site-header.header {
+.header {
   background: #fff;
   min-height: 64px;
   padding: 0;
@@ -188,6 +188,23 @@ body {
 
 .login-btn__icon {
   flex-shrink: 0;
+}
+
+.logo-image--home {
+  height: 48px;
+  width: auto;
+}
+
+.login-btn--home {
+  border-radius: var(--sd-radius-sm);
+  padding: 0.35rem 0.65rem;
+  font-size: 0.825rem;
+  font-weight: 500;
+  gap: 0.625rem;
+}
+
+.login-btn--home:hover {
+  color: var(--sd-primary);
 }
 
 /* ============================================

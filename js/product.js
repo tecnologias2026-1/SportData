@@ -19,7 +19,6 @@ document.addEventListener('DOMContentLoaded', function() {
     setupQuantityControls();
     setupSizeSelection();
     setupColorSelection();
-    setupAddToCart();
 });
 
 // ============================================
@@ -419,103 +418,6 @@ function setupColorSelection() {
 }
 
 // ============================================
-// ADD TO CART
-// ============================================
-
-function setupAddToCart() {
-    const addToCartBtn = document.querySelector('.btn-add-cart');
-
-    if (addToCartBtn) {
-        addToCartBtn.addEventListener('click', function() {
-            addProductToCart();
-        });
-    }
-}
-
-function addProductToCart() {
-    const product = productState.currentProduct;
-
-    // Create cart item object
-    const cartItem = {
-        id: product.id,
-        name: product.name,
-        price: product.price,
-        quantity: productState.quantity,
-        size: productState.selectedSize,
-        color: productState.selectedColor,
-        image: product.image,
-        addedAt: new Date().toISOString()
-    };
-
-    // Get existing cart from localStorage
-    let cart = [];
-    const storedCart = localStorage.getItem('cart');
-    if (storedCart) {
-        try {
-            cart = JSON.parse(storedCart);
-        } catch (e) {
-            cart = [];
-        }
-    }
-
-    // Check if product with same specs already in cart
-    const existingItem = cart.find(item => 
-        item.id === cartItem.id && 
-        item.size === cartItem.size && 
-        item.color === cartItem.color
-    );
-
-    if (existingItem) {
-        existingItem.quantity += cartItem.quantity;
-    } else {
-        cart.push(cartItem);
-    }
-
-    localStorage.setItem('cart', JSON.stringify(cart));
-    showAddToCartFeedback();
-    updateCartCount();
-}
-
-function showAddToCartFeedback() {
-    const btn = document.querySelector('.btn-add-cart');
-    const originalText = btn.innerHTML;
-    const quantity = productState.quantity;
-
-    // Change button text
-    btn.innerHTML = `✓ ${quantity} artículo(s) agregado`;
-    btn.style.backgroundColor = '#22863a';
-
-    // Reset after 2 seconds
-    setTimeout(() => {
-        btn.innerHTML = originalText;
-        btn.style.backgroundColor = '';
-    }, 2000);
-}
-
-function updateCartCount() {
-    // Get cart from localStorage
-    let cart = [];
-    const storedCart = localStorage.getItem('cart');
-    if (storedCart) {
-        try {
-            cart = JSON.parse(storedCart);
-        } catch (e) {
-            cart = [];
-        }
-    }
-
-    // Calculate total items
-    const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
-
-    // Update all cart links in navigation (if they exist)
-    const cartLinks = document.querySelectorAll('a[href="cart.html"], a[href="./cart.html"]');
-    cartLinks.forEach(link => {
-        // Note: This would need proper implementation in the full nav structure
-        // For now, this is a placeholder for future cart count display
-    });
-}
-
-// ============================================
 // UTILITY FUNCTIONS
 // ============================================
 
@@ -531,16 +433,7 @@ function scrollToSection(sectionId) {
 // ============================================
 
 document.addEventListener('keydown', function(e) {
-    // Add to cart with Ctrl/Cmd + Enter
-    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
-        const addToCartBtn = document.querySelector('.btn-add-cart');
-        if (addToCartBtn) {
-            addToCartBtn.click();
-        }
-    }
-});
-
-// ============================================
+    // ============================================
 // ANALYTICS TRACKING
 // ============================================
 
