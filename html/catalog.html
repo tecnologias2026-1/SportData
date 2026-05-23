@@ -74,26 +74,34 @@
         <div class="catalog-header">
             <h1 id="catalog-title" class="catalog-header__title">Comparador de Precios Deportivos</h1>
             <p class="catalog-header__subtitle">Encuentra los mejores precios de múltiples tiendas online</p>
-            <div class="catalog-header__controls">
-                <div class="search-bar">
-                    <svg class="search-bar__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                        <circle cx="11" cy="11" r="8"></circle>
-                        <path d="m21 21-4.35-4.35"></path>
-                    </svg>
-                    <input type="search" class="search-bar__input" id="productSearch" placeholder="Buscar productos..." aria-label="Buscar productos en el catálogo">
+
+            <!-- Controls row aligned with products grid column -->
+            <div class="catalog-header__controls-row">
+                <div class="catalog-header__controls-spacer" aria-hidden="true"></div>
+                <div class="catalog-header__controls">
+                    <div class="search-bar">
+                        <svg class="search-bar__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <path d="m21 21-4.35-4.35"></path>
+                        </svg>
+                        <input type="search" class="search-bar__input" id="productSearch" placeholder="Buscar productos..." aria-label="Buscar productos en el catálogo">
+                    </div>
+                    <select class="sort-select" id="sortBy" aria-label="Ordenar productos por">
+                        <option value="relevance">Ordenar por</option>
+                        <option value="price-asc">Precio: Menor a Mayor</option>
+                        <option value="price-desc">Precio: Mayor a Menor</option>
+                        <option value="newest">Más Reciente</option>
+                        <option value="rating">Mejor Calificación</option>
+                    </select>
                 </div>
-                <select class="sort-select" id="sortBy" aria-label="Ordenar productos por">
-                    <option value="relevance">Ordenar por</option>
-                    <option value="price-asc">Precio: Menor a Mayor</option>
-                    <option value="price-desc">Precio: Mayor a Menor</option>
-                    <option value="newest">Más Reciente</option>
-                    <option value="rating">Mejor Calificación</option>
-                </select>
             </div>
         </div>
 
-        <!-- Count -->
-        <p class="catalog-count" id="catalogCount">12 productos encontrados</p>
+        <!-- Count aligned with products grid column -->
+        <div class="catalog-count-row">
+            <div class="catalog-count-spacer" aria-hidden="true"></div>
+            <p class="catalog-count" id="catalogCount">12 productos encontrados</p>
+        </div>
 
         <!-- Catalog Container -->
         <div class="catalog-container">
@@ -679,25 +687,5 @@
 <!-- ===== JS ===== -->
 <script src="../js/products.js"></script>
 <script src="../js/catalog.js"></script>
-<script>
-// Update count display
-function updateCount() {
-    const visible = document.querySelectorAll('.product-card:not([style*="display: none"])').length;
-    const el = document.getElementById('catalogCount');
-    if (el) el.textContent = visible + ' producto' + (visible !== 1 ? 's' : '') + ' encontrado' + (visible !== 1 ? 's' : '');
-}
-// Observe changes to update count
-const observer = new MutationObserver(updateCount);
-document.querySelectorAll('.product-card').forEach(card => {
-    observer.observe(card, { attributes: true, attributeFilter: ['style'] });
-});
-// Price range max override
-const priceRange = document.getElementById('priceRange');
-const priceValue = document.getElementById('priceValue');
-if (priceRange && priceValue) {
-    priceRange.value = 200;
-    priceValue.textContent = '200';
-}
-</script>
 </body>
 </html>
