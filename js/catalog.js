@@ -1,511 +1,507 @@
 /**
- *========================================
- * SportData - Catalog Page JavaScript
- * ========================================
- * Handles filters, search, sorting, and product interactions
+ * ================================================
+ * SportData — Catalog Page JavaScript
+ * Handles: search, category/brand/store/price
+ * filters, sorting, favorites, navigation, mobile
+ * ================================================
  */
 
-(function() {
-    'use strict';
+(function () {
+  'use strict';
 
-    // State
-    const state = {
-        activeFilters: {
-            categories: [],
-            brands: [],
-            maxPrice: 500
-        },
-        searchTerm: '',
-        sortBy: 'relevance',
-        favorites: JSON.parse(localStorage.getItem('favorites')) || []
-    };
+  /* ── State ─────────────────────────────────── */
+  const state = {
+    search: '',
+    categories: [],   // empty = "todos" (show all)
+    brands: [],       // empty = "todas" (show all)
+    stores: [],       // empty = "todas" (show all)
+    maxPrice: 200,
+    sortBy: 'relevance',
+    favorites: []
+  };
 
-    /**
-     * Initialize the application
-     */
-    function init() {
-        setupHamburgerMenu();
-        setupNavigation();
-        setupFilters();
-        setupSearch();
-        setupSort();
-        setupFavorites();
-        setupProducts();
-        setupCompare();
-        setupSidebarToggle();
-        loadFavorites();
-        trackPageView();
-    }
+  /* ── Init ───────────────────────────────────── */
+  function init () {
+    loadFavoritesFromStorage();
+    setupHamburger();
+    setupSidebar();
+    setupSearch();
+    setupSort();
+    setupCategoryFilters();
+    setupBrandFilters();
+    setupStoreFilters();
+    setupPriceRange();
+    setupResetFilters();
+    setupFavoriteButtons();
+    setupProductNavigation();
+    applyFilters();             // render initial state
+  }
 
-    /**
-     * Setup hamburger menu for mobile
-     */
-    function setupHamburgerMenu() {
-        const hamburgerBtn = document.getElementById('hamburgerBtn');
-        const navMenu = document.getElementById('navMenu');
-        const navLinks = document.querySelectorAll('.nav-list__link');
+  /* ════════════════════════════════════════════
+     HAMBURGER MENU
+  ════════════════════════════════════════════ */
+  function setupHamburger () {
+    const btn  = document.getElementById('hamburgerBtn');
+    const menu = document.getElementById('navMenu');
+    if (!btn || !menu) return;
 
-        if (!hamburgerBtn || !navMenu) return;
-
-        // Toggle menu on hamburger click
-        hamburgerBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            const isExpanded = hamburgerBtn.getAttribute('aria-expanded') === 'true';
-            
-            hamburgerBtn.setAttribute('aria-expanded', !isExpanded);
-            navMenu.classList.toggle('active');
-        });
-
-        // Close menu when clicking on a link
-        navLinks.forEach(link => {
-            link.addEventListener('click', () => {
-                hamburgerBtn.setAttribute('aria-expanded', 'false');
-                navMenu.classList.remove('active');
-            });
-        });
-
-        // Close menu when clicking outside
-        document.addEventListener('click', (e) => {
-            const isClickInsideNav = navMenu.contains(e.target);
-            const isClickOnHamburger = hamburgerBtn.contains(e.target);
-
-            if (!isClickInsideNav && !isClickOnHamburger && navMenu.classList.contains('active')) {
-                hamburgerBtn.setAttribute('aria-expanded', 'false');
-                navMenu.classList.remove('active');
-            }
-        });
-
-        // Close menu with Escape key
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && navMenu.classList.contains('active')) {
-                hamburgerBtn.setAttribute('aria-expanded', 'false');
-                navMenu.classList.remove('active');
-                hamburgerBtn.focus();
-            }
-        });
-    }
-
-    /**
-     * Setup navigation highlighting based on current page
-     */
-    function setupNavigation() {
-        const navLinks = document.querySelectorAll('.nav-list__link');
-        
-        navLinks.forEach(link => {
-            link.classList.remove('nav-list__link--active');
-            const href = link.getAttribute('href');
-            const currentPath = window.location.pathname;
-            
-            if (href === currentPath || (href === '/catalog' && currentPath.includes('catalog'))) {
-                link.classList.add('nav-list__link--active');
-            }
-        });
-    }
-
-    /**
-     * Setup filters
-     */
-    function setupFilters() {
-        const categoryFilters = document.querySelectorAll('.category-filter');
-        const brandFilters = document.querySelectorAll('.brand-filter');
-        const priceRange = document.getElementById('priceRange');
-        const priceValue = document.getElementById('priceValue');
-        const resetBtn = document.getElementById('resetFiltersBtn');
-
-        // Category filters
-        categoryFilters.forEach(checkbox => {
-            checkbox.addEventListener('change', () => {
-                updateCategoryFilters();
-                filterProducts();
-            });
-        });
-
-        // Brand filters
-        brandFilters.forEach(checkbox => {
-            checkbox.addEventListener('change', () => {
-                updateBrandFilters();
-                filterProducts();
-            });
-        });
-
-        // Price range
-        priceRange?.addEventListener('input', (e) => {
-            state.activeFilters.maxPrice = parseInt(e.target.value);
-            priceValue.textContent = e.target.value;
-            filterProducts();
-        });
-
-        // Reset filters
-        resetBtn?.addEventListener('click', () => {
-            categoryFilters.forEach(checkbox => checkbox.checked = false);
-            brandFilters.forEach(checkbox => checkbox.checked = false);
-            document.querySelector('.category-filter[value="todos"]').checked = true;
-            priceRange.value = 500;
-            priceValue.textContent = '500';
-            state.activeFilters = {
-                categories: [],
-                brands: [],
-                maxPrice: 500
-            };
-            state.searchTerm = '';
-            document.getElementById('productSearch').value = '';
-            filterProducts();
-        });
-    }
-
-    /**
-     * Update category filters state
-     */
-    function updateCategoryFilters() {
-        const checkedCategories = Array.from(document.querySelectorAll('.category-filter:checked'))
-            .filter(cb => cb.value !== 'todos')
-            .map(cb => cb.value);
-        
-        state.activeFilters.categories = checkedCategories;
-    }
-
-    /**
-     * Update brand filters state
-     */
-    function updateBrandFilters() {
-        const checkedBrands = Array.from(document.querySelectorAll('.brand-filter:checked'))
-            .map(cb => cb.value);
-        
-        state.activeFilters.brands = checkedBrands;
-    }
-
-    /**
-     * Setup search functionality
-     */
-    function setupSearch() {
-        const searchInput = document.getElementById('productSearch');
-
-        searchInput?.addEventListener('input', (e) => {
-            state.searchTerm = e.target.value.toLowerCase();
-            filterProducts();
-        });
-    }
-
-    /**
-     * Setup sort functionality
-     */
-    function setupSort() {
-        const sortSelect = document.getElementById('sortBy');
-
-        sortSelect?.addEventListener('change', (e) => {
-            state.sortBy = e.target.value;
-            applySort();
-        });
-    }
-
-    /**
-     * Setup favorite button functionality
-     */
-    function setupFavorites() {
-        const favoriteButtons = document.querySelectorAll('.product-card__favorite');
-
-        favoriteButtons.forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                toggleFavorite(btn);
-            });
-        });
-    }
-
-    /**
-     * Toggle favorite status
-     */
-    function toggleFavorite(btn) {
-        const productCard = btn.closest('.product-card');
-        const productTitle = productCard.querySelector('.product-card__title').textContent;
-        const isFavorite = btn.getAttribute('data-favorite') === 'true';
-
-        if (isFavorite) {
-            btn.setAttribute('data-favorite', 'false');
-            state.favorites = state.favorites.filter(fav => fav !== productTitle);
-        } else {
-            btn.setAttribute('data-favorite', 'true');
-            state.favorites.push(productTitle);
-        }
-
-        saveFavorites();
-    }
-
-    /**
-     * Load favorites from localStorage
-     */
-    function loadFavorites() {
-        const favoriteButtons = document.querySelectorAll('.product-card__favorite');
-
-        favoriteButtons.forEach(btn => {
-            const productCard = btn.closest('.product-card');
-            const productTitle = productCard.querySelector('.product-card__title').textContent;
-
-            if (state.favorites.includes(productTitle)) {
-                btn.setAttribute('data-favorite', 'true');
-            }
-        });
-    }
-
-    /**
-     * Save favorites to localStorage
-     */
-    function saveFavorites() {
-        localStorage.setItem('favorites', JSON.stringify(state.favorites));
-    }
-
-    /**
-     * Setup product button functionality
-     */
-    function setupProducts() {
-        const productCards = document.querySelectorAll('.product-card');
-        const addCartButtons = document.querySelectorAll('.product-card__btn');
-
-        // Add click listeners to navigate to product detail page
-        productCards.forEach(card => {
-            card.addEventListener('click', (e) => {
-                // Don't navigate if clicking the favorite or product action button
-                if (e.target.closest('.product-card__favorite') || e.target.closest('.product-card__btn') || e.target.closest('.product-card__compare')) {
-                    return;
-                }
-                
-                const productTitle = card.querySelector('.product-card__title').textContent;
-                const product = PRODUCTS.find(p => p.name === productTitle);
-                
-                if (product) {
-                    navigateToProductDetail(product.id);
-                }
-            });
-
-            // Make the card cursor indicate it's clickable
-            card.style.cursor = 'pointer';
-        });        });
-    }
-
-    /**
-     * Navigate to product detail page
-     */
-    function navigateToProductDetail(productId) {
-        const inHtmlFolder = window.location.pathname.includes('/html/');
-        const prefix = inHtmlFolder ? '' : 'html/';
-        window.location.href = `${prefix}product.html?id=${productId}`;
-    }
-
-    /**
-     * Setup compare button (adds to compare list in localStorage)
-     */
-    function setupCompare() {
-        const compareButtons = document.querySelectorAll('.product-card__compare');
-        if (!compareButtons.length) return;
-
-        compareButtons.forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-
-                const productCard = btn.closest('.product-card');
-                const productId = productCard.getAttribute('data-product-id');
-                const productTitle = productCard.querySelector('.product-card__title').textContent;
-                const key = productId || productTitle;
-
-                const compareList = JSON.parse(localStorage.getItem('compare') || '[]');
-                if (!compareList.includes(key)) {
-                    compareList.push(key);
-                }
-                localStorage.setItem('compare', JSON.stringify(compareList));
-
-                const originalHtml = btn.innerHTML;
-                btn.innerHTML = '✓ En lista';
-                btn.disabled = true;
-                setTimeout(() => {
-                    btn.innerHTML = originalHtml;
-                    btn.disabled = false;
-                }, 2000);
-            });
-        });
-    }
-
-    /**
-     * Setup sidebar toggle for mobile
-     */
-    function setupSidebarToggle() {
-        const toggleBtn = document.getElementById('toggleSidebarBtn');
-        const sidebar = document.getElementById('catalogFilters');
-        const closeBtn = document.querySelector('.filters-header__close');
-
-        if (!toggleBtn || !sidebar) {
-            // Show toggle button on mobile
-            const viewport = window.innerWidth;
-            if (viewport <= 768) {
-                const btn = document.querySelector('.toggle-sidebar-btn');
-                if (btn) btn.style.display = 'flex';
-            }
-            return;
-        }
-
-        // Toggle sidebar
-        toggleBtn.addEventListener('click', () => {
-            sidebar.classList.toggle('active');
-            if (sidebar.classList.contains('active')) {
-                closeBtn.style.display = 'block';
-                document.body.style.overflow = 'hidden';
-            }
-        });
-
-        // Close sidebar
-        closeBtn?.addEventListener('click', () => {
-            sidebar.classList.remove('active');
-            closeBtn.style.display = 'none';
-            document.body.style.overflow = 'auto';
-        });
-
-        // Close sidebar when clicking outside
-        document.addEventListener('click', (e) => {
-            if (!sidebar.contains(e.target) && !toggleBtn.contains(e.target) && sidebar.classList.contains('active')) {
-                sidebar.classList.remove('active');
-                closeBtn.style.display = 'none';
-                document.body.style.overflow = 'auto';
-            }
-        });
-    }
-
-    /**
-     * Filter products based on active filters and search
-     */
-    function filterProducts() {
-        const productCards = document.querySelectorAll('.product-card');
-        let visibleCount = 0;
-
-        productCards.forEach(card => {
-            const category = card.getAttribute('data-category');
-            const brand = card.getAttribute('data-brand');
-            const title = card.querySelector('.product-card__title').textContent.toLowerCase();
-            const price = parseFloat(card.querySelector('.product-card__price').textContent.replace('$', ''));
-
-            // Check search term
-            const matchesSearch = title.includes(state.searchTerm);
-
-            // Check category filter
-            const matchesCategory = state.activeFilters.categories.length === 0 || 
-                                  state.activeFilters.categories.includes(category);
-
-            // Check brand filter
-            const matchesBrand = state.activeFilters.brands.length === 0 || 
-                               state.activeFilters.brands.includes(brand);
-
-            // Check price filter
-            const matchesPrice = price <= state.activeFilters.maxPrice;
-
-            // Show or hide card
-            const shouldShow = matchesSearch && matchesCategory && matchesBrand && matchesPrice;
-
-            if (shouldShow) {
-                card.style.display = '';
-                visibleCount++;
-            } else {
-                card.style.display = 'none';
-            }
-        });
-
-        // Show/hide no results message
-        showNoResultsIfNeeded(visibleCount);
-    }
-
-    /**
-     * Show no results message if needed
-     */
-    function showNoResultsIfNeeded(visibleCount) {
-        const grid = document.querySelector('.products-grid');
-        let noResults = grid.querySelector('.no-results');
-
-        if (visibleCount === 0) {
-            if (!noResults) {
-                noResults = document.createElement('div');
-                noResults.className = 'no-results';
-                noResults.style.cssText = `
-                    grid-column: 1 / -1;
-                    text-align: center;
-                    padding: 3rem;
-                    background-color: #f3f4f6;
-                    border-radius: 0.75rem;
-                `;
-                noResults.innerHTML = `
-                    <p style="font-size: 1.1rem; color: #4a5565; margin-bottom: 0.5rem;">
-                        No se encontraron productos
-                    </p>
-                    <p style="font-size: 0.9rem; color: #9ca3af;">
-                        Intenta ajustar tus filtros o búsqueda
-                    </p>
-                `;
-                grid.appendChild(noResults);
-            }
-        } else if (noResults) {
-            noResults.remove();
-        }
-    }
-
-    /**
-     * Apply sorting to products
-     */
-    function applySort() {
-        const grid = document.querySelector('.products-grid');
-        const cards = Array.from(grid.querySelectorAll('.product-card'));
-
-        cards.sort((a, b) => {
-            const priceA = parseFloat(a.querySelector('.product-card__price').textContent.replace('$', ''));
-            const priceB = parseFloat(b.querySelector('.product-card__price').textContent.replace('$', ''));
-            const titleA = a.querySelector('.product-card__title').textContent;
-            const titleB = b.querySelector('.product-card__title').textContent;
-
-            switch(state.sortBy) {
-                case 'price-asc':
-                    return priceA - priceB;
-                case 'price-desc':
-                    return priceB - priceA;
-                case 'newest':
-                    return cards.indexOf(b) - cards.indexOf(a);
-                case 'rating':
-                    const reviewsA = a.querySelector('.product-card__reviews').textContent;
-                    const reviewsB = b.querySelector('.product-card__reviews').textContent;
-                    return parseFloat(reviewsB) - parseFloat(reviewsA);
-                default:
-                    return 0;
-            }
-        });
-
-        // Re-append sorted cards
-        cards.forEach(card => grid.appendChild(card));
-    }
-
-    /**
-     * Track page view (analytics)
-     */
-    function trackPageView() {
-        console.log('Catalog page loaded');
-    }
-
-    /**
-     * Handle window resize for responsive sidebar
-     */
-    window.addEventListener('resize', () => {
-        const toggleBtn = document.getElementById('toggleSidebarBtn');
-        const sidebar = document.getElementById('catalogFilters');
-
-        if (!toggleBtn) return;
-
-        if (window.innerWidth > 768) {
-            toggleBtn.style.display = 'none';
-            if (sidebar) sidebar.classList.remove('active');
-        } else {
-            toggleBtn.style.display = 'flex';
-        }
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const expanded = btn.getAttribute('aria-expanded') === 'true';
+      btn.setAttribute('aria-expanded', String(!expanded));
+      menu.classList.toggle('active');
     });
 
-    // Initialize when DOM is ready
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', init);
-    } else {
-        init();
+    document.querySelectorAll('.nav-list__link').forEach(link => {
+      link.addEventListener('click', () => {
+        btn.setAttribute('aria-expanded', 'false');
+        menu.classList.remove('active');
+      });
+    });
+
+    document.addEventListener('click', (e) => {
+      if (!menu.contains(e.target) && !btn.contains(e.target) && menu.classList.contains('active')) {
+        btn.setAttribute('aria-expanded', 'false');
+        menu.classList.remove('active');
+      }
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && menu.classList.contains('active')) {
+        btn.setAttribute('aria-expanded', 'false');
+        menu.classList.remove('active');
+        btn.focus();
+      }
+    });
+  }
+
+  /* ════════════════════════════════════════════
+     SIDEBAR TOGGLE (MOBILE)
+  ════════════════════════════════════════════ */
+  function setupSidebar () {
+    const toggleBtn  = document.getElementById('toggleSidebarBtn');
+    const sidebar    = document.getElementById('catalogFilters');
+    const closeBtn   = document.getElementById('closeSidebarBtn');
+
+    /* Show toggle button on mobile widths */
+    function checkWidth () {
+      if (!toggleBtn) return;
+      if (window.innerWidth <= 768) {
+        toggleBtn.style.display = 'flex';
+        if (closeBtn) closeBtn.style.display = 'block';
+      } else {
+        toggleBtn.style.display = 'none';
+        if (sidebar)  sidebar.classList.remove('active');
+        if (closeBtn) closeBtn.style.display = 'none';
+        document.body.style.overflow = '';
+      }
     }
+
+    window.addEventListener('resize', checkWidth);
+    checkWidth();
+
+    if (toggleBtn && sidebar) {
+      toggleBtn.addEventListener('click', () => {
+        sidebar.classList.toggle('active');
+        document.body.style.overflow = sidebar.classList.contains('active') ? 'hidden' : '';
+      });
+    }
+
+    if (closeBtn && sidebar) {
+      closeBtn.addEventListener('click', () => {
+        sidebar.classList.remove('active');
+        document.body.style.overflow = '';
+      });
+    }
+
+    /* Close when clicking outside sidebar on mobile */
+    document.addEventListener('click', (e) => {
+      if (!sidebar || !toggleBtn) return;
+      if (window.innerWidth > 768) return;
+      if (!sidebar.contains(e.target) && !toggleBtn.contains(e.target) && sidebar.classList.contains('active')) {
+        sidebar.classList.remove('active');
+        document.body.style.overflow = '';
+      }
+    });
+  }
+
+  /* ════════════════════════════════════════════
+     SEARCH
+  ════════════════════════════════════════════ */
+  function setupSearch () {
+    const input = document.getElementById('productSearch');
+    if (!input) return;
+    input.addEventListener('input', (e) => {
+      state.search = e.target.value.trim().toLowerCase();
+      applyFilters();
+    });
+  }
+
+  /* ════════════════════════════════════════════
+     SORT
+  ════════════════════════════════════════════ */
+  function setupSort () {
+    const select = document.getElementById('sortBy');
+    if (!select) return;
+    select.addEventListener('change', (e) => {
+      state.sortBy = e.target.value;
+      applyFilters();
+    });
+  }
+
+  /* ════════════════════════════════════════════
+     CATEGORY FILTERS
+     "Todos" acts as "select all / clear all"
+  ════════════════════════════════════════════ */
+  function setupCategoryFilters () {
+    const todosBox    = document.querySelector('.category-filter[value="todos"]');
+    const specificBoxes = document.querySelectorAll('.category-filter:not([value="todos"])');
+
+    if (!todosBox) return;
+
+    /* Clicking "Todos" → uncheck all specifics, clear state */
+    todosBox.addEventListener('change', () => {
+      if (todosBox.checked) {
+        specificBoxes.forEach(cb => { cb.checked = false; });
+        state.categories = [];
+        applyFilters();
+      } else {
+        /* prevent unchecking if nothing else is checked */
+        todosBox.checked = true;
+      }
+    });
+
+    /* Clicking a specific category */
+    specificBoxes.forEach(cb => {
+      cb.addEventListener('change', () => {
+        updateCheckedList(specificBoxes, state.categories = []);
+        state.categories = getCheckedValues(specificBoxes);
+
+        if (state.categories.length === 0) {
+          /* nothing selected → back to "Todos" */
+          todosBox.checked = true;
+        } else {
+          todosBox.checked = false;
+        }
+        applyFilters();
+      });
+    });
+  }
+
+  /* ════════════════════════════════════════════
+     BRAND FILTERS
+  ════════════════════════════════════════════ */
+  function setupBrandFilters () {
+    const todasBox      = document.querySelector('.brand-filter[value="todas"]');
+    const specificBoxes = document.querySelectorAll('.brand-filter:not([value="todas"])');
+
+    if (!todasBox) return;
+
+    todasBox.addEventListener('change', () => {
+      if (todasBox.checked) {
+        specificBoxes.forEach(cb => { cb.checked = false; });
+        state.brands = [];
+        applyFilters();
+      } else {
+        todasBox.checked = true;
+      }
+    });
+
+    specificBoxes.forEach(cb => {
+      cb.addEventListener('change', () => {
+        state.brands = getCheckedValues(specificBoxes);
+        if (state.brands.length === 0) {
+          todasBox.checked = true;
+        } else {
+          todasBox.checked = false;
+        }
+        applyFilters();
+      });
+    });
+  }
+
+  /* ════════════════════════════════════════════
+     STORE FILTERS
+  ════════════════════════════════════════════ */
+  function setupStoreFilters () {
+    const todasBox      = document.querySelector('.store-filter[value="todas"]');
+    const specificBoxes = document.querySelectorAll('.store-filter:not([value="todas"])');
+
+    if (!todasBox) return;
+
+    todasBox.addEventListener('change', () => {
+      if (todasBox.checked) {
+        specificBoxes.forEach(cb => { cb.checked = false; });
+        state.stores = [];
+        applyFilters();
+      } else {
+        todasBox.checked = true;
+      }
+    });
+
+    specificBoxes.forEach(cb => {
+      cb.addEventListener('change', () => {
+        state.stores = Array.from(specificBoxes)
+          .filter(cb => cb.checked)
+          .map(cb => cb.value); // keep original case to match data-store
+        if (state.stores.length === 0) {
+          todasBox.checked = true;
+        } else {
+          todasBox.checked = false;
+        }
+        applyFilters();
+      });
+    });
+  }
+
+  /* ════════════════════════════════════════════
+     PRICE RANGE
+  ════════════════════════════════════════════ */
+  function setupPriceRange () {
+    const slider = document.getElementById('priceRange');
+    const label  = document.getElementById('priceValue');
+    if (!slider) return;
+
+    slider.addEventListener('input', () => {
+      state.maxPrice = parseFloat(slider.value);
+      if (label) label.textContent = slider.value;
+      applyFilters();
+    });
+  }
+
+  /* ════════════════════════════════════════════
+     RESET FILTERS
+  ════════════════════════════════════════════ */
+  function setupResetFilters () {
+    const btn = document.getElementById('resetFiltersBtn');
+    if (!btn) return;
+
+    btn.addEventListener('click', () => {
+      /* Reset state */
+      state.search     = '';
+      state.categories = [];
+      state.brands     = [];
+      state.stores     = [];
+      state.maxPrice   = 200;
+      state.sortBy     = 'relevance';
+
+      /* Reset UI — checkboxes */
+      document.querySelectorAll('.category-filter').forEach(cb => {
+        cb.checked = cb.value === 'todos';
+      });
+      document.querySelectorAll('.brand-filter').forEach(cb => {
+        cb.checked = cb.value === 'todas';
+      });
+      document.querySelectorAll('.store-filter').forEach(cb => {
+        cb.checked = cb.value === 'todas';
+      });
+
+      /* Reset price slider */
+      const slider = document.getElementById('priceRange');
+      const label  = document.getElementById('priceValue');
+      if (slider) slider.value = 200;
+      if (label)  label.textContent = '200';
+
+      /* Reset search input */
+      const searchInput = document.getElementById('productSearch');
+      if (searchInput) searchInput.value = '';
+
+      /* Reset sort */
+      const sortSelect = document.getElementById('sortBy');
+      if (sortSelect) sortSelect.value = 'relevance';
+
+      applyFilters();
+    });
+  }
+
+  /* ════════════════════════════════════════════
+     APPLY FILTERS + SORT
+  ════════════════════════════════════════════ */
+  function applyFilters () {
+    const cards = Array.from(document.querySelectorAll('.product-card'));
+    let visibleCards = [];
+
+    cards.forEach(card => {
+      const category = (card.dataset.category || '').toLowerCase();
+      const brand    = (card.dataset.brand    || '').toLowerCase();
+      const store    = (card.dataset.store    || '');
+      const title    = (card.querySelector('.product-card__title')?.textContent || '').toLowerCase();
+      const priceEl  = card.querySelector('.product-card__price');
+      const price    = priceEl ? parseFloat(priceEl.textContent.replace('$', '')) : 0;
+
+      const matchesSearch   = !state.search || title.includes(state.search);
+      const matchesCategory = state.categories.length === 0 || state.categories.includes(category);
+      const matchesBrand    = state.brands.length    === 0 || state.brands.includes(brand);
+      const matchesStore    = state.stores.length    === 0 || state.stores.map(s => s.toLowerCase()).includes(store.toLowerCase());
+      const matchesPrice    = price <= state.maxPrice;
+
+      const visible = matchesSearch && matchesCategory && matchesBrand && matchesStore && matchesPrice;
+      card.style.display = visible ? '' : 'none';
+      if (visible) visibleCards.push(card);
+    });
+
+    /* Sort visible cards */
+    sortCards(visibleCards);
+
+    /* Update count */
+    updateCount(visibleCards.length);
+
+    /* Show/hide empty state */
+    toggleEmptyState(visibleCards.length === 0);
+  }
+
+  /* ════════════════════════════════════════════
+     SORT CARDS IN DOM
+  ════════════════════════════════════════════ */
+  function sortCards (visibleCards) {
+    if (state.sortBy === 'relevance') return; // keep original DOM order
+
+    const grid = document.getElementById('productsGrid');
+    if (!grid) return;
+
+    /* Get original index for "newest" sort */
+    const allCards = Array.from(grid.querySelectorAll('.product-card'));
+
+    visibleCards.sort((a, b) => {
+      switch (state.sortBy) {
+        case 'price-asc': {
+          const pa = parseFloat(a.querySelector('.product-card__price').textContent.replace('$', ''));
+          const pb = parseFloat(b.querySelector('.product-card__price').textContent.replace('$', ''));
+          return pa - pb;
+        }
+        case 'price-desc': {
+          const pa = parseFloat(a.querySelector('.product-card__price').textContent.replace('$', ''));
+          const pb = parseFloat(b.querySelector('.product-card__price').textContent.replace('$', ''));
+          return pb - pa;
+        }
+        case 'rating': {
+          const ra = parseFloat(a.querySelector('.product-card__reviews')?.textContent.replace(/[()]/g, '') || 0);
+          const rb = parseFloat(b.querySelector('.product-card__reviews')?.textContent.replace(/[()]/g, '') || 0);
+          return rb - ra;
+        }
+        case 'newest': {
+          return allCards.indexOf(b) - allCards.indexOf(a);
+        }
+        default:
+          return 0;
+      }
+    });
+
+    /* Re-append in sorted order (hidden cards stay in place) */
+    visibleCards.forEach(card => grid.appendChild(card));
+  }
+
+  /* ════════════════════════════════════════════
+     EMPTY STATE
+  ════════════════════════════════════════════ */
+  function toggleEmptyState (isEmpty) {
+    const grid = document.getElementById('productsGrid');
+    if (!grid) return;
+    let empty = grid.querySelector('.no-results');
+
+    if (isEmpty) {
+      if (!empty) {
+        empty = document.createElement('div');
+        empty.className = 'no-results';
+        empty.innerHTML = `
+          <p style="font-size:1rem;font-weight:600;color:#4a5565;margin-bottom:.5rem;">
+            No se encontraron productos
+          </p>
+          <p style="font-size:.875rem;color:#9ca3af;">
+            Intenta ajustar tus filtros o búsqueda
+          </p>`;
+        grid.appendChild(empty);
+      }
+    } else if (empty) {
+      empty.remove();
+    }
+  }
+
+  /* ════════════════════════════════════════════
+     COUNT
+  ════════════════════════════════════════════ */
+  function updateCount (n) {
+    const el = document.getElementById('catalogCount');
+    if (el) el.textContent = n + ' producto' + (n !== 1 ? 's' : '') + ' encontrado' + (n !== 1 ? 's' : '');
+  }
+
+  /* ════════════════════════════════════════════
+     FAVORITE BUTTONS
+  ════════════════════════════════════════════ */
+  function setupFavoriteButtons () {
+    document.querySelectorAll('.product-card__favorite').forEach(btn => {
+      /* Sync initial state from storage */
+      const card      = btn.closest('.product-card');
+      const productId = card?.dataset.productId;
+      if (productId && state.favorites.includes(productId)) {
+        btn.setAttribute('data-favorite', 'true');
+      }
+
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const id  = btn.closest('.product-card')?.dataset.productId;
+        const fav = btn.getAttribute('data-favorite') === 'true';
+
+        if (fav) {
+          btn.setAttribute('data-favorite', 'false');
+          state.favorites = state.favorites.filter(f => f !== id);
+        } else {
+          btn.setAttribute('data-favorite', 'true');
+          if (id && !state.favorites.includes(id)) state.favorites.push(id);
+        }
+        saveFavoritesToStorage();
+      });
+    });
+  }
+
+  function loadFavoritesFromStorage () {
+    try { state.favorites = JSON.parse(localStorage.getItem('sportdata_favorites') || '[]'); }
+    catch { state.favorites = []; }
+  }
+
+  function saveFavoritesToStorage () {
+    localStorage.setItem('sportdata_favorites', JSON.stringify(state.favorites));
+  }
+
+  /* ════════════════════════════════════════════
+     PRODUCT CARD NAVIGATION
+  ════════════════════════════════════════════ */
+  function setupProductNavigation () {
+    document.querySelectorAll('.product-card').forEach(card => {
+      card.style.cursor = 'pointer';
+      card.addEventListener('click', (e) => {
+        /* Ignore clicks on favorite button or "Ver en Tienda" button */
+        if (e.target.closest('.product-card__favorite') || e.target.closest('.product-card__btn')) return;
+        const id = card.dataset.productId;
+        if (id) {
+          const inHtml = window.location.pathname.includes('/html/');
+          window.location.href = (inHtml ? '' : 'html/') + 'product.html?id=' + id;
+        }
+      });
+    });
+  }
+
+  /* ════════════════════════════════════════════
+     HELPERS
+  ════════════════════════════════════════════ */
+  function getCheckedValues (nodeList) {
+    return Array.from(nodeList)
+      .filter(cb => cb.checked)
+      .map(cb => cb.value.toLowerCase());
+  }
+
+  // eslint-disable-next-line no-unused-vars
+  function updateCheckedList (nodeList, arr) {
+    arr.length = 0;
+    nodeList.forEach(cb => { if (cb.checked) arr.push(cb.value.toLowerCase()); });
+  }
+
+  /* ── Boot ───────────────────────────────────── */
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+
 })();
