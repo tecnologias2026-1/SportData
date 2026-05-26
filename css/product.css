@@ -1,5 +1,5 @@
 /* ============================================
-   PRODUCT DETAIL PAGE STYLES
+    PRODUCT DETAIL PAGE STYLES
    ============================================ */
 
 .main-content {
@@ -14,7 +14,7 @@
 }
 
 /* ============================================
-   BREADCRUMB
+    BREADCRUMB
    ============================================ */
 
 .breadcrumb {
@@ -47,7 +47,7 @@
 }
 
 /* ============================================
-   PRODUCT CONTAINER
+    PRODUCT CONTAINER
    ============================================ */
 
 .product-container {
@@ -62,7 +62,7 @@
 }
 
 /* ============================================
-   PRODUCT IMAGE SECTION
+    PRODUCT IMAGE SECTION
    ============================================ */
 
 .product-image-section {
@@ -135,7 +135,7 @@
 }
 
 /* ============================================
-   PRODUCT INFO SECTION
+    PRODUCT INFO SECTION
    ============================================ */
 
 .product-info-section {
@@ -236,7 +236,7 @@
 }
 
 /* ============================================
-   QUANTITY SELECTOR
+    QUANTITY SELECTOR
    ============================================ */
 
 .quantity-selector {
@@ -291,22 +291,23 @@
 
 .quantity-input[type=number] {
     -moz-appearance: textfield;
+    appearance: textfield;
 }
 
 /* ============================================
-   ACTION BUTTONS
+    ACTION BUTTONS
    ============================================ */
 
 .product-actions {
     display: flex;
     gap: 1rem;
 }
-
+
 
 
 
 /* ============================================
-   SHIPPING INFO
+    SHIPPING INFO
    ============================================ */
 
 .shipping-info {
@@ -335,7 +336,7 @@
 }
 
 /* ============================================
-   SPECIFICATIONS SECTION
+    SPECIFICATIONS SECTION
    ============================================ */
 
 .product-specifications {
@@ -402,7 +403,7 @@
 }
 
 /* ============================================
-   SIZE OPTIONS
+    SIZE OPTIONS
    ============================================ */
 
 .size-options {
@@ -435,7 +436,7 @@
 }
 
 /* ============================================
-   COLOR OPTIONS
+    COLOR OPTIONS
    ============================================ */
 
 .color-options {
@@ -464,7 +465,7 @@
 }
 
 /* ============================================
-   REVIEWS SECTION
+    REVIEWS SECTION
    ============================================ */
 
 .product-reviews {
@@ -554,7 +555,7 @@
 }
 
 /* ============================================
-   REVIEW CARDS
+    REVIEW CARDS
    ============================================ */
 
 .reviews-list {
@@ -615,7 +616,7 @@
 }
 
 /* ============================================
-   RESPONSIVE DESIGN
+    RESPONSIVE DESIGN
    ============================================ */
 
 @media (max-width: 1024px) {
@@ -709,3 +710,4 @@
         width: 100%;
         justify-content: space-between;
     }
+}
