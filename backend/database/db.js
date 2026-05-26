@@ -70,10 +70,65 @@ const db = {
   emailExists(email) {
     const { users } = read();
     return users.some(u => u.email === email);
-  }
+  },
+  /**
+ * Agregar estos métodos al objeto db en backend/database/db.js
+ * Pegar ANTES de la línea:  module.exports = db;
+ */
+
+  // ── Reset de contraseña ───────────────────────────────────────────────────
+
+  saveResetCode(userId, code, expires) {
+    const data = read();
+    if (!data.reset_codes) data.reset_codes = {};
+    data.reset_codes[userId] = { code, expires };
+    write(data);
+  },
+
+  getResetCode(userId) {
+    const data = read();
+    return (data.reset_codes || {})[userId] || null;
+  },
+
+  saveResetToken(userId, token, expires) {
+    const data = read();
+    if (!data.reset_tokens) data.reset_tokens = {};
+    data.reset_tokens[token] = { userId, expires };
+    write(data);
+  },
+
+  getUserIdByResetToken(token) {
+    const data = read();
+    const record = (data.reset_tokens || {})[token];
+    if (!record || Date.now() > record.expires) return null;
+    return record.userId;
+  },
+
+  updatePassword(userId, hashedPassword) {
+    const data = read();
+    const user = data.users.find(u => u.id === userId);
+    if (user) {
+      user.password = hashedPassword;
+      write(data);
+    }
+  },
+
+  clearResetData(userId) {
+    const data = read();
+    if (data.reset_codes) delete data.reset_codes[userId];
+    // Limpiar tokens de este usuario
+    if (data.reset_tokens) {
+      Object.keys(data.reset_tokens).forEach(t => {
+        if (data.reset_tokens[t].userId === userId) delete data.reset_tokens[t];
+      });
+    }
+    write(data);
+  },
 
 };
 
 console.log('  ✔  Base de datos JSON inicializada: sportdata.json');
+
+
 
 module.exports = db;
