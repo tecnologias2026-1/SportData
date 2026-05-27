@@ -13,7 +13,7 @@ const path         = require('path');
 
 // Inicializar la base de datos antes de las rutas
 require('./database/db');
-
+// Rutas
 const authRoutes    = require('./routes/auth');
 const productRoutes = require('./routes/products');
 const productCache  = require('./services/productCache');
@@ -49,7 +49,13 @@ app.get('/api/health', (req, res) => {
     products:  cacheStatus,
   });
 });
-
+// Ruta explícita para html/catalog.html
+app.get('/html/:page', (req, res) => {
+  const filePath = path.join(__dirname, '..', 'html', req.params.page);
+  res.sendFile(filePath, err => {
+    if (err) res.status(404).send('Página no encontrada');
+  });
+});
 // Fallback: cualquier ruta no API sirve el index.html
 app.get('*', (req, res) => {
   if (!req.path.startsWith('/api')) {
