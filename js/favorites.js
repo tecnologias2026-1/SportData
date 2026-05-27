@@ -1,13 +1,16 @@
                 /**
      * Public API
      */
+(function () {
+
     window.SportData = {
         favorites: {
             save: saveFavorite,
             remove: removeFavorite,
             getAll: getFavorites,
             isFavorite: isFavorite
-        },        utils: {
+        },
+        utils: {
             showNotification: showNotification,
             trackEvent: trackEvent
         }
@@ -21,8 +24,8 @@
     } else {
         init();
     }
-})();
 
+})();
 /**
  * ========================================
  * CSS for Notifications (injected)

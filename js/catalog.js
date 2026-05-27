@@ -1,27 +1,30 @@
 /**
  * ================================================
- * SportData — Catalog Page JavaScript
- * Handles: search, category/brand/store/price
- * filters, sorting, favorites, navigation, mobile
+ * SportData — Catalog Page JavaScript (Dinámico)
  * ================================================
+ * Carga productos desde la API (o fallback local),
+ * los renderiza dinámicamente y gestiona todos
+ * los filtros, búsqueda, favoritos y navegación.
  */
 
 (function () {
   'use strict';
 
-  /* ── State ─────────────────────────────────── */
+  /* ── Estado ─────────────────────────────────── */
   const state = {
-    search: '',
-    categories: [],   // empty = "todos" (show all)
-    brands: [],       // empty = "todas" (show all)
-    stores: [],       // empty = "todas" (show all)
-    maxPrice: 200,
-    sortBy: 'relevance',
-    favorites: []
+    search:     '',
+    categories: [],
+    brands:     [],
+    stores:     [],
+    maxPrice:   200,
+    sortBy:     'relevance',
+    favorites:  [],
+    allProducts:[],
+    loading:    true,
   };
 
-  /* ── Init ───────────────────────────────────── */
-  function init () {
+  /* ── Init ────────────────────────────────────── */
+  async function init() {
     loadFavoritesFromStorage();
     setupHamburger();
     setupSidebar();
@@ -32,59 +35,275 @@
     setupStoreFilters();
     setupPriceRange();
     setupResetFilters();
+    checkURLCategory();
+
+    showSkeleton();
+
+    try {
+      // Cargar productos desde API / fallback
+      state.allProducts = await window.SportDataProducts.getAll();
+    } catch {
+      state.allProducts = window.SportDataProducts.getAllProducts();
+    }
+
+    state.loading = false;
+    renderProducts(state.allProducts);
     setupFavoriteButtons();
     setupProductNavigation();
-    applyFilters();             // render initial state
+    applyFilters();
   }
 
-  /* ════════════════════════════════════════════
-     HAMBURGER MENU
-  ════════════════════════════════════════════ */
-  function setupHamburger () {
+  /* ── Skeleton loader ────────────────────────── */
+  function showSkeleton() {
+    const grid = document.getElementById('productsGrid');
+    if (!grid) return;
+    grid.innerHTML = Array.from({ length: 6 }, () => `
+      <article class="product-card product-card--skeleton" aria-hidden="true">
+        <div class="product-card__image-container skeleton-box" style="height:200px"></div>
+        <div class="product-card__content" style="gap:.75rem">
+          <div class="skeleton-box" style="height:12px;width:60%;border-radius:4px"></div>
+          <div class="skeleton-box" style="height:18px;width:85%;border-radius:4px"></div>
+          <div class="skeleton-box" style="height:12px;width:40%;border-radius:4px"></div>
+          <div class="skeleton-box" style="height:24px;width:50%;border-radius:4px;margin-top:.5rem"></div>
+        </div>
+        <div class="product-card__actions">
+          <div class="skeleton-box" style="height:42px;border-radius:8px"></div>
+        </div>
+      </article>`).join('');
+    injectSkeletonStyles();
+  }
+
+  function injectSkeletonStyles() {
+    if (document.getElementById('sd-skeleton-styles')) return;
+    const s = document.createElement('style');
+    s.id = 'sd-skeleton-styles';
+    s.textContent = `
+      .skeleton-box {
+        background: linear-gradient(90deg, #e5e7eb 25%, #f3f4f6 50%, #e5e7eb 75%);
+        background-size: 200% 100%;
+        animation: skeleton-shimmer 1.4s infinite;
+        border-radius: 6px;
+      }
+      @keyframes skeleton-shimmer {
+        0%   { background-position: 200% 0; }
+        100% { background-position: -200% 0; }
+      }
+    `;
+    document.head.appendChild(s);
+  }
+
+  /* ────────────────────────────────────────────────
+     RENDER DINÁMICO DE TARJETAS
+  ──────────────────────────────────────────────── */
+  function renderProducts(products) {
+    const grid = document.getElementById('productsGrid');
+    if (!grid) return;
+
+    if (!products.length) {
+      grid.innerHTML = `
+        <div class="no-results" style="grid-column:1/-1">
+          <p style="font-size:1rem;font-weight:600;color:#4a5565;margin-bottom:.5rem">No se encontraron productos</p>
+          <p style="font-size:.875rem;color:#9ca3af">Intenta ajustar tus filtros o búsqueda</p>
+        </div>`;
+      updateCount(0);
+      return;
+    }
+
+    grid.innerHTML = products.map(p => buildCard(p)).join('');
+    updateCount(products.length);
+    setupFavoriteButtons();
+    setupProductNavigation();
+  }
+
+  function buildCard(p) {
+    const isFav    = state.favorites.includes(p.id);
+    const stock    = p.storePrices && p.storePrices[0] ? p.storePrices[0] : null;
+    const storeName= stock ? stock.storeName   : 'Amazon Sports';
+    const stockLbl = stock ? stock.stock       : 'En Stock';
+    const stockPill= stock ? stock.stockPill   : 'ok';
+    const stockCls = stockPill === 'out' ? 'product-card__stock--limited' : '';
+    const stars    = generateStarHTML(p.rating);
+    const updAt    = p.updatedAgo || 'Hace 5 min';
+    const savings  = p.savings ? `<span class="card-savings">Ahorras $${p.savings.toFixed(2)}</span>` : '';
+    const imgPath  = (p.image || '').replace(/^\.\.\//,'../');
+
+    return `
+      <article class="product-card"
+        data-category="${(p.category||'').toLowerCase()}"
+        data-brand="${(p.brand||'').toLowerCase()}"
+        data-store="${storeName}"
+        data-product-id="${p.id}">
+
+        <div class="product-card__image-container">
+          <img src="${imgPath}"
+               alt="${p.name}"
+               class="product-card__image"
+               loading="lazy"
+               onerror="this.src='../assets/img/main_produc_zapatillas.jpg'">
+
+          <span class="product-card__store">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+            </svg>
+            ${storeName}
+          </span>
+
+          <span class="product-card__stock ${stockCls}">${stockLbl}</span>
+
+          <button type="button"
+            class="product-card__favorite"
+            aria-label="Añadir ${p.name} a favoritos"
+            data-favorite="${isFav}">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                 stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+            </svg>
+          </button>
+        </div>
+
+        <div class="product-card__content">
+          <p class="product-card__category">${p.brand}</p>
+          <h3 class="product-card__title">${p.name}</h3>
+
+          <div class="product-card__rating">
+            <div class="star-rating" aria-label="${p.rating} de 5 estrellas">
+              ${stars}
+            </div>
+            <span class="product-card__reviews">(${p.rating})</span>
+          </div>
+
+          <p class="product-card__updated">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>
+            </svg>
+            Actualizado: ${updAt}
+          </p>
+
+          <p class="product-card__price">$${p.price.toFixed(2)}</p>
+          ${savings}
+        </div>
+
+        <div class="product-card__actions">
+          <button type="button" class="product-card__btn" aria-label="Ver tienda de ${p.name}">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14 21 3"/>
+            </svg>
+            Ver en Tienda
+          </button>
+        </div>
+      </article>`;
+  }
+
+  function generateStarHTML(rating) {
+    let html = '';
+    for (let i = 1; i <= 5; i++) {
+      if (i <= Math.floor(rating))      html += '<span class="star star--filled"></span>';
+      else if (i - rating < 1 && rating % 1 !== 0) html += '<span class="star star--half"></span>';
+      else                               html += '<span class="star"></span>';
+    }
+    return html;
+  }
+
+  /* ────────────────────────────────────────────────
+     FILTROS Y BÚSQUEDA
+  ──────────────────────────────────────────────── */
+  function applyFilters() {
+    if (state.loading) return;
+
+    let filtered = [...state.allProducts];
+
+    // Búsqueda
+    if (state.search) {
+      const q = state.search.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+      filtered = filtered.filter(p =>
+        [p.name, p.brand, p.category, p.description].some(f =>
+          f && f.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').includes(q)
+        )
+      );
+    }
+
+    // Categoría
+    if (state.categories.length) {
+      filtered = filtered.filter(p => state.categories.includes(p.category.toLowerCase()));
+    }
+
+    // Marca
+    if (state.brands.length) {
+      filtered = filtered.filter(p => state.brands.includes(p.brand.toLowerCase()));
+    }
+
+    // Tienda
+    if (state.stores.length) {
+      filtered = filtered.filter(p => {
+        const s = p.storePrices && p.storePrices[0] ? p.storePrices[0].storeName : '';
+        return state.stores.map(x => x.toLowerCase()).includes(s.toLowerCase());
+      });
+    }
+
+    // Precio
+    filtered = filtered.filter(p => p.price <= state.maxPrice);
+
+    // Ordenar
+    filtered = sortArr(filtered, state.sortBy);
+
+    renderProducts(filtered);
+  }
+
+  function sortArr(arr, by) {
+    const s = [...arr];
+    if (by === 'price-asc')  s.sort((a,b) => a.price - b.price);
+    if (by === 'price-desc') s.sort((a,b) => b.price - a.price);
+    if (by === 'rating')     s.sort((a,b) => b.rating - a.rating);
+    if (by === 'newest')     s.reverse();
+    return s;
+  }
+
+  /* ── URL param: ?cat=calzado ──────────── */
+  function checkURLCategory() {
+    const params = new URLSearchParams(window.location.search);
+    const cat = params.get('cat');
+    if (!cat) return;
+    const box = document.querySelector(`.category-filter[value="${cat}"]`);
+    const todosBox = document.querySelector('.category-filter[value="todos"]');
+    if (box) {
+      box.checked = true;
+      if (todosBox) todosBox.checked = false;
+      state.categories = [cat.toLowerCase()];
+    }
+  }
+
+  /* ── Hamburger ────────────────────────── */
+  function setupHamburger() {
     const btn  = document.getElementById('hamburgerBtn');
     const menu = document.getElementById('navMenu');
     if (!btn || !menu) return;
-
-    btn.addEventListener('click', (e) => {
+    btn.addEventListener('click', e => {
       e.stopPropagation();
-      const expanded = btn.getAttribute('aria-expanded') === 'true';
-      btn.setAttribute('aria-expanded', String(!expanded));
+      const exp = btn.getAttribute('aria-expanded') === 'true';
+      btn.setAttribute('aria-expanded', String(!exp));
       menu.classList.toggle('active');
     });
-
-    document.querySelectorAll('.nav-list__link').forEach(link => {
-      link.addEventListener('click', () => {
-        btn.setAttribute('aria-expanded', 'false');
-        menu.classList.remove('active');
-      });
-    });
-
-    document.addEventListener('click', (e) => {
+    document.querySelectorAll('.nav-list__link').forEach(l =>
+      l.addEventListener('click', () => { btn.setAttribute('aria-expanded','false'); menu.classList.remove('active'); })
+    );
+    document.addEventListener('click', e => {
       if (!menu.contains(e.target) && !btn.contains(e.target) && menu.classList.contains('active')) {
-        btn.setAttribute('aria-expanded', 'false');
-        menu.classList.remove('active');
+        btn.setAttribute('aria-expanded','false'); menu.classList.remove('active');
       }
     });
-
-    document.addEventListener('keydown', (e) => {
+    document.addEventListener('keydown', e => {
       if (e.key === 'Escape' && menu.classList.contains('active')) {
-        btn.setAttribute('aria-expanded', 'false');
-        menu.classList.remove('active');
-        btn.focus();
+        btn.setAttribute('aria-expanded','false'); menu.classList.remove('active'); btn.focus();
       }
     });
   }
 
-  /* ════════════════════════════════════════════
-     SIDEBAR TOGGLE (MOBILE)
-  ════════════════════════════════════════════ */
-  function setupSidebar () {
-    const toggleBtn  = document.getElementById('toggleSidebarBtn');
-    const sidebar    = document.getElementById('catalogFilters');
-    const closeBtn   = document.getElementById('closeSidebarBtn');
-
-    /* Show toggle button on mobile widths */
-    function checkWidth () {
+  /* ── Sidebar ─────────────────────────── */
+  function setupSidebar() {
+    const toggleBtn = document.getElementById('toggleSidebarBtn');
+    const sidebar   = document.getElementById('catalogFilters');
+    const closeBtn  = document.getElementById('closeSidebarBtn');
+    function checkW() {
       if (!toggleBtn) return;
       if (window.innerWidth <= 768) {
         toggleBtn.style.display = 'flex';
@@ -92,386 +311,155 @@
       } else {
         toggleBtn.style.display = 'none';
         if (sidebar)  sidebar.classList.remove('active');
-        if (closeBtn) closeBtn.style.display = 'none';
         document.body.style.overflow = '';
       }
     }
-
-    window.addEventListener('resize', checkWidth);
-    checkWidth();
-
-    if (toggleBtn && sidebar) {
-      toggleBtn.addEventListener('click', () => {
-        sidebar.classList.toggle('active');
-        document.body.style.overflow = sidebar.classList.contains('active') ? 'hidden' : '';
-      });
-    }
-
-    if (closeBtn && sidebar) {
-      closeBtn.addEventListener('click', () => {
-        sidebar.classList.remove('active');
-        document.body.style.overflow = '';
-      });
-    }
-
-    /* Close when clicking outside sidebar on mobile */
-    document.addEventListener('click', (e) => {
-      if (!sidebar || !toggleBtn) return;
-      if (window.innerWidth > 768) return;
+    window.addEventListener('resize', checkW); checkW();
+    if (toggleBtn && sidebar) toggleBtn.addEventListener('click', () => {
+      sidebar.classList.toggle('active');
+      document.body.style.overflow = sidebar.classList.contains('active') ? 'hidden' : '';
+    });
+    if (closeBtn && sidebar) closeBtn.addEventListener('click', () => {
+      sidebar.classList.remove('active'); document.body.style.overflow = '';
+    });
+    document.addEventListener('click', e => {
+      if (!sidebar || !toggleBtn || window.innerWidth > 768) return;
       if (!sidebar.contains(e.target) && !toggleBtn.contains(e.target) && sidebar.classList.contains('active')) {
-        sidebar.classList.remove('active');
-        document.body.style.overflow = '';
+        sidebar.classList.remove('active'); document.body.style.overflow = '';
       }
     });
   }
 
-  /* ════════════════════════════════════════════
-     SEARCH
-  ════════════════════════════════════════════ */
-  function setupSearch () {
-    const input = document.getElementById('productSearch');
-    if (!input) return;
-    input.addEventListener('input', (e) => {
-      state.search = e.target.value.trim().toLowerCase();
-      applyFilters();
-    });
+  /* ── Search ──────────────────────────── */
+  function setupSearch() {
+    const inp = document.getElementById('productSearch');
+    if (!inp) return;
+    inp.addEventListener('input', e => { state.search = e.target.value.trim().toLowerCase(); applyFilters(); });
   }
 
-  /* ════════════════════════════════════════════
-     SORT
-  ════════════════════════════════════════════ */
-  function setupSort () {
-    const select = document.getElementById('sortBy');
-    if (!select) return;
-    select.addEventListener('change', (e) => {
-      state.sortBy = e.target.value;
-      applyFilters();
-    });
+  /* ── Sort ────────────────────────────── */
+  function setupSort() {
+    const sel = document.getElementById('sortBy');
+    if (!sel) return;
+    sel.addEventListener('change', e => { state.sortBy = e.target.value; applyFilters(); });
   }
 
-  /* ════════════════════════════════════════════
-     CATEGORY FILTERS
-     "Todos" acts as "select all / clear all"
-  ════════════════════════════════════════════ */
-  function setupCategoryFilters () {
-    const todosBox    = document.querySelector('.category-filter[value="todos"]');
-    const specificBoxes = document.querySelectorAll('.category-filter:not([value="todos"])');
-
+  /* ── Category filters ─────────────────── */
+  function setupCategoryFilters() {
+    const todosBox = document.querySelector('.category-filter[value="todos"]');
+    const specifics = document.querySelectorAll('.category-filter:not([value="todos"])');
     if (!todosBox) return;
-
-    /* Clicking "Todos" → uncheck all specifics, clear state */
     todosBox.addEventListener('change', () => {
-      if (todosBox.checked) {
-        specificBoxes.forEach(cb => { cb.checked = false; });
-        state.categories = [];
-        applyFilters();
-      } else {
-        /* prevent unchecking if nothing else is checked */
-        todosBox.checked = true;
-      }
+      if (todosBox.checked) { specifics.forEach(cb => cb.checked = false); state.categories = []; applyFilters(); }
+      else todosBox.checked = true;
     });
-
-    /* Clicking a specific category */
-    specificBoxes.forEach(cb => {
-      cb.addEventListener('change', () => {
-        updateCheckedList(specificBoxes, state.categories = []);
-        state.categories = getCheckedValues(specificBoxes);
-
-        if (state.categories.length === 0) {
-          /* nothing selected → back to "Todos" */
-          todosBox.checked = true;
-        } else {
-          todosBox.checked = false;
-        }
-        applyFilters();
-      });
-    });
+    specifics.forEach(cb => cb.addEventListener('change', () => {
+      state.categories = Array.from(specifics).filter(c => c.checked).map(c => c.value.toLowerCase());
+      todosBox.checked = state.categories.length === 0;
+      applyFilters();
+    }));
   }
 
-  /* ════════════════════════════════════════════
-     BRAND FILTERS
-  ════════════════════════════════════════════ */
-  function setupBrandFilters () {
-    const todasBox      = document.querySelector('.brand-filter[value="todas"]');
-    const specificBoxes = document.querySelectorAll('.brand-filter:not([value="todas"])');
-
-    if (!todasBox) return;
-
-    todasBox.addEventListener('change', () => {
-      if (todasBox.checked) {
-        specificBoxes.forEach(cb => { cb.checked = false; });
-        state.brands = [];
-        applyFilters();
-      } else {
-        todasBox.checked = true;
-      }
+  /* ── Brand filters ─────────────────────── */
+  function setupBrandFilters() {
+    const todas = document.querySelector('.brand-filter[value="todas"]');
+    const specifics = document.querySelectorAll('.brand-filter:not([value="todas"])');
+    if (!todas) return;
+    todas.addEventListener('change', () => {
+      if (todas.checked) { specifics.forEach(cb => cb.checked = false); state.brands = []; applyFilters(); }
+      else todas.checked = true;
     });
-
-    specificBoxes.forEach(cb => {
-      cb.addEventListener('change', () => {
-        state.brands = getCheckedValues(specificBoxes);
-        if (state.brands.length === 0) {
-          todasBox.checked = true;
-        } else {
-          todasBox.checked = false;
-        }
-        applyFilters();
-      });
-    });
+    specifics.forEach(cb => cb.addEventListener('change', () => {
+      state.brands = Array.from(specifics).filter(c => c.checked).map(c => c.value.toLowerCase());
+      todas.checked = state.brands.length === 0;
+      applyFilters();
+    }));
   }
 
-  /* ════════════════════════════════════════════
-     STORE FILTERS
-  ════════════════════════════════════════════ */
-  function setupStoreFilters () {
-    const todasBox      = document.querySelector('.store-filter[value="todas"]');
-    const specificBoxes = document.querySelectorAll('.store-filter:not([value="todas"])');
-
-    if (!todasBox) return;
-
-    todasBox.addEventListener('change', () => {
-      if (todasBox.checked) {
-        specificBoxes.forEach(cb => { cb.checked = false; });
-        state.stores = [];
-        applyFilters();
-      } else {
-        todasBox.checked = true;
-      }
+  /* ── Store filters ─────────────────────── */
+  function setupStoreFilters() {
+    const todas = document.querySelector('.store-filter[value="todas"]');
+    const specifics = document.querySelectorAll('.store-filter:not([value="todas"])');
+    if (!todas) return;
+    todas.addEventListener('change', () => {
+      if (todas.checked) { specifics.forEach(cb => cb.checked = false); state.stores = []; applyFilters(); }
+      else todas.checked = true;
     });
-
-    specificBoxes.forEach(cb => {
-      cb.addEventListener('change', () => {
-        state.stores = Array.from(specificBoxes)
-          .filter(cb => cb.checked)
-          .map(cb => cb.value); // keep original case to match data-store
-        if (state.stores.length === 0) {
-          todasBox.checked = true;
-        } else {
-          todasBox.checked = false;
-        }
-        applyFilters();
-      });
-    });
+    specifics.forEach(cb => cb.addEventListener('change', () => {
+      state.stores = Array.from(specifics).filter(c => c.checked).map(c => c.value);
+      todas.checked = state.stores.length === 0;
+      applyFilters();
+    }));
   }
 
-  /* ════════════════════════════════════════════
-     PRICE RANGE
-  ════════════════════════════════════════════ */
-  function setupPriceRange () {
-    const slider = document.getElementById('priceRange');
-    const label  = document.getElementById('priceValue');
-    if (!slider) return;
-
-    slider.addEventListener('input', () => {
-      state.maxPrice = parseFloat(slider.value);
-      if (label) label.textContent = slider.value;
+  /* ── Price range ──────────────────────── */
+  function setupPriceRange() {
+    const sl = document.getElementById('priceRange');
+    const lbl = document.getElementById('priceValue');
+    if (!sl) return;
+    sl.addEventListener('input', () => {
+      state.maxPrice = parseFloat(sl.value);
+      if (lbl) lbl.textContent = sl.value;
       applyFilters();
     });
   }
 
-  /* ════════════════════════════════════════════
-     RESET FILTERS
-  ════════════════════════════════════════════ */
-  function setupResetFilters () {
+  /* ── Reset filters ─────────────────────── */
+  function setupResetFilters() {
     const btn = document.getElementById('resetFiltersBtn');
     if (!btn) return;
-
     btn.addEventListener('click', () => {
-      /* Reset state */
-      state.search     = '';
-      state.categories = [];
-      state.brands     = [];
-      state.stores     = [];
-      state.maxPrice   = 200;
-      state.sortBy     = 'relevance';
-
-      /* Reset UI — checkboxes */
-      document.querySelectorAll('.category-filter').forEach(cb => {
-        cb.checked = cb.value === 'todos';
-      });
-      document.querySelectorAll('.brand-filter').forEach(cb => {
-        cb.checked = cb.value === 'todas';
-      });
-      document.querySelectorAll('.store-filter').forEach(cb => {
-        cb.checked = cb.value === 'todas';
-      });
-
-      /* Reset price slider */
-      const slider = document.getElementById('priceRange');
-      const label  = document.getElementById('priceValue');
-      if (slider) slider.value = 200;
-      if (label)  label.textContent = '200';
-
-      /* Reset search input */
-      const searchInput = document.getElementById('productSearch');
-      if (searchInput) searchInput.value = '';
-
-      /* Reset sort */
-      const sortSelect = document.getElementById('sortBy');
-      if (sortSelect) sortSelect.value = 'relevance';
-
+      state.search = ''; state.categories = []; state.brands = []; state.stores = [];
+      state.maxPrice = 200; state.sortBy = 'relevance';
+      document.querySelectorAll('.category-filter').forEach(cb => cb.checked = cb.value === 'todos');
+      document.querySelectorAll('.brand-filter').forEach(cb => cb.checked = cb.value === 'todas');
+      document.querySelectorAll('.store-filter').forEach(cb => cb.checked = cb.value === 'todas');
+      const sl = document.getElementById('priceRange'); if (sl) sl.value = 200;
+      const lbl = document.getElementById('priceValue'); if (lbl) lbl.textContent = '200';
+      const sinp = document.getElementById('productSearch'); if (sinp) sinp.value = '';
+      const ssel = document.getElementById('sortBy'); if (ssel) ssel.value = 'relevance';
       applyFilters();
     });
   }
 
-  /* ════════════════════════════════════════════
-     APPLY FILTERS + SORT
-  ════════════════════════════════════════════ */
-  function applyFilters () {
-    const cards = Array.from(document.querySelectorAll('.product-card'));
-    let visibleCards = [];
-
-    cards.forEach(card => {
-      const category = (card.dataset.category || '').toLowerCase();
-      const brand    = (card.dataset.brand    || '').toLowerCase();
-      const store    = (card.dataset.store    || '');
-      const title    = (card.querySelector('.product-card__title')?.textContent || '').toLowerCase();
-      const priceEl  = card.querySelector('.product-card__price');
-      const price    = priceEl ? parseFloat(priceEl.textContent.replace('$', '')) : 0;
-
-      const matchesSearch   = !state.search || title.includes(state.search);
-      const matchesCategory = state.categories.length === 0 || state.categories.includes(category);
-      const matchesBrand    = state.brands.length    === 0 || state.brands.includes(brand);
-      const matchesStore    = state.stores.length    === 0 || state.stores.map(s => s.toLowerCase()).includes(store.toLowerCase());
-      const matchesPrice    = price <= state.maxPrice;
-
-      const visible = matchesSearch && matchesCategory && matchesBrand && matchesStore && matchesPrice;
-      card.style.display = visible ? '' : 'none';
-      if (visible) visibleCards.push(card);
-    });
-
-    /* Sort visible cards */
-    sortCards(visibleCards);
-
-    /* Update count */
-    updateCount(visibleCards.length);
-
-    /* Show/hide empty state */
-    toggleEmptyState(visibleCards.length === 0);
-  }
-
-  /* ════════════════════════════════════════════
-     SORT CARDS IN DOM
-  ════════════════════════════════════════════ */
-  function sortCards (visibleCards) {
-    if (state.sortBy === 'relevance') return; // keep original DOM order
-
-    const grid = document.getElementById('productsGrid');
-    if (!grid) return;
-
-    /* Get original index for "newest" sort */
-    const allCards = Array.from(grid.querySelectorAll('.product-card'));
-
-    visibleCards.sort((a, b) => {
-      switch (state.sortBy) {
-        case 'price-asc': {
-          const pa = parseFloat(a.querySelector('.product-card__price').textContent.replace('$', ''));
-          const pb = parseFloat(b.querySelector('.product-card__price').textContent.replace('$', ''));
-          return pa - pb;
-        }
-        case 'price-desc': {
-          const pa = parseFloat(a.querySelector('.product-card__price').textContent.replace('$', ''));
-          const pb = parseFloat(b.querySelector('.product-card__price').textContent.replace('$', ''));
-          return pb - pa;
-        }
-        case 'rating': {
-          const ra = parseFloat(a.querySelector('.product-card__reviews')?.textContent.replace(/[()]/g, '') || 0);
-          const rb = parseFloat(b.querySelector('.product-card__reviews')?.textContent.replace(/[()]/g, '') || 0);
-          return rb - ra;
-        }
-        case 'newest': {
-          return allCards.indexOf(b) - allCards.indexOf(a);
-        }
-        default:
-          return 0;
-      }
-    });
-
-    /* Re-append in sorted order (hidden cards stay in place) */
-    visibleCards.forEach(card => grid.appendChild(card));
-  }
-
-  /* ════════════════════════════════════════════
-     EMPTY STATE
-  ════════════════════════════════════════════ */
-  function toggleEmptyState (isEmpty) {
-    const grid = document.getElementById('productsGrid');
-    if (!grid) return;
-    let empty = grid.querySelector('.no-results');
-
-    if (isEmpty) {
-      if (!empty) {
-        empty = document.createElement('div');
-        empty.className = 'no-results';
-        empty.innerHTML = `
-          <p style="font-size:1rem;font-weight:600;color:#4a5565;margin-bottom:.5rem;">
-            No se encontraron productos
-          </p>
-          <p style="font-size:.875rem;color:#9ca3af;">
-            Intenta ajustar tus filtros o búsqueda
-          </p>`;
-        grid.appendChild(empty);
-      }
-    } else if (empty) {
-      empty.remove();
-    }
-  }
-
-  /* ════════════════════════════════════════════
-     COUNT
-  ════════════════════════════════════════════ */
-  function updateCount (n) {
+  /* ── Count ───────────────────────────── */
+  function updateCount(n) {
     const el = document.getElementById('catalogCount');
     if (el) el.textContent = n + ' producto' + (n !== 1 ? 's' : '') + ' encontrado' + (n !== 1 ? 's' : '');
   }
 
-  /* ════════════════════════════════════════════
-     FAVORITE BUTTONS
-  ════════════════════════════════════════════ */
-  function setupFavoriteButtons () {
+  /* ── Favorites ───────────────────────── */
+  function setupFavoriteButtons() {
     document.querySelectorAll('.product-card__favorite').forEach(btn => {
-      /* Sync initial state from storage */
-      const card      = btn.closest('.product-card');
-      const productId = card?.dataset.productId;
-      if (productId && state.favorites.includes(productId)) {
-        btn.setAttribute('data-favorite', 'true');
-      }
+      const card = btn.closest('.product-card');
+      const id   = card && card.dataset.productId;
+      if (id && state.favorites.includes(id)) btn.setAttribute('data-favorite','true');
 
-      btn.addEventListener('click', (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        const id  = btn.closest('.product-card')?.dataset.productId;
+      btn.addEventListener('click', e => {
+        e.preventDefault(); e.stopPropagation();
         const fav = btn.getAttribute('data-favorite') === 'true';
-
-        if (fav) {
-          btn.setAttribute('data-favorite', 'false');
-          state.favorites = state.favorites.filter(f => f !== id);
-        } else {
-          btn.setAttribute('data-favorite', 'true');
-          if (id && !state.favorites.includes(id)) state.favorites.push(id);
-        }
+        const cid = btn.closest('.product-card')?.dataset.productId;
+        btn.setAttribute('data-favorite', String(!fav));
+        if (fav) state.favorites = state.favorites.filter(f => f !== cid);
+        else if (cid && !state.favorites.includes(cid)) state.favorites.push(cid);
         saveFavoritesToStorage();
       });
     });
   }
 
-  function loadFavoritesFromStorage () {
+  function loadFavoritesFromStorage() {
     try { state.favorites = JSON.parse(localStorage.getItem('sportdata_favorites') || '[]'); }
     catch { state.favorites = []; }
   }
-
-  function saveFavoritesToStorage () {
+  function saveFavoritesToStorage() {
     localStorage.setItem('sportdata_favorites', JSON.stringify(state.favorites));
   }
 
-  /* ════════════════════════════════════════════
-     PRODUCT CARD NAVIGATION
-  ════════════════════════════════════════════ */
-  function setupProductNavigation () {
+  /* ── Product navigation ──────────────── */
+  function setupProductNavigation() {
     document.querySelectorAll('.product-card').forEach(card => {
       card.style.cursor = 'pointer';
-      card.addEventListener('click', (e) => {
-        /* Ignore clicks on favorite button or "Ver en Tienda" button */
+      card.addEventListener('click', e => {
         if (e.target.closest('.product-card__favorite') || e.target.closest('.product-card__btn')) return;
         const id = card.dataset.productId;
         if (id) {
@@ -482,22 +470,7 @@
     });
   }
 
-  /* ════════════════════════════════════════════
-     HELPERS
-  ════════════════════════════════════════════ */
-  function getCheckedValues (nodeList) {
-    return Array.from(nodeList)
-      .filter(cb => cb.checked)
-      .map(cb => cb.value.toLowerCase());
-  }
-
-  // eslint-disable-next-line no-unused-vars
-  function updateCheckedList (nodeList, arr) {
-    arr.length = 0;
-    nodeList.forEach(cb => { if (cb.checked) arr.push(cb.value.toLowerCase()); });
-  }
-
-  /* ── Boot ───────────────────────────────────── */
+  /* ── Boot ─────────────────────────────── */
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init);
   } else {
