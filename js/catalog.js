@@ -25,6 +25,16 @@
 
   /* ── Init ────────────────────────────────────── */
   async function init() {
+
+    // Guard: esperar a que products.js esté disponible
+  if (typeof window.SportDataProducts === 'undefined') {
+    console.error('SportDataProducts no está cargado. Verifica el orden de scripts.');
+    // Intentar cargar igual con fallback
+    state.allProducts = [];
+    state.loading = false;
+    renderProducts([]);
+    return;
+  }
     loadFavoritesFromStorage();
     setupHamburger();
     setupSidebar();
