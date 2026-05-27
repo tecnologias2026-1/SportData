@@ -7,14 +7,16 @@
  * Puerto: http://localhost:3000
  */
 
-const express = require('express');
-const cors    = require('cors');
-const path    = require('path');
+const express      = require('express');
+const cors         = require('cors');
+const path         = require('path');
 
 // Inicializar la base de datos antes de las rutas
 require('./database/db');
 
-const authRoutes = require('./routes/auth');
+const authRoutes    = require('./routes/auth');
+const productRoutes = require('./routes/products');
+const productCache  = require('./services/productCache');
 
 const app  = express();
 const PORT = process.env.PORT || 3000;
@@ -22,33 +24,34 @@ const PORT = process.env.PORT || 3000;
 // ─── Middleware ───────────────────────────────────────────────────────────────
 
 app.use(cors({
-  origin: '*',                          // En producción limitar al dominio real
+  origin: '*',
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
 app.use(express.json());
 
-// Servir los archivos estáticos del frontend desde la carpeta raíz del proyecto
-// La carpeta backend/ está dentro del proyecto, así que subimos un nivel
+// Servir los archivos estáticos del frontend
 app.use(express.static(path.join(__dirname, '..')));
 
 // ─── Rutas API ────────────────────────────────────────────────────────────────
 
-app.use('/api/auth', authRoutes);
+app.use('/api/auth',     authRoutes);
+app.use('/api/products', productRoutes);
 
-// Ruta de salud — verifica que el servidor esté activo
+// Ruta de salud
 app.get('/api/health', (req, res) => {
+  const cacheStatus = productCache.getStatus();
   res.json({
-    status: 'ok',
-    message: 'SportData API funcionando correctamente',
-    timestamp: new Date().toISOString()
+    status:    'ok',
+    message:   'SportData API funcionando correctamente',
+    timestamp: new Date().toISOString(),
+    products:  cacheStatus,
   });
 });
 
-// ─── Fallback: cualquier ruta no reconocida sirve el index.html ───────────────
+// Fallback: cualquier ruta no API sirve el index.html
 app.get('*', (req, res) => {
-  // Solo para rutas que NO empiecen con /api
   if (!req.path.startsWith('/api')) {
     res.sendFile(path.join(__dirname, '..', 'index.html'));
   } else {
@@ -57,13 +60,21 @@ app.get('*', (req, res) => {
 });
 
 // ─── Inicio del servidor ──────────────────────────────────────────────────────
-app.listen(PORT, () => {
+app.listen(PORT, async () => {
   console.log('');
-  console.log('  ╔══════════════════════════════════════╗');
-  console.log('  ║   SportData Backend — Node.js        ║');
-  console.log('  ╠══════════════════════════════════════╣');
-  console.log(`  ║   URL:  http://localhost:${PORT}         ║`);
-  console.log('  ║   DB:   SQLite (sportdata.db)        ║');
-  console.log('  ╚══════════════════════════════════════╝');
+  console.log('  ╔══════════════════════════════════════════╗');
+  console.log('  ║   SportData Backend — Node.js + Scraper  ║');
+  console.log('  ╠══════════════════════════════════════════╣');
+  console.log(`  ║   URL:  http://localhost:${PORT}             ║`);
+  console.log('  ║   DB:   JSON (sportdata.json)            ║');
+  console.log('  ║   API:  /api/products                    ║');
+  console.log('  ╚══════════════════════════════════════════╝');
   console.log('');
+
+  // Inicializar caché de productos al arrancar
+  try {
+    await productCache.init();
+  } catch (err) {
+    console.error('  ❌  Error inicializando caché:', err.message);
+  }
 });
