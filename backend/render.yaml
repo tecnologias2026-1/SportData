@@ -1,0 +1,23 @@
+# render.yaml — Configuración para Render.com
+# Sube SOLO la carpeta /backend a un repositorio Git y apunta Render a ella
+# O configura manualmente en el dashboard de Render
+
+services:
+  - type: web
+    name: sportdata-api
+    runtime: node
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: PORT
+        value: 10000
+      - key: NODE_VERSION
+        value: 22
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_EXPIRES_IN
+        value: 7d
+      - key: ALLOWED_ORIGIN
+        value: https://TU-FRONTEND.netlify.app
+      # DB_FILE opcional — por defecto usa database/sportdata.db dentro del servicio
+      # En Render el disco persiste si usas un Disk, sino usa la ruta por defecto
