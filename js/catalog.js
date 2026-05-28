@@ -57,7 +57,28 @@
       state.allProducts = window.SportDataProducts.getAllProducts();
       state.dataSource  = 'fallback';
     }
-
+ 
+    // ── NUEVO: si no hay productos, reintentar en 5 segundos ──────────────
+    if (state.allProducts.length === 0) {
+      updateNotificationBar({ source: 'retrying' });
+      console.log('[Catalog] Sin productos, reintentando en 5s...');
+      setTimeout(async () => {
+        try {
+          window.SportDataProducts.refreshCache();
+          state.allProducts = await window.SportDataProducts.getAll();
+          const info = window.SportDataProducts.getSourceInfo();
+          state.dataSource = info.source;
+          state.loading = false;
+          updateNotificationBar(info);
+          applyFilters();
+          setupFavoriteButtons();
+          setupProductNavigation();
+          console.log(`[Catalog] Reintento exitoso: ${state.allProducts.length} productos`);
+        } catch (e) {
+          console.warn('[Catalog] Reintento fallido:', e.message);
+        }
+      }, 5000);
+    }
     // Actualizar precio máximo del slider según datos reales
     const maxPriceReal = Math.max(...state.allProducts.map(p => p.worstPrice || p.price || 200));
     const sliderMax    = Math.ceil(maxPriceReal / 50) * 50 + 50;
@@ -76,30 +97,72 @@
     setupProductNavigation();
   }
 
-  /* ── Actualizar barra de notificación ────────── */
-  function updateNotificationBar(info) {
-    const bar = document.querySelector('.notification-bar');
-    if (!bar) return;
+/* ── Actualizar barra de notificación ────────── */
+function updateNotificationBar(info) {
+  const bar = document.querySelector('.notification-bar');
+  if (!bar) return;
 
-    const leftEl  = bar.querySelector('.notification-bar__left span');
-    const rightEl = bar.querySelector('.notification-bar__right');
+  const leftEl  = bar.querySelector('.notification-bar__left span');
+  const rightEl = bar.querySelector('.notification-bar__right');
 
-    if (info.source === 'local' || info.source === 'netlify') {
-      const count   = state.allProducts.length;
-      const latency = info.latency ? ` · ${info.latency}ms` : '';
-      if (leftEl) leftEl.innerHTML = `<strong>● Datos en vivo desde MercadoLibre:</strong> ${count} productos scrapeados, precios actualizados en tiempo real${latency}`;
-      if (rightEl) rightEl.textContent = `Fuente: API ${info.source === 'local' ? 'local' : 'Netlify'} · ${new Date().toLocaleTimeString('es', {hour:'2-digit', minute:'2-digit'})}`;
-      bar.style.background   = '#ecfdf5';
-      bar.style.borderColor  = '#a7f3d0';
-      bar.style.color        = '#065f46';
-    } else {
-      if (leftEl) leftEl.innerHTML = `<strong>⚠ Datos de respaldo:</strong> Inicia el backend para obtener precios scrapeados de MercadoLibre`;
-      if (rightEl) rightEl.textContent = 'Backend offline';
-      bar.style.background  = '#fefce8';
-      bar.style.borderColor = '#fde68a';
-      bar.style.color       = '#92400e';
+  if (info.source === 'local' || info.source === 'netlify') {
+
+    const count   = state.allProducts.length;
+    const latency = info.latency ? ` · ${info.latency}ms` : '';
+
+    if (leftEl) {
+      leftEl.innerHTML =
+        `<strong>● Datos en vivo desde MercadoLibre:</strong>
+         ${count} productos scrapeados,
+         precios actualizados en tiempo real${latency}`;
     }
+
+    if (rightEl) {
+      rightEl.textContent =
+        `Fuente: API ${info.source === 'local' ? 'local' : 'Netlify'}
+         · ${new Date().toLocaleTimeString('es', {
+           hour:'2-digit',
+           minute:'2-digit'
+         })}`;
+    }
+
+    bar.style.background  = '#ecfdf5';
+    bar.style.borderColor = '#a7f3d0';
+    bar.style.color       = '#065f46';
+
+  } else if (info.source === 'retrying') {
+
+    if (leftEl) {
+      leftEl.innerHTML =
+        `<strong>⏳ Conectando con el servidor...</strong>
+         Reintentando en 5 segundos`;
+    }
+
+    if (rightEl) {
+      rightEl.textContent = 'Espera un momento';
+    }
+
+    bar.style.background  = '#eff6ff';
+    bar.style.borderColor = '#bfdbfe';
+    bar.style.color       = '#1e40af';
+
+  } else {
+
+    if (leftEl) {
+      leftEl.innerHTML =
+        `<strong>⚠ Datos de respaldo:</strong>
+         Inicia el backend para obtener precios scrapeados de MercadoLibre`;
+    }
+
+    if (rightEl) {
+      rightEl.textContent = 'Backend offline';
+    }
+
+    bar.style.background  = '#fefce8';
+    bar.style.borderColor = '#fde68a';
+    bar.style.color       = '#92400e';
   }
+}
 
   /* ── Skeleton loader ────────────────────────── */
   function showSkeleton() {
