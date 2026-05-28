@@ -129,8 +129,8 @@ async function init() {
     lastFullRefresh = lastRefresh;
     console.log(`[Cache] 💾  Caché de disco cargada (${disk.products.length} productos, ${Math.round(diskAge / 60000)} min antigüedad).`);
   } else {
-    // Carga inicial desde datos base (rápida)
-    await refresh(false);
+    // Si no hay disco o es muy viejo, forzamos el primer scrape real de inmediato
+    await refresh(true);
   }
 
   // 2. Programar refresco periódico inteligente
@@ -142,8 +142,8 @@ async function init() {
     refresh(forceFull);
   }, REFRESH_INTERVAL);
 
-  // 3. Si la caché de disco es vieja, lanzar scraping completo en background
-  if (diskAge >= MAX_CACHE_AGE) {
+  // 3. Si cargamos del disco pero ya tiene cierta edad, refrescamos en background
+  if (disk && diskAge > 300000) { // 5 minutos
     setTimeout(() => refresh(true), 5000);   // 5 s después de iniciar
   }
 }

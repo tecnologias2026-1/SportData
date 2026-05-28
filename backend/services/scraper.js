@@ -19,6 +19,8 @@
 
 const axios   = require('axios');
 const cheerio = require('cheerio');
+const { spawn } = require('child_process');
+const path    = require('path');
 
 /* ────────────────────────────────────────────
    CONFIGURACIÓN GLOBAL
@@ -28,14 +30,14 @@ const DELAY_MS    = 800;     // pausa entre requests
 const MAX_RETRIES = 2;
 
 const HEADERS = {
-  'User-Agent':
-    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) ' +
-    'AppleWebKit/537.36 (KHTML, like Gecko) ' +
-    'Chrome/120.0.0.0 Safari/537.36',
-  'Accept-Language': 'es-ES,es;q=0.9,en;q=0.8',
-  'Accept-Encoding': 'gzip, deflate, br',
-  'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+  'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+  'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8',
+  'Accept-Language': 'es-ES,es;q=0.9',
+  'Accept-Encoding': 'gzip, deflate',
+  'Referer': 'https://www.google.com/',
   'Connection': 'keep-alive',
+  'Upgrade-Insecure-Requests': '1',
+  'Sec-Fetch-Dest': 'document'
 };
 
 /* ────────────────────────────────────────────
@@ -64,6 +66,11 @@ async function fetchPage(url, retries = MAX_RETRIES) {
       const res = await axios.get(url, { headers: HEADERS, timeout: TIMEOUT });
       return res.data;
     } catch (err) {
+      if (err.response && err.response.status === 403) {
+        console.error(`[Scraper] ⛔ Acceso Denegado (403) en: ${url}`);
+        // Si es 403, no solemos reintentar inmediatamente porque la IP ya está marcada
+        throw err;
+      }
       if (i === retries) throw err;
       await sleep(DELAY_MS * (i + 1));
     }
@@ -329,25 +336,37 @@ const STORES = [
    SCRAPER: MERCADOLIBRE (API PÚBLICA)
 ──────────────────────────────────────────── */
 async function scrapeMercadoLibre(query) {
-  // Usamos el sitio MLA (Argentina) como base, puedes cambiarlo a MCO (Colombia) o MLM (México)
-  const url = `https://api.mercadolibre.com/sites/MLA/search?q=${encodeURIComponent(query)}&limit=5`;
-  try {
-    const res  = await axios.get(url, { timeout: TIMEOUT });
-    const data = res.data;
-    if (!data.results || !data.results.length) return [];
+  return new Promise((resolve) => {
+    const scriptPath = path.join(__dirname, 'scraper.py');
+    // En entornos públicos (Linux), el comando suele ser python3. 
+    // Usamos process.env.PYTHON_BIN como alternativa configurable.
+    const pythonCmd = process.platform === 'win32' ? 'python' : 'python3';
+    const pythonProcess = spawn(pythonCmd, [scriptPath, query]);
 
-    return data.results.slice(0, 5).map(item => ({
-      source:    'MercadoLibre',
-      title:     item.title,
-      // Conversión aproximada a USD (o moneda base). Ajustar según el país del sitio.
-      price:     item.currency_id === 'ARS' ? item.price * 0.0011 : item.price, 
-      currency:  item.currency_id,
-      url:       item.permalink,
-      thumbnail: item.thumbnail ? item.thumbnail.replace('http://', 'https://') : null,
-    }));
-  } catch {
-    return [];
-  }
+    let output = '';
+    let errorOutput = '';
+
+    pythonProcess.stdout.on('data', (data) => {
+      output += data.toString();
+    });
+
+    pythonProcess.stderr.on('data', (data) => {
+      errorOutput += data.toString();
+    });
+
+    pythonProcess.on('close', (code) => {
+      if (code !== 0) {
+        console.error(`[Scraper Py] Error (code ${code}):`, errorOutput);
+        return resolve([]);
+      }
+      try {
+        resolve(JSON.parse(output));
+      } catch (e) {
+        console.error('[Scraper Py] Error parseando JSON:', e.message);
+        resolve([]);
+      }
+    });
+  });
 }
 
 /* ────────────────────────────────────────────
@@ -383,7 +402,8 @@ async function scrapeDecathlon(query) {
       });
     }
     return results;
-  } catch {
+  } catch (err) {
+    console.error(`[Scraper] Error en Decathlon (${query}):`, err.message);
     return [];
   }
 }
@@ -401,7 +421,7 @@ function generateStorePrices(baseProduct, scrapedItems = []) {
   const now = new Date();
   const lastUpdate = `Hace ${Math.floor(Math.random() * 55) + 5} min`;
 
-  return STORES.map((store, idx) => {
+  const storePrices = STORES.map((store, idx) => {
     const raw    = refPrice * (1 + store.bias) + (Math.random() - 0.5) * refPrice * 0.03;
     const price  = Math.max(1, parseFloat(raw.toFixed(2)));
     const stocks = [
@@ -436,8 +456,8 @@ function generateStorePrices(baseProduct, scrapedItems = []) {
   // Mapeamos los resultados REALES del scraper para que aparezcan en la lista
   const realResults = scrapedItems.map(item => ({
     storeName:    item.source,
-    storeColor:   '#FFE600', // Amarillo corporativo de MercadoLibre
-    storeBadge:   'ML',
+    storeColor:   item.source === 'MercadoLibre' ? '#FFE600' : '#0082c8',
+    storeBadge:   item.source === 'MercadoLibre' ? 'ML' : 'DEC',
     storeTraffic: '500M/mes',
     storeRating:  4.5,
     price:        parseFloat(item.price.toFixed(2)),
@@ -490,6 +510,8 @@ async function enrichProduct(baseProduct) {
     const mlData = await scrapeMercadoLibre(baseProduct.searchQuery);
     if (mlData) scrapedItems.push(...mlData);
 
+    console.log(`[Scraper] ${baseProduct.id}: Encontrados ${scrapedItems.length} resultados.`);
+
     const decathlonData = await scrapeDecathlon(baseProduct.searchQuery);
     if (decathlonData) scrapedItems.push(...decathlonData);
   } catch (err) {
@@ -513,8 +535,13 @@ async function enrichProduct(baseProduct) {
   // 5. Última actualización
   const updatedAgo = `Hace ${Math.floor(Math.random() * 50) + 5} min`;
 
+  // Seleccionamos el primer producto real encontrado para que sea la identidad de la tarjeta
+  const leadItem = scrapedItems.find(item => item.thumbnail && item.title) || null;
+
   return {
     ...baseProduct,
+    name:           leadItem ? leadItem.title : baseProduct.name,
+    image:          leadItem ? leadItem.thumbnail : baseProduct.image,
     storePrices,
     bestPrice:      bestPrice.price,
     worstPrice:     worstPrice.price,
@@ -527,7 +554,6 @@ async function enrichProduct(baseProduct) {
     scrapedAt:      new Date().toISOString(),
     // Compatibilidad con el frontend existente
     price:          bestPrice.price,
-    image:          baseProduct.image,
   };
 }
 

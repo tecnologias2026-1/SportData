@@ -17,8 +17,9 @@
 (function () {
   'use strict';
 
-  const API_BASE = 'http://localhost:3000/api/products';
-  const TIMEOUT  = 8000;   // ms
+  // Cambiamos el localhost por el dominio público de Netlify donde reside la API
+  const API_BASE = 'https://sportdata001.netlify.app/api/products';
+  const TIMEOUT  = 20000;  // Aumentado a 20s para permitir que el scraper termine
 
   /* ── Caché en memoria del frontend ─────── */
   let _cache     = null;

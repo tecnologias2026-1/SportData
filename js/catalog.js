@@ -52,7 +52,9 @@
     try {
       // Cargar productos desde API / fallback
       state.allProducts = await window.SportDataProducts.getAll();
+      console.log('[Catalog] Datos cargados desde la API con éxito.');
     } catch {
+      console.warn('[Catalog] La API no respondió, usando datos de respaldo.');
       state.allProducts = window.SportDataProducts.getAllProducts();
     }
 
@@ -136,7 +138,13 @@
     const stars    = generateStarHTML(p.rating);
     const updAt    = p.updatedAgo || 'Hace 5 min';
     const savings  = p.savings ? `<span class="card-savings">Ahorras $${p.savings.toFixed(2)}</span>` : '';
-    const imgPath  = (p.image || '').replace(/^\.\.\//,'../');
+    
+    // Detección robusta de imágenes locales vs externas
+    const imgPath  = (p.image || '').startsWith('http') ? p.image : 
+                     (p.image || '').startsWith('../') ? p.image : `../${p.image}`;
+    
+    // Indicador visual de si el dato es "En Vivo" (scraping real)
+    const isLive = p.scrapedAt ? '<span class="live-indicator">● En vivo</span>' : '';
 
     return `
       <article class="product-card"
@@ -190,7 +198,7 @@
             Actualizado: ${updAt}
           </p>
 
-          <p class="product-card__price">$${p.price.toFixed(2)}</p>
+          <p class="product-card__price">$${p.price.toFixed(2)} ${isLive}</p>
           ${savings}
         </div>
 
