@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Configuración — SportData</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/shared.css">
+<style>
+  :root {
+    --teal: #38a8c7;
+    --teal-d: #2a8ca8;
+    --teal-10: rgba(56,168,199,.1);
+    --ink: #0a0a0a;
+    --ink-2: #4a4a4a;
+    --ink-3: #8a8a8a;
+    --surface: #f7f7f5;
+    --card: #ffffff;
+    --border: #e8e8e4;
+    --green: #10b981;
+    --green-10: rgba(16,185,129,.1);
+    --red: #ef4444;
+    --red-10: rgba(239,68,68,.1);
+    --gold: #f59e0b;
+    --gold-10: rgba(245,158,11,.1);
+    --radius: 12px;
+  }
+
+  body { font-family: 'Inter', sans-serif; background: var(--surface); color: var(--ink); }
+
+  .settings-wrap {
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 40px 24px 80px;
+  }
+
+  .settings-header {
+    margin-bottom: 32px;
+  }
+  .settings-header__back {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: var(--teal);
+    text-decoration: none;
+    margin-bottom: 16px;
+    font-weight: 500;
+    transition: opacity .2s;
+  }
+  .settings-header__back:hover { opacity: .75; }
+  .settings-header__title {
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--ink);
+    margin: 0 0 6px;
+  }
+  .settings-header__sub {
+    font-size: 14px;
+    color: var(--ink-3);
+  }
+
+  /* Status card */
+  .status-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px 24px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .status-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .status-dot--ok    { background: var(--green); box-shadow: 0 0 0 3px var(--green-10); }
+  .status-dot--warn  { background: var(--gold);  box-shadow: 0 0 0 3px var(--gold-10); }
+  .status-dot--error { background: var(--red);   box-shadow: 0 0 0 3px var(--red-10); }
+  .status-info { flex: 1; }
+  .status-info__title { font-size: 14px; font-weight: 600; color: var(--ink); margin: 0 0 2px; }
+  .status-info__detail { font-size: 13px; color: var(--ink-3); margin: 0; }
+  .status-badge {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 999px;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+  }
+  .status-badge--ok    { background: var(--green-10); color: var(--green); }
+  .status-badge--warn  { background: var(--gold-10);  color: #92400e; }
+  .status-badge--error { background: var(--red-10);   color: var(--red); }
+
+  /* Main card */
+  .settings-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    margin-bottom: 20px;
+  }
+  .settings-card__head {
+    padding: 18px 24px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .settings-card__icon {
+    width: 36px; height: 36px;
+    border-radius: 8px;
+    background: var(--teal-10);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--teal);
+    flex-shrink: 0;
+  }
+  .settings-card__title { font-size: 15px; font-weight: 700; margin: 0; }
+  .settings-card__sub { font-size: 12px; color: var(--ink-3); margin: 0; }
+  .settings-card__body { padding: 24px; }
+
+  /* Form */
+  .field { margin-bottom: 20px; }
+  .field:last-child { margin-bottom: 0; }
+  .field__label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink-2);
+    margin-bottom: 8px;
+  }
+  .field__input-wrap { position: relative; }
+  .field__input {
+    width: 100%;
+    padding: 11px 14px;
+    padding-right: 110px;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: 'Courier New', monospace;
+    color: var(--ink);
+    background: #fafaf8;
+    outline: none;
+    transition: border-color .2s, box-shadow .2s;
+    box-sizing: border-box;
+  }
+  .field__input:focus {
+    border-color: var(--teal);
+    background: #fff;
+    box-shadow: 0 0 0 3px var(--teal-10);
+  }
+  .field__input.is-valid   { border-color: var(--green); }
+  .field__input.is-error   { border-color: var(--red); }
+  .field__toggle {
+    position: absolute;
+    right: 10px; top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 12px;
+    color: var(--teal);
+    font-weight: 600;
+    padding: 4px 8px;
+    border-radius: 4px;
+    transition: background .15s;
+  }
+  .field__toggle:hover { background: var(--teal-10); }
+  .field__hint {
+    font-size: 12px;
+    color: var(--ink-3);
+    margin-top: 6px;
+    line-height: 1.5;
+  }
+  .field__hint a { color: var(--teal); }
+  .field__error { font-size: 12px; color: var(--red); margin-top: 4px; display: none; }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 24px; }
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 11px 22px;
+    background: var(--teal);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background .2s, transform .15s, box-shadow .2s;
+    font-family: inherit;
+  }
+  .btn-primary:hover { background: var(--teal-d); transform: translateY(-1px); box-shadow: 0 4px 16px rgba(56,168,199,.3); }
+  .btn-primary:disabled { opacity: .6; cursor: not-allowed; transform: none; }
+  .btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 11px 18px;
+    background: var(--card);
+    color: var(--ink-2);
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: border-color .2s, background .2s;
+    font-family: inherit;
+  }
+  .btn-secondary:hover { border-color: var(--teal); background: var(--teal-10); }
+  .btn-secondary:disabled { opacity: .5; cursor: not-allowed; }
+
+  /* Feedback */
+  .feedback {
+    margin-top: 16px;
+    padding: 12px 16px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 500;
+    display: none;
+    align-items: center;
+    gap: 8px;
+  }
+  .feedback--success { background: var(--green-10); color: #065f46; border: 1px solid rgba(16,185,129,.2); }
+  .feedback--error   { background: var(--red-10);   color: #991b1b; border: 1px solid rgba(239,68,68,.2); }
+  .feedback--loading { background: var(--teal-10);  color: #0c4a6e; border: 1px solid var(--teal-10); }
+
+  /* Stats grid */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-top: 16px;
+  }
+  .stat-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 16px;
+  }
+  .stat-box__val {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--teal);
+    margin: 0 0 2px;
+    font-variant-numeric: tabular-nums;
+  }
+  .stat-box__label {
+    font-size: 11px;
+    color: var(--ink-3);
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    margin: 0;
+  }
+
+  /* How to get key */
+  .how-to {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px 24px;
+  }
+  .how-to__title {
+    font-size: 14px;
+    font-weight: 700;
+    margin: 0 0 14px;
+    color: var(--ink);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .how-to__steps {
+    list-style: none;
+    padding: 0; margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .how-to__step {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: 13px;
+    color: var(--ink-2);
+    line-height: 1.5;
+  }
+  .how-to__num {
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    background: var(--teal);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+  .how-to__step a { color: var(--teal); }
+
+  /* Progress bar */
+  .refresh-bar { margin-top: 12px; display: none; }
+  .refresh-bar__track {
+    height: 4px;
+    background: var(--border);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .refresh-bar__fill {
+    height: 100%;
+    border-radius: 2px;
+    background: var(--teal);
+    width: 0%;
+    transition: width .4s ease;
+  }
+  .refresh-bar__label {
+    font-size: 12px;
+    color: var(--ink-3);
+    margin-top: 5px;
+  }
+
+  @media (max-width: 480px) {
+    .stats-grid { grid-template-columns: 1fr 1fr; }
+    .btn-row { flex-direction: column; }
+    .btn-primary, .btn-secondary { justify-content: center; }
+  }
+</style>
+</head>
+<body>
+
+<header class="header header--home">
+  <div class="header__container">
+    <div class="header__logo">
+      <a href="../index.html" aria-label="Ir al inicio">
+        <img src="https://www.figma.com/api/mcp/asset/4333c8d7-1c2f-46d4-be97-b4d5b794feb3" alt="SportData" class="logo-image logo-image--home">
+      </a>
+    </div>
+    <button class="hamburger-menu" id="hamburgerBtn" aria-label="Menú de navegación" aria-expanded="false">
+      <span class="hamburger-line"></span>
+      <span class="hamburger-line"></span>
+      <span class="hamburger-line"></span>
+    </button>
+    <nav class="header__nav" id="navMenu" aria-label="Navegación principal">
+      <ul class="nav-list">
+        <li class="nav-list__item"><a href="../index.html" class="nav-list__link">Inicio</a></li>
+        <li class="nav-list__item"><a href="catalog.html" class="nav-list__link">Buscar Productos</a></li>
+        <li class="nav-list__item"><a href="favorites.html" class="nav-list__link">Favoritos</a></li>
+        <li class="nav-list__item nav-list__item--auth-mobile"><a href="register.html" class="nav-list__link">Ingresar</a></li>
+      </ul>
+    </nav>
+    <button class="login-btn login-btn--home" type="button" onclick="location.href='register.html'">
+      <svg class="login-btn__icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+      </svg>
+      <span>Ingresar</span>
+    </button>
+  </div>
+</header>
+
+<main>
+  <div class="settings-wrap">
+
+    <div class="settings-header">
+      <a href="catalog.html" class="settings-header__back">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M5 12l7 7M5 12l7-7"/></svg>
+        Volver al catálogo
+      </a>
+      <h1 class="settings-header__title">⚙️ Configuración de API</h1>
+      <p class="settings-header__sub">Conecta RapidAPI para obtener productos reales scrapeados en tiempo real</p>
+    </div>
+
+    <!-- Status card (se llena dinámicamente) -->
+    <div class="status-card" id="statusCard">
+      <div class="status-dot status-dot--warn" id="statusDot"></div>
+      <div class="status-info">
+        <p class="status-info__title" id="statusTitle">Verificando estado...</p>
+        <p class="status-info__detail" id="statusDetail">Consultando el servidor</p>
+      </div>
+      <span class="status-badge status-badge--warn" id="statusBadge">–</span>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-grid" id="statsGrid" style="display:none">
+      <div class="stat-box">
+        <p class="stat-box__val" id="statProducts">–</p>
+        <p class="stat-box__label">Productos en caché</p>
+      </div>
+      <div class="stat-box">
+        <p class="stat-box__val" id="statAge">–</p>
+        <p class="stat-box__label">Última actualización</p>
+      </div>
+      <div class="stat-box">
+        <p class="stat-box__val" id="statSource">–</p>
+        <p class="stat-box__label">Fuente de datos</p>
+      </div>
+    </div>
+
+    <!-- API Key card -->
+    <div class="settings-card" style="margin-top: 20px;">
+      <div class="settings-card__head">
+        <div class="settings-card__icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/>
+          </svg>
+        </div>
+        <div>
+          <p class="settings-card__title">RapidAPI Key</p>
+          <p class="settings-card__sub">Necesaria para scraping de productos deportivos en tiempo real</p>
+        </div>
+      </div>
+      <div class="settings-card__body">
+        <div class="field">
+          <label class="field__label" for="apiKeyInput">Tu clave de RapidAPI</label>
+          <div class="field__input-wrap">
+            <input
+              type="password"
+              id="apiKeyInput"
+              class="field__input"
+              placeholder="Pega aquí tu RapidAPI key..."
+              autocomplete="off"
+              spellcheck="false"
+            >
+            <button class="field__toggle" id="toggleKeyBtn" type="button">Mostrar</button>
+          </div>
+          <p class="field__hint">
+            Obtén tu clave gratis en
+            <a href="https://rapidapi.com/letscrape-6bRBa3QguO5/api/real-time-product-search" target="_blank">RapidAPI → Real-Time Product Search</a>.
+            La clave se guarda en el archivo <code>.env</code> del backend y no se expone al frontend.
+          </p>
+          <p class="field__error" id="keyError">Ingresa una clave válida (mínimo 10 caracteres)</p>
+        </div>
+
+        <div class="feedback" id="feedback"></div>
+
+        <div class="refresh-bar" id="refreshBar">
+          <div class="refresh-bar__track">
+            <div class="refresh-bar__fill" id="refreshFill"></div>
+          </div>
+          <p class="refresh-bar__label" id="refreshLabel">Actualizando catálogo...</p>
+        </div>
+
+        <div class="btn-row">
+          <button class="btn-primary" id="saveKeyBtn" type="button">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/>
+            </svg>
+            Guardar y actualizar catálogo
+          </button>
+          <button class="btn-secondary" id="refreshBtn" type="button">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/>
+              <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+            </svg>
+            Forzar actualización
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- How to get the key -->
+    <div class="how-to">
+      <p class="how-to__title">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        ¿Cómo obtener mi clave?
+      </p>
+      <ol class="how-to__steps">
+        <li class="how-to__step">
+          <span class="how-to__num">1</span>
+          <span>Ve a <a href="https://rapidapi.com/auth/sign-up" target="_blank">rapidapi.com</a> y crea una cuenta gratuita.</span>
+        </li>
+        <li class="how-to__step">
+          <span class="how-to__num">2</span>
+          <span>Busca la API <a href="https://rapidapi.com/letscrape-6bRBa3QguO5/api/real-time-product-search" target="_blank">"Real-Time Product Search"</a> y suscríbete al plan gratuito (500 req/mes).</span>
+        </li>
+        <li class="how-to__step">
+          <span class="how-to__num">3</span>
+          <span>En el panel de la API copia el valor de <strong>X-RapidAPI-Key</strong> del header de ejemplo.</span>
+        </li>
+        <li class="how-to__step">
+          <span class="how-to__num">4</span>
+          <span>Pégalo arriba y haz clic en <strong>Guardar y actualizar catálogo</strong>. El scraping arranca automáticamente.</span>
+        </li>
+      </ol>
+    </div>
+
+  </div>
+</main>
+
+<script>
+(function () {
+  'use strict';
+
+  const API = window.location.origin + '/api';
+
+  /* ── elementos ── */
+  const keyInput    = document.getElementById('apiKeyInput');
+  const toggleBtn   = document.getElementById('toggleKeyBtn');
+  const saveBtn     = document.getElementById('saveKeyBtn');
+  const refreshBtn  = document.getElementById('refreshBtn');
+  const feedbackEl  = document.getElementById('feedback');
+  const keyError    = document.getElementById('keyError');
+  const refreshBar  = document.getElementById('refreshBar');
+  const refreshFill = document.getElementById('refreshFill');
+  const refreshLbl  = document.getElementById('refreshLabel');
+
+  /* ── toggle visibilidad key ── */
+  toggleBtn.addEventListener('click', () => {
+    const hidden = keyInput.type === 'password';
+    keyInput.type = hidden ? 'text' : 'password';
+    toggleBtn.textContent = hidden ? 'Ocultar' : 'Mostrar';
+  });
+
+  /* ── cargar estado actual ── */
+  async function loadStatus() {
+    try {
+      const res  = await fetch(`${API}/settings/status`);
+      const data = await res.json();
+      renderStatus(data);
+    } catch {
+      renderStatus(null);
+    }
+  }
+
+  function renderStatus(data) {
+    const dot    = document.getElementById('statusDot');
+    const title  = document.getElementById('statusTitle');
+    const detail = document.getElementById('statusDetail');
+    const badge  = document.getElementById('statusBadge');
+    const grid   = document.getElementById('statsGrid');
+
+    if (!data) {
+      dot.className   = 'status-dot status-dot--error';
+      title.textContent = 'Backend no disponible';
+      detail.textContent = 'Asegúrate de que el servidor esté corriendo en localhost:3000';
+      badge.className = 'status-badge status-badge--error';
+      badge.textContent = 'Offline';
+      return;
+    }
+
+    if (data.apiKeySet && data.loaded) {
+      dot.className   = 'status-dot status-dot--ok';
+      title.textContent = `✅ API activa — ${data.count} productos en catálogo`;
+      detail.textContent = data.apiKeyHint ? `Key: ${data.apiKeyHint}` : 'Clave configurada';
+      badge.className = 'status-badge status-badge--ok';
+      badge.textContent = 'En vivo';
+    } else if (!data.apiKeySet) {
+      dot.className   = 'status-dot status-dot--warn';
+      title.textContent = 'Sin RapidAPI key — mostrando productos de respaldo';
+      detail.textContent = 'Configura tu clave para obtener precios reales';
+      badge.className = 'status-badge status-badge--warn';
+      badge.textContent = 'Sin key';
+    } else {
+      dot.className   = 'status-dot status-dot--warn';
+      title.textContent = 'Key configurada, catálogo cargando...';
+      detail.textContent = 'El primer scraping puede tardar unos segundos';
+      badge.className = 'status-badge status-badge--warn';
+      badge.textContent = 'Cargando';
+    }
+
+    // stats
+    if (data.count !== undefined) {
+      grid.style.display = 'grid';
+      document.getElementById('statProducts').textContent = data.count || '–';
+      const secs = data.ageSeconds;
+      document.getElementById('statAge').textContent = secs != null
+        ? (secs < 60 ? `${secs}s` : `${Math.round(secs/60)}m`)
+        : '–';
+      document.getElementById('statSource').textContent = data.apiKeySet ? 'RapidAPI' : 'Respaldo';
+    }
+  }
+
+  /* ── feedback helpers ── */
+  function showFeedback(type, msg) {
+    feedbackEl.className = `feedback feedback--${type}`;
+    feedbackEl.textContent = msg;
+    feedbackEl.style.display = 'flex';
+  }
+  function hideFeedback() { feedbackEl.style.display = 'none'; }
+
+  function animateRefreshBar(label) {
+    refreshBar.style.display = 'block';
+    refreshLbl.textContent   = label;
+    let pct = 0;
+    const iv = setInterval(() => {
+      pct = Math.min(pct + Math.random() * 8, 88);
+      refreshFill.style.width = pct + '%';
+    }, 300);
+    return () => {
+      clearInterval(iv);
+      refreshFill.style.width = '100%';
+      setTimeout(() => { refreshBar.style.display = 'none'; refreshFill.style.width = '0%'; }, 600);
+    };
+  }
+
+  /* ── guardar key ── */
+  saveBtn.addEventListener('click', async () => {
+    const key = keyInput.value.trim();
+    keyError.style.display = 'none';
+    keyInput.classList.remove('is-error', 'is-valid');
+
+    if (!key || key.length < 10) {
+      keyError.style.display = 'block';
+      keyInput.classList.add('is-error');
+      keyInput.focus();
+      return;
+    }
+
+    saveBtn.disabled   = true;
+    refreshBtn.disabled = true;
+    showFeedback('loading', '🔄 Guardando clave y actualizando catálogo... esto puede tardar hasta 20 segundos.');
+    const stopBar = animateRefreshBar('Scrapeando productos desde RapidAPI...');
+
+    try {
+      const res  = await fetch(`${API}/settings/rapidapi-key`, {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ key })
+      });
+      const data = await res.json();
+      stopBar();
+
+      if (data.ok) {
+        keyInput.classList.add('is-valid');
+        showFeedback('success', `✅ ${data.message} — ${data.count || 0} productos cargados.`);
+        await loadStatus();
+        keyInput.value = '';
+        keyInput.type  = 'password';
+        toggleBtn.textContent = 'Mostrar';
+      } else {
+        showFeedback('error', `❌ ${data.error || 'Error al guardar la clave.'}`);
+      }
+    } catch {
+      stopBar();
+      showFeedback('error', '❌ No se pudo conectar con el backend. ¿Está corriendo en localhost:3000?');
+    }
+
+    saveBtn.disabled   = false;
+    refreshBtn.disabled = false;
+  });
+
+  /* ── forzar actualización ── */
+  refreshBtn.addEventListener('click', async () => {
+    saveBtn.disabled   = true;
+    refreshBtn.disabled = true;
+    showFeedback('loading', '🔄 Actualizando catálogo desde RapidAPI...');
+    const stopBar = animateRefreshBar('Consultando RapidAPI...');
+
+    try {
+      const res  = await fetch(`${API}/settings/refresh`, { method: 'POST' });
+      const data = await res.json();
+      stopBar();
+
+      if (data.ok) {
+        showFeedback('success', `✅ Catálogo actualizado — ${data.count || 0} productos disponibles.`);
+        await loadStatus();
+      } else {
+        showFeedback('error', `❌ ${data.error || 'Error al actualizar.'}`);
+      }
+    } catch {
+      stopBar();
+      showFeedback('error', '❌ No se pudo conectar con el backend.');
+    }
+
+    saveBtn.disabled   = false;
+    refreshBtn.disabled = false;
+  });
+
+  /* ── hamburger ── */
+  document.getElementById('hamburgerBtn').addEventListener('click', function () {
+    const exp = this.getAttribute('aria-expanded') === 'true';
+    this.setAttribute('aria-expanded', String(!exp));
+    document.getElementById('navMenu').classList.toggle('active');
+  });
+
+  /* ── init ── */
+  loadStatus();
+})();
+</script>
+
+<script src="../js/session-nav.js"></script>
+</body>
+</html>
