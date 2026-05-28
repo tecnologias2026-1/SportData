@@ -3,13 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="SportData - Catálogo de Productos. Encuentra los mejores productos deportivos al mejor precio.">
+    <meta name="description" content="SportData - Catálogo de Productos. Precios scrapeados en tiempo real desde MercadoLibre y múltiples tiendas deportivas.">
     <title>Catálogo - SportData</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../css/shared.css">
     <link rel="stylesheet" href="../css/catalog.css">
+    <style>
+      /* Estilos adicionales para indicadores de datos ML */
+      .notification-bar {
+        transition: background 0.4s ease, border-color 0.4s ease, color 0.4s ease;
+      }
+      .ml-source-info {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        padding: 3px 10px;
+        border-radius: 999px;
+        background: rgba(255,255,255,0.6);
+        white-space: nowrap;
+      }
+      /* Override card stock badge cuando hay datos reales */
+      [data-is-live="true"] .product-card__updated {
+        color: #059669;
+      }
+      /* Mejora visual para precios con scraping real */
+      [data-is-live="true"] .product-card__price {
+        color: #0e7490;
+      }
+    </style>
 </head>
 <body class="secondary-page catalog-page">
 
@@ -53,17 +78,17 @@
     </div>
 </header>
 
-<!-- ===== NOTIFICATION BAR ===== -->
-<div class="notification-bar" role="status" aria-live="polite">
+<!-- ===== NOTIFICATION BAR — se actualiza dinámicamente por catalog.js ===== -->
+<div class="notification-bar" role="status" aria-live="polite" id="notificationBar">
     <div class="notification-bar__left">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
             <polyline points="23 4 23 10 17 10"></polyline>
             <polyline points="1 20 1 14 7 14"></polyline>
             <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
         </svg>
-        <span><strong>Datos actualizados en tiempo real:</strong> Rastreamos precios de 8 tiendas deportivas online cada pocos minutos</span>
+        <span>Conectando con el scraper de MercadoLibre…</span>
     </div>
-    <div class="notification-bar__right">Última actualización: Hace 5 min</div>
+    <div class="notification-bar__right">Cargando datos…</div>
 </div>
 
 <!-- ===== MAIN ===== -->
@@ -73,9 +98,8 @@
         <!-- Catalog Header -->
         <div class="catalog-header">
             <h1 id="catalog-title" class="catalog-header__title">Comparador de Precios Deportivos</h1>
-            <p class="catalog-header__subtitle">Encuentra los mejores precios de múltiples tiendas online</p>
+            <p class="catalog-header__subtitle">Precios scrapeados de MercadoLibre y 8 tiendas deportivas en tiempo real</p>
 
-            <!-- Controls row aligned with products grid column -->
             <div class="catalog-header__controls-row">
                 <div class="catalog-header__controls-spacer" aria-hidden="true"></div>
                 <div class="catalog-header__controls">
@@ -84,7 +108,7 @@
                             <circle cx="11" cy="11" r="8"></circle>
                             <path d="m21 21-4.35-4.35"></path>
                         </svg>
-                        <input type="search" class="search-bar__input" id="productSearch" placeholder="Buscar productos..." aria-label="Buscar productos en el catálogo">
+                        <input type="search" class="search-bar__input" id="productSearch" placeholder="Buscar productos, marcas…" aria-label="Buscar productos en el catálogo">
                     </div>
                     <select class="sort-select" id="sortBy" aria-label="Ordenar productos por">
                         <option value="relevance">Ordenar por</option>
@@ -97,10 +121,10 @@
             </div>
         </div>
 
-        <!-- Count aligned with products grid column -->
+        <!-- Count -->
         <div class="catalog-count-row">
             <div class="catalog-count-spacer" aria-hidden="true"></div>
-            <p class="catalog-count" id="catalogCount">12 productos encontrados</p>
+            <p class="catalog-count" id="catalogCount">Cargando productos…</p>
         </div>
 
         <!-- Catalog Container -->
@@ -150,34 +174,34 @@
                         <label class="filter-option"><input type="checkbox" class="filter-option__input brand-filter" value="everlast"><span class="filter-option__label">Everlast</span></label>
                         <label class="filter-option"><input type="checkbox" class="filter-option__input brand-filter" value="giro"><span class="filter-option__label">Giro</span></label>
                         <label class="filter-option"><input type="checkbox" class="filter-option__input brand-filter" value="manduka"><span class="filter-option__label">Manduka</span></label>
+                        <label class="filter-option"><input type="checkbox" class="filter-option__input brand-filter" value="hummel"><span class="filter-option__label">Hummel</span></label>
                         <label class="filter-option"><input type="checkbox" class="filter-option__input brand-filter" value="bowflex"><span class="filter-option__label">Bowflex</span></label>
                     </div>
                 </div>
 
                 <!-- Tienda -->
                 <div class="filter-group">
-                    <h3 class="filter-group__title">Tienda</h3>
+                    <h3 class="filter-group__title">Mejor Precio en</h3>
                     <div class="filter-options">
                         <label class="filter-option"><input type="checkbox" class="filter-option__input store-filter" value="todas"><span class="filter-option__label">Todas</span></label>
                         <label class="filter-option"><input type="checkbox" class="filter-option__input store-filter" value="Amazon Sports"><span class="filter-option__label">Amazon Sports</span></label>
                         <label class="filter-option"><input type="checkbox" class="filter-option__input store-filter" value="Decathlon"><span class="filter-option__label">Decathlon</span></label>
                         <label class="filter-option"><input type="checkbox" class="filter-option__input store-filter" value="SportZone"><span class="filter-option__label">SportZone</span></label>
                         <label class="filter-option"><input type="checkbox" class="filter-option__input store-filter" value="FitnessOutlet"><span class="filter-option__label">FitnessOutlet</span></label>
-                        <label class="filter-option"><input type="checkbox" class="filter-option__input store-filter" value="TennisWarehouse"><span class="filter-option__label">TennisWarehouse</span></label>
-                        <label class="filter-option"><input type="checkbox" class="filter-option__input store-filter" value="SwimShop"><span class="filter-option__label">SwimShop</span></label>
-                        <label class="filter-option"><input type="checkbox" class="filter-option__input store-filter" value="BikeStore"><span class="filter-option__label">BikeStore</span></label>
-                        <label class="filter-option"><input type="checkbox" class="filter-option__input store-filter" value="FightGear"><span class="filter-option__label">FightGear</span></label>
+                        <label class="filter-option"><input type="checkbox" class="filter-option__input store-filter" value="Nike Official"><span class="filter-option__label">Nike Official</span></label>
+                        <label class="filter-option"><input type="checkbox" class="filter-option__input store-filter" value="Reebok Store"><span class="filter-option__label">Reebok Store</span></label>
+                        <label class="filter-option"><input type="checkbox" class="filter-option__input store-filter" value="MercadoLibre"><span class="filter-option__label">MercadoLibre</span></label>
                     </div>
                 </div>
 
                 <!-- Precio -->
                 <div class="filter-group">
-                    <h3 class="filter-group__title">Rango de Precio</h3>
+                    <h3 class="filter-group__title">Precio máximo</h3>
                     <div class="price-filter">
-                        <input type="range" class="price-filter__slider" id="priceRange" min="0" max="200" value="200" aria-label="Rango de precio máximo">
+                        <input type="range" class="price-filter__slider" id="priceRange" min="0" max="500" value="500" aria-label="Rango de precio máximo">
                         <div class="price-filter__display">
                             <span class="price-filter__min">$0</span>
-                            <span class="price-filter__max">$<span id="priceValue">200</span></span>
+                            <span class="price-filter__max">$<span id="priceValue">500</span></span>
                         </div>
                     </div>
                 </div>
@@ -195,442 +219,12 @@
                 Filtros
             </button>
 
-            <!-- ===== PRODUCTS GRID ===== -->
-            <div class="products-grid" id="productsGrid">
+            <!-- ===== PRODUCTS GRID — se llena dinámicamente por catalog.js ===== -->
+            <div class="products-grid" id="productsGrid" aria-label="Productos encontrados">
+                <!-- Las tarjetas se generan dinámicamente desde la API del backend -->
+                <!-- con datos scrapeados de MercadoLibre en tiempo real -->
+            </div>
 
-                <!-- 1. Zapatillas Running Pro -->
-                <article class="product-card" data-category="calzado" data-brand="nike" data-store="Amazon Sports" data-product-id="NK-RNP-001">
-                    <div class="product-card__image-container">
-                        <img src="../assets/img/main_produc_zapatillas.jpg" alt="Zapatillas Running Pro" class="product-card__image">
-                        <span class="product-card__store">
-                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
-                            Amazon Sports
-                        </span>
-                        <span class="product-card__stock">En Stock</span>
-                        <button type="button" class="product-card__favorite" aria-label="Añadir a favoritos" data-favorite="false">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
-                        </button>
-                    </div>
-                    <div class="product-card__content">
-                        <p class="product-card__category">Nike</p>
-                        <h3 class="product-card__title">Zapatillas Running Pro</h3>
-                        <div class="product-card__rating">
-                            <div class="star-rating" aria-label="4.5 de 5 estrellas">
-                                <span class="star star--filled"></span><span class="star star--filled"></span><span class="star star--filled"></span><span class="star star--filled"></span><span class="star star--half"></span>
-                            </div>
-                            <span class="product-card__reviews">(4.5)</span>
-                        </div>
-                        <p class="product-card__updated">
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
-                            Actualizado: Hace 1h
-                        </p>
-                        <p class="product-card__price">$89.99</p>
-                    </div>
-                    <div class="product-card__actions">
-                        <button type="button" class="product-card__btn" aria-label="Ver tienda de Zapatillas Running Pro">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14 21 3"/></svg>
-                            Ver en Tienda
-                        </button>
-                    </div>
-                </article>
-
-                <!-- 2. Balón de Baloncesto -->
-                <article class="product-card" data-category="balones" data-brand="spalding" data-store="Decathlon" data-product-id="SP-BAL-010">
-                    <div class="product-card__image-container">
-                        <img src="../assets/img/main_produc_basquet.jpg" alt="Balón de Baloncesto" class="product-card__image">
-                        <span class="product-card__store">
-                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
-                            Decathlon
-                        </span>
-                        <span class="product-card__stock">En Stock</span>
-                        <button type="button" class="product-card__favorite" aria-label="Añadir a favoritos" data-favorite="false">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
-                        </button>
-                    </div>
-                    <div class="product-card__content">
-                        <p class="product-card__category">Spalding</p>
-                        <h3 class="product-card__title">Balón de Baloncesto</h3>
-                        <div class="product-card__rating">
-                            <div class="star-rating" aria-label="4.8 de 5 estrellas">
-                                <span class="star star--filled"></span><span class="star star--filled"></span><span class="star star--filled"></span><span class="star star--filled"></span><span class="star star--filled"></span>
-                            </div>
-                            <span class="product-card__reviews">(4.8)</span>
-                        </div>
-                        <p class="product-card__updated">
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
-                            Actualizado: Hace 2h
-                        </p>
-                        <p class="product-card__price">$45.00</p>
-                    </div>
-                    <div class="product-card__actions">
-                        <button type="button" class="product-card__btn" aria-label="Ver tienda de Balón de Baloncesto">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14 21 3"/></svg>
-                            Ver en Tienda
-                        </button>
-                    </div>
-                </article>
-
-                <!-- 3. Esterilla de Yoga -->
-                <article class="product-card" data-category="fitness" data-brand="manduka" data-store="SportZone" data-product-id="MK-ESTER-011">
-                    <div class="product-card__image-container">
-                        <img src="../assets/img/main_produc_estirilla.jpg" alt="Esterilla de Yoga Premium" class="product-card__image">
-                        <span class="product-card__store">
-                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
-                            SportZone
-                        </span>
-                        <span class="product-card__stock">En Stock</span>
-                        <button type="button" class="product-card__favorite" aria-label="Añadir a favoritos" data-favorite="false">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
-                        </button>
-                    </div>
-                    <div class="product-card__content">
-                        <p class="product-card__category">Manduka</p>
-                        <h3 class="product-card__title">Esterilla de Yoga Premium</h3>
-                        <div class="product-card__rating">
-                            <div class="star-rating" aria-label="4.7 de 5 estrellas">
-                                <span class="star star--filled"></span><span class="star star--filled"></span><span class="star star--filled"></span><span class="star star--filled"></span><span class="star star--half"></span>
-                            </div>
-                            <span class="product-card__reviews">(4.7)</span>
-                        </div>
-                        <p class="product-card__updated">
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
-                            Actualizado: Hace 3h
-                        </p>
-                        <p class="product-card__price">$35.99</p>
-                    </div>
-                    <div class="product-card__actions">
-                        <button type="button" class="product-card__btn" aria-label="Ver tienda de Esterilla de Yoga">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14 21 3"/></svg>
-                            Ver en Tienda
-                        </button>
-                    </div>
-                </article>
-
-                <!-- 4. Camiseta Deportiva -->
-                <article class="product-card" data-category="ropa" data-brand="adidas" data-store="FitnessOutlet" data-product-id="PU-CAM-004">
-                    <div class="product-card__image-container">
-                        <img src="../assets/img/main_produc_camiseta.jpg" alt="Camiseta Deportiva" class="product-card__image">
-                        <span class="product-card__store">
-                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
-                            FitnessOutlet
-                        </span>
-                        <span class="product-card__stock product-card__stock--limited">Pocas unidades</span>
-                        <button type="button" class="product-card__favorite" aria-label="Añadir a favoritos" data-favorite="false">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
-                        </button>
-                    </div>
-                    <div class="product-card__content">
-                        <p class="product-card__category">Adidas</p>
-                        <h3 class="product-card__title">Camiseta Deportiva</h3>
-                        <div class="product-card__rating">
-                            <div class="star-rating" aria-label="4.3 de 5 estrellas">
-                                <span class="star star--filled"></span><span class="star star--filled"></span><span class="star star--filled"></span><span class="star star--filled"></span><span class="star star--half"></span>
-                            </div>
-                            <span class="product-card__reviews">(4.3)</span>
-                        </div>
-                        <p class="product-card__updated">
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
-                            Actualizado: Hace 40 min
-                        </p>
-                        <p class="product-card__price">$29.99</p>
-                    </div>
-                    <div class="product-card__actions">
-                        <button type="button" class="product-card__btn" aria-label="Ver tienda de Camiseta Deportiva">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14 21 3"/></svg>
-                            Ver en Tienda
-                        </button>
-                    </div>
-                </article>
-
-                <!-- 5. Mancuernas Ajustables -->
-                <article class="product-card" data-category="fitness" data-brand="bowflex" data-store="FitnessOutlet" data-product-id="NK-MANC-006">
-                    <div class="product-card__image-container">
-                        <img src="../assets/img/mancuerna ajustable.jpg" alt="Mancuernas Ajustables" class="product-card__image">
-                        <span class="product-card__store">
-                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
-                            FitnessOutlet
-                        </span>
-                        <span class="product-card__stock product-card__stock--limited">Pocas unidades</span>
-                        <button type="button" class="product-card__favorite" aria-label="Añadir a favoritos" data-favorite="false">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
-                        </button>
-                    </div>
-                    <div class="product-card__content">
-                        <p class="product-card__category">Bowflex</p>
-                        <h3 class="product-card__title">Mancuernas Ajustables</h3>
-                        <div class="product-card__rating">
-                            <div class="star-rating" aria-label="4.9 de 5 estrellas">
-                                <span class="star star--filled"></span><span class="star star--filled"></span><span class="star star--filled"></span><span class="star star--filled"></span><span class="star star--filled"></span>
-                            </div>
-                            <span class="product-card__reviews">(4.9)</span>
-                        </div>
-                        <p class="product-card__updated">
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
-                            Actualizado: Hace 4h
-                        </p>
-                        <p class="product-card__price">$120.00</p>
-                    </div>
-                    <div class="product-card__actions">
-                        <button type="button" class="product-card__btn" aria-label="Ver tienda de Mancuernas Ajustables">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14 21 3"/></svg>
-                            Ver en Tienda
-                        </button>
-                    </div>
-                </article>
-
-                <!-- 6. Balón de Fútbol -->
-                <article class="product-card" data-category="balones" data-brand="adidas" data-store="Decathlon" data-product-id="AD-BAL-005">
-                    <div class="product-card__image-container">
-                        <img src="../assets/img/balon de futbol.jpg" alt="Balón de Fútbol" class="product-card__image">
-                        <span class="product-card__store">
-                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
-                            Decathlon
-                        </span>
-                        <span class="product-card__stock">En Stock</span>
-                        <button type="button" class="product-card__favorite" aria-label="Añadir a favoritos" data-favorite="false">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
-                        </button>
-                    </div>
-                    <div class="product-card__content">
-                        <p class="product-card__category">Adidas</p>
-                        <h3 class="product-card__title">Balón de Fútbol</h3>
-                        <div class="product-card__rating">
-                            <div class="star-rating" aria-label="4.6 de 5 estrellas">
-                                <span class="star star--filled"></span><span class="star star--filled"></span><span class="star star--filled"></span><span class="star star--filled"></span><span class="star star--half"></span>
-                            </div>
-                            <span class="product-card__reviews">(4.6)</span>
-                        </div>
-                        <p class="product-card__updated">
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
-                            Actualizado: Hace 2h
-                        </p>
-                        <p class="product-card__price">$39.99</p>
-                    </div>
-                    <div class="product-card__actions">
-                        <button type="button" class="product-card__btn" aria-label="Ver tienda de Balón de Fútbol">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14 21 3"/></svg>
-                            Ver en Tienda
-                        </button>
-                    </div>
-                </article>
-
-                <!-- 7. Raqueta de Tenis Pro -->
-                <article class="product-card" data-category="raquetas" data-brand="wilson" data-store="TennisWarehouse" data-product-id="WL-RAQ-007">
-                    <div class="product-card__image-container">
-                        <img src="../assets/img/banda entrenamiento.jpg" alt="Raqueta de Tenis Pro" class="product-card__image">
-                        <span class="product-card__store">
-                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
-                            TennisWarehouse
-                        </span>
-                        <span class="product-card__stock product-card__stock--limited">Pocas unidades</span>
-                        <button type="button" class="product-card__favorite" aria-label="Añadir a favoritos" data-favorite="false">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
-                        </button>
-                    </div>
-                    <div class="product-card__content">
-                        <p class="product-card__category">Wilson</p>
-                        <h3 class="product-card__title">Raqueta de Tenis Pro</h3>
-                        <div class="product-card__rating">
-                            <div class="star-rating" aria-label="4.8 de 5 estrellas">
-                                <span class="star star--filled"></span><span class="star star--filled"></span><span class="star star--filled"></span><span class="star star--filled"></span><span class="star star--filled"></span>
-                            </div>
-                            <span class="product-card__reviews">(4.8)</span>
-                        </div>
-                        <p class="product-card__updated">
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
-                            Actualizado: Hace 2h
-                        </p>
-                        <p class="product-card__price">$159.99</p>
-                    </div>
-                    <div class="product-card__actions">
-                        <button type="button" class="product-card__btn" aria-label="Ver tienda de Raqueta de Tenis Pro">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14 21 3"/></svg>
-                            Ver en Tienda
-                        </button>
-                    </div>
-                </article>
-
-                <!-- 8. Gafas de Natación -->
-                <article class="product-card" data-category="natacion" data-brand="speedo" data-store="SwimShop" data-product-id="PU-GAF-008">
-                    <div class="product-card__image-container">
-                        <img src="../assets/img/gafas natacion.jpg" alt="Gafas de Natación" class="product-card__image">
-                        <span class="product-card__store">
-                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
-                            SwimShop
-                        </span>
-                        <span class="product-card__stock">En Stock</span>
-                        <button type="button" class="product-card__favorite" aria-label="Añadir a favoritos" data-favorite="false">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
-                        </button>
-                    </div>
-                    <div class="product-card__content">
-                        <p class="product-card__category">Speedo</p>
-                        <h3 class="product-card__title">Gafas de Natación</h3>
-                        <div class="product-card__rating">
-                            <div class="star-rating" aria-label="4.4 de 5 estrellas">
-                                <span class="star star--filled"></span><span class="star star--filled"></span><span class="star star--filled"></span><span class="star star--filled"></span><span class="star star--half"></span>
-                            </div>
-                            <span class="product-card__reviews">(4.4)</span>
-                        </div>
-                        <p class="product-card__updated">
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
-                            Actualizado: Hace 55 min
-                        </p>
-                        <p class="product-card__price">$24.99</p>
-                    </div>
-                    <div class="product-card__actions">
-                        <button type="button" class="product-card__btn" aria-label="Ver tienda de Gafas de Natación">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14 21 3"/></svg>
-                            Ver en Tienda
-                        </button>
-                    </div>
-                </article>
-
-                <!-- 9. Casco de Ciclismo -->
-                <article class="product-card" data-category="ciclismo" data-brand="giro" data-store="BikeStore" data-product-id="GR-CAS-009">
-                    <div class="product-card__image-container">
-                        <img src="../assets/img/zapatillas running.jpg" alt="Casco de Ciclismo" class="product-card__image">
-                        <span class="product-card__store">
-                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
-                            BikeStore
-                        </span>
-                        <span class="product-card__stock">En Stock</span>
-                        <button type="button" class="product-card__favorite" aria-label="Añadir a favoritos" data-favorite="false">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
-                        </button>
-                    </div>
-                    <div class="product-card__content">
-                        <p class="product-card__category">Giro</p>
-                        <h3 class="product-card__title">Casco de Ciclismo</h3>
-                        <div class="product-card__rating">
-                            <div class="star-rating" aria-label="4.7 de 5 estrellas">
-                                <span class="star star--filled"></span><span class="star star--filled"></span><span class="star star--filled"></span><span class="star star--filled"></span><span class="star star--half"></span>
-                            </div>
-                            <span class="product-card__reviews">(4.7)</span>
-                        </div>
-                        <p class="product-card__updated">
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
-                            Actualizado: Hace 3h
-                        </p>
-                        <p class="product-card__price">$79.99</p>
-                    </div>
-                    <div class="product-card__actions">
-                        <button type="button" class="product-card__btn" aria-label="Ver tienda de Casco de Ciclismo">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14 21 3"/></svg>
-                            Ver en Tienda
-                        </button>
-                    </div>
-                </article>
-
-                <!-- 10. Guantes de Boxeo -->
-                <article class="product-card" data-category="boxeo" data-brand="everlast" data-store="FightGear" data-product-id="EV-GUA-010">
-                    <div class="product-card__image-container">
-                        <img src="../assets/img/mochila de yoga.jpg" alt="Guantes de Boxeo" class="product-card__image">
-                        <span class="product-card__store">
-                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
-                            FightGear
-                        </span>
-                        <span class="product-card__stock">En Stock</span>
-                        <button type="button" class="product-card__favorite" aria-label="Añadir a favoritos" data-favorite="false">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
-                        </button>
-                    </div>
-                    <div class="product-card__content">
-                        <p class="product-card__category">Everlast</p>
-                        <h3 class="product-card__title">Guantes de Boxeo</h3>
-                        <div class="product-card__rating">
-                            <div class="star-rating" aria-label="4.6 de 5 estrellas">
-                                <span class="star star--filled"></span><span class="star star--filled"></span><span class="star star--filled"></span><span class="star star--filled"></span><span class="star star--half"></span>
-                            </div>
-                            <span class="product-card__reviews">(4.6)</span>
-                        </div>
-                        <p class="product-card__updated">
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
-                            Actualizado: Hace 1h
-                        </p>
-                        <p class="product-card__price">$54.99</p>
-                    </div>
-                    <div class="product-card__actions">
-                        <button type="button" class="product-card__btn" aria-label="Ver tienda de Guantes de Boxeo">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14 21 3"/></svg>
-                            Ver en Tienda
-                        </button>
-                    </div>
-                </article>
-
-                <!-- 11. Zapatillas Training -->
-                <article class="product-card" data-category="calzado" data-brand="reebok" data-store="SportZone" data-product-id="NK-ZAP-009">
-                    <div class="product-card__image-container">
-                        <img src="../assets/img/botin_skateboarding.jpg" alt="Zapatillas Training" class="product-card__image">
-                        <span class="product-card__store">
-                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
-                            SportZone
-                        </span>
-                        <span class="product-card__stock">En Stock</span>
-                        <button type="button" class="product-card__favorite" aria-label="Añadir a favoritos" data-favorite="false">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
-                        </button>
-                    </div>
-                    <div class="product-card__content">
-                        <p class="product-card__category">Reebok</p>
-                        <h3 class="product-card__title">Zapatillas Training</h3>
-                        <div class="product-card__rating">
-                            <div class="star-rating" aria-label="4.4 de 5 estrellas">
-                                <span class="star star--filled"></span><span class="star star--filled"></span><span class="star star--filled"></span><span class="star star--filled"></span><span class="star star--half"></span>
-                            </div>
-                            <span class="product-card__reviews">(4.4)</span>
-                        </div>
-                        <p class="product-card__updated">
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
-                            Actualizado: Hace 2h
-                        </p>
-                        <p class="product-card__price">$75.00</p>
-                    </div>
-                    <div class="product-card__actions">
-                        <button type="button" class="product-card__btn" aria-label="Ver tienda de Zapatillas Training">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14 21 3"/></svg>
-                            Ver en Tienda
-                        </button>
-                    </div>
-                </article>
-
-                <!-- 12. Pantalón Deportivo -->
-                <article class="product-card" data-category="ropa" data-brand="puma" data-store="Amazon Sports" data-product-id="PU-PAN-012">
-                    <div class="product-card__image-container">
-                        <img src="../assets/img/main_produc_camiseta.jpg" alt="Pantalón Deportivo" class="product-card__image">
-                        <span class="product-card__store">
-                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
-                            Amazon Sports
-                        </span>
-                        <span class="product-card__stock">En Stock</span>
-                        <button type="button" class="product-card__favorite" aria-label="Añadir a favoritos" data-favorite="false">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
-                        </button>
-                    </div>
-                    <div class="product-card__content">
-                        <p class="product-card__category">Puma</p>
-                        <h3 class="product-card__title">Pantalón Deportivo</h3>
-                        <div class="product-card__rating">
-                            <div class="star-rating" aria-label="4.5 de 5 estrellas">
-                                <span class="star star--filled"></span><span class="star star--filled"></span><span class="star star--filled"></span><span class="star star--filled"></span><span class="star star--half"></span>
-                            </div>
-                            <span class="product-card__reviews">(4.5)</span>
-                        </div>
-                        <p class="product-card__updated">
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
-                            Actualizado: Hace 45 min
-                        </p>
-                        <p class="product-card__price">$42.99</p>
-                    </div>
-                    <div class="product-card__actions">
-                        <button type="button" class="product-card__btn" aria-label="Ver tienda de Pantalón Deportivo">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14 21 3"/></svg>
-                            Ver en Tienda
-                        </button>
-                    </div>
-                </article>
-
-            </div><!-- /products-grid -->
         </div><!-- /catalog-container -->
     </section>
 </main>
@@ -684,44 +278,13 @@
     </div>
 </footer>
 
-<!-- ===== JS ===== -->
+<!-- ===== JS — orden importante ===== -->
+<!-- 1. products.js: detecta el mejor endpoint (local → Netlify → fallback) -->
 <script src="../js/products.js"></script>
+<!-- 2. catalog.js: renderiza los productos con datos scrapeados de ML -->
 <script src="../js/catalog.js"></script>
-<script src="../js/session-nav.js"></script> 
-<script>
-    document.addEventListener('DOMContentLoaded', () => {
-        const favorites = JSON.parse(localStorage.getItem('sd_favorites') || '[]');
-        
-        document.querySelectorAll('.product-card').forEach(card => {
-            const id = card.dataset.productId;
-            const btn = card.querySelector('.product-card__favorite');
-            const path = btn.querySelector('svg path');
+<!-- 3. session-nav.js: gestión de sesión de usuario -->
+<script src="../js/session-nav.js"></script>
 
-            // Marcar como activo si ya está en favoritos al cargar
-            if (favorites.includes(id)) {
-                btn.dataset.favorite = 'true';
-                path.setAttribute('fill', '#ef4444');
-                path.setAttribute('stroke', '#ef4444');
-            }
-
-            btn.addEventListener('click', (e) => {
-                e.preventDefault();
-                let currentFavs = JSON.parse(localStorage.getItem('sd_favorites') || '[]');
-                const isFav = currentFavs.includes(id);
-
-                if (isFav) {
-                    currentFavs = currentFavs.filter(favId => favId !== id);
-                    path.setAttribute('fill', 'none');
-                    path.setAttribute('stroke', 'currentColor');
-                } else {
-                    currentFavs.push(id);
-                    path.setAttribute('fill', '#ef4444');
-                    path.setAttribute('stroke', '#ef4444');
-                }
-                localStorage.setItem('sd_favorites', JSON.stringify(currentFavs));
-            });
-        });
-    });
-</script>
 </body>
 </html>
