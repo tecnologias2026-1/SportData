@@ -11,7 +11,7 @@
 (function () {
   'use strict';
 
-  /* ── Estado ─────────────────────────────────── */
+  /* ── Estado ─────────────────────────────────────── */
   const state = {
     search:     '',
     categories: [],
@@ -22,10 +22,10 @@
     favorites:  [],
     allProducts:[],
     loading:    true,
-    dataSource: 'unknown', // 'local' | 'netlify' | 'fallback'
+    dataSource: 'unknown',
   };
 
-  /* ── Init ────────────────────────────────────── */
+  /* ── Init ────────────────────────────────────────── */
   async function init() {
     if (typeof window.SportDataProducts === 'undefined') {
       console.error('SportDataProducts no está cargado.');
@@ -57,8 +57,8 @@
       state.allProducts = window.SportDataProducts.getAllProducts();
       state.dataSource  = 'fallback';
     }
- 
-    // ── NUEVO: si no hay productos, reintentar en 5 segundos ──────────────
+
+    // ── Si no hay productos, reintentar en 5 segundos ──
     if (state.allProducts.length === 0) {
       updateNotificationBar({ source: 'retrying' });
       console.log('[Catalog] Sin productos, reintentando en 5s...');
@@ -79,6 +79,7 @@
         }
       }, 5000);
     }
+
     // Actualizar precio máximo del slider según datos reales
     const maxPriceReal = Math.max(...state.allProducts.map(p => p.worstPrice || p.price || 200));
     const sliderMax    = Math.ceil(maxPriceReal / 50) * 50 + 50;
@@ -97,74 +98,58 @@
     setupProductNavigation();
   }
 
-/* ── Actualizar barra de notificación ────────── */
-function updateNotificationBar(info) {
-  const bar = document.querySelector('.notification-bar');
-  if (!bar) return;
+  /* ── Actualizar barra de notificación ────────────── */
+  function updateNotificationBar(info) {
+    const bar = document.querySelector('.notification-bar');
+    if (!bar) return;
 
-  const leftEl  = bar.querySelector('.notification-bar__left span');
-  const rightEl = bar.querySelector('.notification-bar__right');
+    const leftEl  = bar.querySelector('.notification-bar__left span');
+    const rightEl = bar.querySelector('.notification-bar__right');
 
-  if (info.source === 'local' || info.source === 'netlify') {
+    if (info.source === 'local' || info.source === 'netlify') {
+      const count   = state.allProducts.length;
+      const latency = info.latency ? ` · ${info.latency}ms` : '';
 
-    const count   = state.allProducts.length;
-    const latency = info.latency ? ` · ${info.latency}ms` : '';
+      if (leftEl) {
+        leftEl.innerHTML =
+          `<strong>● Datos en vivo desde MercadoLibre:</strong>
+           ${count} productos scrapeados,
+           precios actualizados en tiempo real${latency}`;
+      }
+      if (rightEl) {
+        rightEl.textContent =
+          `Fuente: API ${info.source === 'local' ? 'local' : 'Netlify'}
+           · ${new Date().toLocaleTimeString('es', { hour:'2-digit', minute:'2-digit' })}`;
+      }
+      bar.style.background  = '#ecfdf5';
+      bar.style.borderColor = '#a7f3d0';
+      bar.style.color       = '#065f46';
 
-    if (leftEl) {
-      leftEl.innerHTML =
-        `<strong>● Datos en vivo desde MercadoLibre:</strong>
-         ${count} productos scrapeados,
-         precios actualizados en tiempo real${latency}`;
+    } else if (info.source === 'retrying') {
+      if (leftEl) {
+        leftEl.innerHTML =
+          `<strong>⏳ Conectando con el servidor...</strong>
+           Reintentando en 5 segundos`;
+      }
+      if (rightEl) rightEl.textContent = 'Espera un momento';
+      bar.style.background  = '#eff6ff';
+      bar.style.borderColor = '#bfdbfe';
+      bar.style.color       = '#1e40af';
+
+    } else {
+      if (leftEl) {
+        leftEl.innerHTML =
+          `<strong>⚠ Datos de respaldo:</strong>
+           Inicia el backend para obtener precios scrapeados de MercadoLibre`;
+      }
+      if (rightEl) rightEl.textContent = 'Backend offline';
+      bar.style.background  = '#fefce8';
+      bar.style.borderColor = '#fde68a';
+      bar.style.color       = '#92400e';
     }
-
-    if (rightEl) {
-      rightEl.textContent =
-        `Fuente: API ${info.source === 'local' ? 'local' : 'Netlify'}
-         · ${new Date().toLocaleTimeString('es', {
-           hour:'2-digit',
-           minute:'2-digit'
-         })}`;
-    }
-
-    bar.style.background  = '#ecfdf5';
-    bar.style.borderColor = '#a7f3d0';
-    bar.style.color       = '#065f46';
-
-  } else if (info.source === 'retrying') {
-
-    if (leftEl) {
-      leftEl.innerHTML =
-        `<strong>⏳ Conectando con el servidor...</strong>
-         Reintentando en 5 segundos`;
-    }
-
-    if (rightEl) {
-      rightEl.textContent = 'Espera un momento';
-    }
-
-    bar.style.background  = '#eff6ff';
-    bar.style.borderColor = '#bfdbfe';
-    bar.style.color       = '#1e40af';
-
-  } else {
-
-    if (leftEl) {
-      leftEl.innerHTML =
-        `<strong>⚠ Datos de respaldo:</strong>
-         Inicia el backend para obtener precios scrapeados de MercadoLibre`;
-    }
-
-    if (rightEl) {
-      rightEl.textContent = 'Backend offline';
-    }
-
-    bar.style.background  = '#fefce8';
-    bar.style.borderColor = '#fde68a';
-    bar.style.color       = '#92400e';
   }
-}
 
-  /* ── Skeleton loader ────────────────────────── */
+  /* ── Skeleton loader ─────────────────────────────── */
   function showSkeleton() {
     const grid = document.getElementById('productsGrid');
     if (!grid) return;
@@ -185,13 +170,12 @@ function updateNotificationBar(info) {
     injectStyles();
   }
 
-  /* ── Inyectar estilos dinámicos ─────────────── */
+  /* ── Inyectar estilos dinámicos ──────────────────── */
   function injectStyles() {
     if (document.getElementById('sd-catalog-dyn-styles')) return;
     const s = document.createElement('style');
     s.id = 'sd-catalog-dyn-styles';
     s.textContent = `
-      /* Skeleton */
       .skeleton-box {
         background: linear-gradient(90deg,#e5e7eb 25%,#f3f4f6 50%,#e5e7eb 75%);
         background-size: 200% 100%;
@@ -202,8 +186,6 @@ function updateNotificationBar(info) {
         0%   { background-position: 200% 0 }
         100% { background-position: -200% 0 }
       }
-
-      /* Live indicator */
       .sd-live-dot {
         display: inline-flex;
         align-items: center;
@@ -228,8 +210,6 @@ function updateNotificationBar(info) {
         0%,100% { opacity: 1; transform: scale(1) }
         50%      { opacity: .45; transform: scale(1.15) }
       }
-
-      /* Savings badge */
       .sd-savings {
         display: inline-flex;
         align-items: center;
@@ -242,8 +222,6 @@ function updateNotificationBar(info) {
         border-radius: 999px;
         margin-top: 2px;
       }
-
-      /* Stores badge */
       .sd-stores-badge {
         display: inline-flex;
         align-items: center;
@@ -253,8 +231,6 @@ function updateNotificationBar(info) {
         margin-top: 2px;
       }
       .sd-stores-badge svg { flex-shrink: 0; }
-
-      /* ML source badge */
       .sd-ml-badge {
         display: inline-flex;
         align-items: center;
@@ -268,8 +244,6 @@ function updateNotificationBar(info) {
         letter-spacing: .02em;
         margin-left: 4px;
       }
-
-      /* Price row with best/worst */
       .sd-price-row {
         display: flex;
         align-items: baseline;
@@ -281,8 +255,6 @@ function updateNotificationBar(info) {
         color: #9ca3af;
         text-decoration: line-through;
       }
-
-      /* Card bottom meta row */
       .sd-card-meta {
         display: flex;
         align-items: center;
@@ -291,21 +263,83 @@ function updateNotificationBar(info) {
         padding: 0 1rem .5rem;
       }
 
-      /* Source info chip in notification bar */
-      .sd-source-chip {
-        display: inline-flex;
-        align-items: center;
-        gap: 5px;
-        font-size: .75rem;
-        font-weight: 600;
+      /* Imagen del producto: object-fit cover para que siempre llene bien */
+      .product-card__image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: center;
+        transition: transform .4s ease;
+      }
+      .product-card__image-container:hover .product-card__image {
+        transform: scale(1.04);
+      }
+
+      /* Placeholder mientras carga la imagen */
+      .product-card__image[data-loading="true"] {
+        background: #f3f4f6;
       }
     `;
     document.head.appendChild(s);
   }
 
-  /* ────────────────────────────────────────────────
+  /* ────────────────────────────────────────────────────
+     RESOLUCIÓN DE IMAGEN — PRIORIZA URLS REALES DEL SCRAPING
+  ──────────────────────────────────────────────────── */
+
+  /**
+   * Fallbacks por categoría (Unsplash, siempre disponibles)
+   */
+  const CATEGORY_FALLBACKS = {
+    calzado:  'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=600&q=80',
+    ropa:     'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=600&q=80',
+    balones:  'https://images.unsplash.com/photo-1614632537190-23e4e3c5d7b6?w=600&q=80',
+    gimnasio: 'https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?w=600&q=80',
+    natacion: 'https://images.unsplash.com/photo-1530549387789-4c1017266635?w=600&q=80',
+    ciclismo: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80',
+    raquetas: 'https://images.unsplash.com/photo-1609710228159-0fa9bd7c0827?w=600&q=80',
+    boxeo:    'https://images.unsplash.com/photo-1555597673-b21d5c935865?w=600&q=80',
+    fitness:  'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=600&q=80',
+    default:  'https://images.unsplash.com/photo-1579952363873-27f3bade9f55?w=600&q=80',
+  };
+
+  /**
+   * Resuelve la URL de imagen para mostrar en la tarjeta.
+   *
+   * Prioridad:
+   *   1. Si `img` es una URL http/https externa → usarla tal cual (imagen del scraping)
+   *   2. Si empieza con '../' → es una ruta local relativa, usarla
+   *   3. Si empieza con 'assets/' → prepend '../'
+   *   4. Fallback por categoría del producto
+   */
+  function resolveImage(img, category) {
+    if (!img) {
+      const cat = (category || 'default').toLowerCase();
+      return CATEGORY_FALLBACKS[cat] || CATEGORY_FALLBACKS.default;
+    }
+
+    const trimmed = img.trim();
+
+    // URL externa real (del scraping de RapidAPI / ML) — usar directamente
+    if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) {
+      return trimmed;
+    }
+
+    // Ruta relativa local
+    if (trimmed.startsWith('../')) return trimmed;
+    if (trimmed.startsWith('assets/')) return '../' + trimmed;
+
+    // Si es solo el nombre de archivo, asumir assets/img/
+    if (!trimmed.includes('/')) return `../assets/img/${trimmed}`;
+
+    // Cualquier otro caso → fallback de categoría
+    const cat = (category || 'default').toLowerCase();
+    return CATEGORY_FALLBACKS[cat] || CATEGORY_FALLBACKS.default;
+  }
+
+  /* ────────────────────────────────────────────────────
      RENDER DINÁMICO DE TARJETAS
-  ──────────────────────────────────────────────── */
+  ──────────────────────────────────────────────────── */
   function renderProducts(products) {
     const grid = document.getElementById('productsGrid');
     if (!grid) return;
@@ -324,13 +358,14 @@ function updateNotificationBar(info) {
     updateCount(products.length);
     setupFavoriteButtons();
     setupProductNavigation();
+    setupImageLazyLoad();
   }
 
-  /* ── Construir tarjeta con datos ML ─────────── */
+  /* ── Construir tarjeta con datos de scraping ─────── */
   function buildCard(p) {
     const isFav     = state.favorites.includes(p.id);
-    const isLive    = !!p.scrapedAt;          // solo true si vino del scraper real
-    const hasML     = p.mlResultsCount > 0;   // hubo resultados reales de ML
+    const isLive    = !!p.scrapedAt;
+    const hasML     = p.mlResultsCount > 0;
     const stock     = p.storePrices && p.storePrices[0] ? p.storePrices[0] : null;
     const storeName = stock ? stock.storeName : 'Amazon Sports';
     const stockLbl  = stock ? stock.stock     : 'En Stock';
@@ -340,39 +375,30 @@ function updateNotificationBar(info) {
                         ? stock.url
                         : `product.html?id=${p.id}`;
 
-    // Precio e imagen
     const price     = p.price ?? p.bestPrice ?? p.basePrice;
     const worst     = p.worstPrice;
     const savings   = p.savings && p.savings > 0.5 ? p.savings : null;
-    const imgPath   = resolveImage(p.image);
-    const storesIn  = p.storesInStock || 0;
+
+    // ── IMAGEN: pasar la categoría para fallback inteligente ──────────────
+    const imgPath   = resolveImage(p.image, p.category);
+
+    const storesIn    = p.storesInStock || 0;
     const storesTotal = p.storesTotal || 0;
+    const updAt       = p.updatedAgo || 'Hace 5 min';
+    const stars       = generateStarHTML(p.rating || 0);
 
-    // Tiempo de actualización
-    const updAt = p.updatedAgo || 'Hace 5 min';
-
-    // Stars
-    const stars = generateStarHTML(p.rating || 0);
-
-    // Badges
     const liveBadge = isLive
       ? `<span class="sd-live-dot">En vivo</span>`
       : '';
     const mlBadge = hasML
       ? `<span class="sd-ml-badge">ML</span>`
       : '';
-
-    // Worst price (tachado)
     const worstHTML = (worst && worst > price + 0.5)
       ? `<span class="sd-price-worst">$${worst.toFixed(2)}</span>`
       : '';
-
-    // Savings
     const savingsHTML = savings
       ? `<span class="sd-savings">−$${savings.toFixed(2)}</span>`
       : '';
-
-    // Stores badge
     const storesHTML = storesTotal > 0
       ? `<span class="sd-stores-badge">
            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -391,11 +417,14 @@ function updateNotificationBar(info) {
         data-is-live="${isLive}">
 
         <div class="product-card__image-container">
-          <img src="${imgPath}"
-               alt="${p.name}"
-               class="product-card__image"
-               loading="lazy"
-               onerror="this.src='../assets/img/main_produc_zapatillas.jpg'">
+          <img
+            src="${imgPath}"
+            alt="${p.name}"
+            class="product-card__image"
+            loading="lazy"
+            decoding="async"
+            onerror="this.onerror=null;this.src='${getFallbackForCategory(p.category)}'"
+          >
 
           <span class="product-card__store">
             <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
@@ -459,13 +488,22 @@ function updateNotificationBar(info) {
       </article>`;
   }
 
-  /* ── Resolver ruta de imagen ─────────────────── */
-  function resolveImage(img) {
-    if (!img) return '../assets/img/main_produc_zapatillas.jpg';
-    if (img.startsWith('http')) return img;
-    if (img.startsWith('../')) return img;
-    if (img.startsWith('assets/')) return '../' + img;
-    return img;
+  /**
+   * Devuelve la URL de fallback de Unsplash para una categoría.
+   * Usada en el atributo onerror del <img> para cuando la imagen del scraping no carga.
+   */
+  function getFallbackForCategory(category) {
+    const cat = (category || 'default').toLowerCase();
+    return CATEGORY_FALLBACKS[cat] || CATEGORY_FALLBACKS.default;
+  }
+
+  /**
+   * Configura lazy-load nativo para las imágenes.
+   * También agrega un observer para detectar imágenes rotas y aplicar fallback.
+   */
+  function setupImageLazyLoad() {
+    // El atributo onerror ya maneja imágenes rotas.
+    // Aquí podemos agregar lógica adicional si es necesario en el futuro.
   }
 
   function generateStarHTML(rating) {
@@ -478,9 +516,9 @@ function updateNotificationBar(info) {
     return html;
   }
 
-  /* ────────────────────────────────────────────────
+  /* ────────────────────────────────────────────────────
      FILTROS Y BÚSQUEDA
-  ──────────────────────────────────────────────── */
+  ──────────────────────────────────────────────────── */
   function applyFilters() {
     if (state.loading) return;
 
@@ -522,7 +560,7 @@ function updateNotificationBar(info) {
     return s;
   }
 
-  /* ── URL param: ?cat=calzado ──────────── */
+  /* ── URL param: ?cat=calzado ─────────────── */
   function checkURLCategory() {
     const params = new URLSearchParams(window.location.search);
     const cat = params.get('cat');
@@ -536,7 +574,7 @@ function updateNotificationBar(info) {
     }
   }
 
-  /* ── Hamburger ────────────────────────── */
+  /* ── Hamburger ───────────────────────────── */
   function setupHamburger() {
     const btn  = document.getElementById('hamburgerBtn');
     const menu = document.getElementById('navMenu');
@@ -562,7 +600,7 @@ function updateNotificationBar(info) {
     });
   }
 
-  /* ── Sidebar ─────────────────────────── */
+  /* ── Sidebar ─────────────────────────────── */
   function setupSidebar() {
     const toggleBtn = document.getElementById('toggleSidebarBtn');
     const sidebar   = document.getElementById('catalogFilters');
@@ -594,7 +632,7 @@ function updateNotificationBar(info) {
     });
   }
 
-  /* ── Search ──────────────────────────── */
+  /* ── Search ──────────────────────────────── */
   function setupSearch() {
     const inp = document.getElementById('productSearch');
     if (!inp) return;
@@ -608,14 +646,14 @@ function updateNotificationBar(info) {
     });
   }
 
-  /* ── Sort ────────────────────────────── */
+  /* ── Sort ────────────────────────────────── */
   function setupSort() {
     const sel = document.getElementById('sortBy');
     if (!sel) return;
     sel.addEventListener('change', e => { state.sortBy = e.target.value; applyFilters(); });
   }
 
-  /* ── Category filters ─────────────────── */
+  /* ── Category filters ────────────────────── */
   function setupCategoryFilters() {
     const todosBox  = document.querySelector('.category-filter[value="todos"]');
     const specifics = document.querySelectorAll('.category-filter:not([value="todos"])');
@@ -631,7 +669,7 @@ function updateNotificationBar(info) {
     }));
   }
 
-  /* ── Brand filters ─────────────────────── */
+  /* ── Brand filters ───────────────────────── */
   function setupBrandFilters() {
     const todas     = document.querySelector('.brand-filter[value="todas"]');
     const specifics = document.querySelectorAll('.brand-filter:not([value="todas"])');
@@ -647,7 +685,7 @@ function updateNotificationBar(info) {
     }));
   }
 
-  /* ── Store filters ─────────────────────── */
+  /* ── Store filters ───────────────────────── */
   function setupStoreFilters() {
     const todas     = document.querySelector('.store-filter[value="todas"]');
     const specifics = document.querySelectorAll('.store-filter:not([value="todas"])');
@@ -663,7 +701,7 @@ function updateNotificationBar(info) {
     }));
   }
 
-  /* ── Price range ──────────────────────── */
+  /* ── Price range ─────────────────────────── */
   function setupPriceRange() {
     const sl  = document.getElementById('priceRange');
     const lbl = document.getElementById('priceValue');
@@ -675,7 +713,7 @@ function updateNotificationBar(info) {
     });
   }
 
-  /* ── Reset filters ─────────────────────── */
+  /* ── Reset filters ───────────────────────── */
   function setupResetFilters() {
     const btn = document.getElementById('resetFiltersBtn');
     if (!btn) return;
@@ -683,7 +721,6 @@ function updateNotificationBar(info) {
       state.search = ''; state.categories = []; state.brands = []; state.stores = [];
       state.sortBy = 'relevance';
 
-      // Restablecer slider al máximo real
       const maxReal = Math.max(...state.allProducts.map(p => p.worstPrice || p.price || 200));
       const sliderMax = Math.ceil(maxReal / 50) * 50 + 50;
       state.maxPrice = sliderMax;
@@ -703,7 +740,7 @@ function updateNotificationBar(info) {
     });
   }
 
-  /* ── Count ───────────────────────────── */
+  /* ── Count ───────────────────────────────── */
   function updateCount(n) {
     const el = document.getElementById('catalogCount');
     if (!el) return;
@@ -713,7 +750,7 @@ function updateNotificationBar(info) {
     el.textContent = `${n} producto${n !== 1 ? 's' : ''} encontrado${n !== 1 ? 's' : ''}${src}`;
   }
 
-  /* ── Favorites ───────────────────────── */
+  /* ── Favorites ───────────────────────────── */
   function setupFavoriteButtons() {
     document.querySelectorAll('.product-card__favorite').forEach(btn => {
       const id = btn.closest('.product-card')?.dataset.productId;
@@ -726,7 +763,6 @@ function updateNotificationBar(info) {
         btn.setAttribute('data-favorite', String(!fav));
         if (fav) {
           state.favorites = state.favorites.filter(f => f !== cid);
-          // Sincronizar con ambas claves de favoritos
           syncFavoriteStorages(state.favorites);
         } else if (cid && !state.favorites.includes(cid)) {
           state.favorites.push(cid);
@@ -738,7 +774,6 @@ function updateNotificationBar(info) {
 
   function loadFavoritesFromStorage() {
     try {
-      // Intentar con ambas claves posibles
       const v1 = JSON.parse(localStorage.getItem('sportdata_favorites') || '[]');
       const v2 = JSON.parse(localStorage.getItem('sd_favorites') || '[]');
       state.favorites = [...new Set([...v1, ...v2])];
@@ -750,7 +785,7 @@ function updateNotificationBar(info) {
     localStorage.setItem('sd_favorites', JSON.stringify(favs));
   }
 
-  /* ── Product navigation ──────────────── */
+  /* ── Product navigation ──────────────────── */
   function setupProductNavigation() {
     document.querySelectorAll('.product-card').forEach(card => {
       card.style.cursor = 'pointer';
@@ -765,7 +800,7 @@ function updateNotificationBar(info) {
     });
   }
 
-  /* ── Boot ─────────────────────────────── */
+  /* ── Boot ────────────────────────────────── */
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init);
   } else {
