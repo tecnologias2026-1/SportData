@@ -1,0 +1,21 @@
+# ============================================
+# SportData — Configuración para Render.com
+# ============================================
+# Sube SOLO la carpeta /backend a Render
+# o configura manualmente en el dashboard
+
+services:
+  - type: web
+    name: sportdata-api
+    runtime: node
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: PORT
+        value: 10000
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_EXPIRES_IN
+        value: 7d
+      - key: FRONTEND_URL
+        value: https://TU-SITIO.netlify.app
