@@ -688,5 +688,40 @@
 <script src="../js/products.js"></script>
 <script src="../js/catalog.js"></script>
 <script src="../js/session-nav.js"></script> 
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const favorites = JSON.parse(localStorage.getItem('sd_favorites') || '[]');
+        
+        document.querySelectorAll('.product-card').forEach(card => {
+            const id = card.dataset.productId;
+            const btn = card.querySelector('.product-card__favorite');
+            const path = btn.querySelector('svg path');
+
+            // Marcar como activo si ya está en favoritos al cargar
+            if (favorites.includes(id)) {
+                btn.dataset.favorite = 'true';
+                path.setAttribute('fill', '#ef4444');
+                path.setAttribute('stroke', '#ef4444');
+            }
+
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                let currentFavs = JSON.parse(localStorage.getItem('sd_favorites') || '[]');
+                const isFav = currentFavs.includes(id);
+
+                if (isFav) {
+                    currentFavs = currentFavs.filter(favId => favId !== id);
+                    path.setAttribute('fill', 'none');
+                    path.setAttribute('stroke', 'currentColor');
+                } else {
+                    currentFavs.push(id);
+                    path.setAttribute('fill', '#ef4444');
+                    path.setAttribute('stroke', '#ef4444');
+                }
+                localStorage.setItem('sd_favorites', JSON.stringify(currentFavs));
+            });
+        });
+    });
+</script>
 </body>
 </html>

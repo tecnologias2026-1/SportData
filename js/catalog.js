@@ -132,6 +132,7 @@
     const stockLbl = stock ? stock.stock       : 'En Stock';
     const stockPill= stock ? stock.stockPill   : 'ok';
     const stockCls = stockPill === 'out' ? 'product-card__stock--limited' : '';
+    const storeUrl = stock && stock.url !== '#' ? stock.url : `product.html?id=${p.id}`;
     const stars    = generateStarHTML(p.rating);
     const updAt    = p.updatedAgo || 'Hace 5 min';
     const savings  = p.savings ? `<span class="card-savings">Ahorras $${p.savings.toFixed(2)}</span>` : '';
@@ -194,12 +195,12 @@
         </div>
 
         <div class="product-card__actions">
-          <button type="button" class="product-card__btn" aria-label="Ver tienda de ${p.name}">
+          <a href="${storeUrl}" target="_blank" class="product-card__btn" aria-label="Ver tienda de ${p.name}" style="text-decoration:none">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
               <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14 21 3"/>
             </svg>
             Ver en Tienda
-          </button>
+          </a>
         </div>
       </article>`;
   }

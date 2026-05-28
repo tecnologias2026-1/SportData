@@ -77,6 +77,7 @@
                     Explorar catálogo
                 </a>
             </div>
+            <div id="favorites-grid" class="products-grid" style="display: none; padding: 2rem; max-width: 1200px; margin: 0 auto;"></div>
         </section>
     </main>
 
@@ -160,5 +161,54 @@
     <!-- JavaScript -->
     <script src="../js/favorites.js"></script>
     <script src="../js/session-nav.js"></script> 
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const favoriteIds = JSON.parse(localStorage.getItem('sd_favorites') || '[]');
+            const emptyState = document.querySelector('.empty-favorites__content');
+            const emptyIcon = document.querySelector('.empty-favorites__icon');
+            const grid = document.getElementById('favorites-grid');
+
+            if (favoriteIds.length === 0) return;
+
+            try {
+                // Consultamos la API de productos del backend
+                const response = await fetch('/api/products');
+                const allProducts = await response.json();
+                const favProducts = allProducts.filter(p => favoriteIds.includes(p.id));
+
+                if (favProducts.length > 0) {
+                    emptyState.style.display = 'none';
+                    emptyIcon.style.display = 'none';
+                    grid.style.display = 'grid';
+                    
+                    grid.innerHTML = favProducts.map(p => `
+                        <article class="product-card" style="background: white; border-radius: 12px; overflow: hidden; border: 1px solid #e8e8e4;">
+                            <div style="position: relative; aspect-ratio: 1;">
+                                <img src="${p.image}" alt="${p.name}" style="width: 100%; height: 100%; object-fit: cover;">
+                                <button onclick="removeFav('${p.id}')" style="position: absolute; top: 10px; right: 10px; background: white; border-radius: 50%; padding: 5px; cursor: pointer; border: none; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="#ef4444" stroke="#ef4444" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+                                </button>
+                            </div>
+                            <div style="padding: 15px;">
+                                <p style="font-size: 12px; color: #8a8a8a; text-transform: uppercase;">${p.brand}</p>
+                                <h3 style="font-size: 16px; margin: 5px 0;">${p.name}</h3>
+                                <p style="font-weight: 700; color: #38a8c7; font-size: 18px;">$${p.price}</p>
+                                <a href="product.html?id=${p.id}" style="display: block; margin-top: 10px; text-align: center; padding: 8px; background: #38a8c7; color: white; border-radius: 6px; font-size: 13px;">Ver detalles</a>
+                            </div>
+                        </article>
+                    `).join('');
+                }
+            } catch (err) {
+                console.error("Error cargando favoritos:", err);
+            }
+        });
+
+        function removeFav(id) {
+            let favs = JSON.parse(localStorage.getItem('sd_favorites') || '[]');
+            favs = favs.filter(favId => favId !== id);
+            localStorage.setItem('sd_favorites', JSON.stringify(favs));
+            location.reload(); // Recarga para actualizar la lista
+        }
+    </script>
 </body>
 </html>

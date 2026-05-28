@@ -26,6 +26,7 @@ const MAX_CACHE_AGE    = 60 * 60 * 1000;   // 1 hora — cache "fresco"
 /* ── Estado interno ─────────────────────── */
 let memCache      = null;   // productos en memoria
 let lastRefresh   = 0;      // timestamp del último scraping
+let lastFullRefresh = 0;    // timestamp del último scraping real (externo)
 let refreshTimer  = null;   // setInterval handle
 let isRefreshing  = false;  // flag para evitar doble scraping
 
@@ -65,18 +66,26 @@ async function refresh(forceFullScrape = false) {
   if (isRefreshing) return;
   isRefreshing = true;
 
-  console.log('[Cache] 🔄  Iniciando refresco de productos…');
+  console.log(`[Cache] 🔄  Iniciando refresco de productos (${forceFullScrape ? 'FULL' : 'LIGHT'})…`);
 
   try {
     let products;
 
     if (forceFullScrape) {
       // Scraping completo (tarda ~15 s por los delays anti-bot)
-      console.log('[Cache]    Scraping completo activado…');
       products = await scraper.scrapeAll();
+      lastFullRefresh = Date.now();
     } else {
-      // Rápido: datos base enriquecidos sin llamadas externas
-      products = scraper.getBaseProducts();
+      // Refresco rápido: mantenemos los datos de scraping si existen
+      if (memCache) {
+        products = memCache.map(p => ({
+          ...p,
+          updatedAgo: `Hace ${Math.floor((Date.now() - lastFullRefresh) / 60000) + 1} min`
+        }));
+      } else {
+        products = scraper.getBaseProducts();
+        if (lastFullRefresh === 0) lastFullRefresh = Date.now();
+      }
     }
 
     memCache    = products;
@@ -93,6 +102,7 @@ async function refresh(forceFullScrape = false) {
       if (disk) {
         memCache    = disk.products;
         lastRefresh = new Date(disk.cachedAt).getTime();
+        lastFullRefresh = lastRefresh;
         console.log('[Cache]    Usando caché de disco como fallback.');
       } else {
         // Último recurso: datos base sin enriquecer
@@ -116,15 +126,21 @@ async function init() {
   if (disk && diskAge < MAX_CACHE_AGE) {
     memCache    = disk.products;
     lastRefresh = new Date(disk.cachedAt).getTime();
+    lastFullRefresh = lastRefresh;
     console.log(`[Cache] 💾  Caché de disco cargada (${disk.products.length} productos, ${Math.round(diskAge / 60000)} min antigüedad).`);
   } else {
     // Carga inicial desde datos base (rápida)
     await refresh(false);
   }
 
-  // 2. Programar refresco periódico (sin scraping externo para no sobrecargar)
+  // 2. Programar refresco periódico inteligente
   if (refreshTimer) clearInterval(refreshTimer);
-  refreshTimer = setInterval(() => refresh(false), REFRESH_INTERVAL);
+  refreshTimer = setInterval(() => {
+    // Si los datos reales son más viejos que MAX_CACHE_AGE, forzamos scraping
+    const timeSinceFull = Date.now() - lastFullRefresh;
+    const forceFull = timeSinceFull >= MAX_CACHE_AGE;
+    refresh(forceFull);
+  }, REFRESH_INTERVAL);
 
   // 3. Si la caché de disco es vieja, lanzar scraping completo en background
   if (diskAge >= MAX_CACHE_AGE) {

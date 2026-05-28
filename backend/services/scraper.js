@@ -329,21 +329,21 @@ const STORES = [
    SCRAPER: MERCADOLIBRE (API PÚBLICA)
 ──────────────────────────────────────────── */
 async function scrapeMercadoLibre(query) {
-  const url = `https://api.mercadolibre.com/sites/MLA/search?q=${encodeURIComponent(query)}&limit=3&category=MLA1276`;
+  // Usamos el sitio MLA (Argentina) como base, puedes cambiarlo a MCO (Colombia) o MLM (México)
+  const url = `https://api.mercadolibre.com/sites/MLA/search?q=${encodeURIComponent(query)}&limit=5`;
   try {
     const res  = await axios.get(url, { timeout: TIMEOUT });
     const data = res.data;
     if (!data.results || !data.results.length) return [];
 
-    return data.results.slice(0, 3).map(item => ({
+    return data.results.slice(0, 5).map(item => ({
       source:    'MercadoLibre',
       title:     item.title,
-      price:     item.price,
+      // Conversión aproximada a USD (o moneda base). Ajustar según el país del sitio.
+      price:     item.currency_id === 'ARS' ? item.price * 0.0011 : item.price, 
       currency:  item.currency_id,
       url:       item.permalink,
       thumbnail: item.thumbnail ? item.thumbnail.replace('http://', 'https://') : null,
-      condition: item.condition,
-      seller:    item.seller ? item.seller.nickname : 'Tienda oficial',
     }));
   } catch {
     return [];
@@ -392,10 +392,10 @@ async function scrapeDecathlon(query) {
    GENERADOR DE PRECIOS POR TIENDA
    Aplica variación realista sobre el precio base
 ──────────────────────────────────────────── */
-function generateStorePrices(baseProduct, scrapedPrices) {
+function generateStorePrices(baseProduct, scrapedItems = []) {
   // Precio de referencia: scraped si existe, sino el base
-  const refPrice = scrapedPrices.length
-    ? scrapedPrices.reduce((s, p) => s + p.price, 0) / scrapedPrices.length
+  const refPrice = scrapedItems.length
+    ? scrapedItems.reduce((s, p) => s + p.price, 0) / scrapedItems.length
     : baseProduct.basePrice;
 
   const now = new Date();
@@ -431,7 +431,27 @@ function generateStorePrices(baseProduct, scrapedPrices) {
       lastUpdate,
       url:          '#',
     };
-  }).sort((a, b) => a.price - b.price);
+  });
+
+  // Mapeamos los resultados REALES del scraper para que aparezcan en la lista
+  const realResults = scrapedItems.map(item => ({
+    storeName:    item.source,
+    storeColor:   '#FFE600', // Amarillo corporativo de MercadoLibre
+    storeBadge:   'ML',
+    storeTraffic: '500M/mes',
+    storeRating:  4.5,
+    price:        parseFloat(item.price.toFixed(2)),
+    shipping:     'Ver en tienda',
+    delivery:     'Según vendedor',
+    stock:        'En Stock',
+    stockQty:     10,
+    stockPill:    'ok',
+    lastUpdate:   'En vivo',
+    url:          item.url, // Enlace real al producto
+  }));
+
+  // Combinamos tiendas reales con las simuladas y ordenamos por precio
+  return [...realResults, ...storePrices].sort((a, b) => a.price - b.price);
 }
 
 /* ────────────────────────────────────────────
@@ -463,16 +483,21 @@ function generatePriceHistory(basePrice) {
    ENSAMBLADOR PRINCIPAL POR PRODUCTO
 ──────────────────────────────────────────── */
 async function enrichProduct(baseProduct) {
-  // 1. Intentar obtener precios reales desde APIs/sitios
-  let scrapedPrices = [];
+  // 1. Obtener datos reales de múltiples fuentes
+  let scrapedItems = [];
+
   try {
-    await sleep(DELAY_MS);
     const mlData = await scrapeMercadoLibre(baseProduct.searchQuery);
-    scrapedPrices = mlData.map(d => ({ source: d.source, price: d.price * 0.0027 })); // ARS → USD aprox
-  } catch { /* Sigue con datos base */ }
+    if (mlData) scrapedItems.push(...mlData);
+
+    const decathlonData = await scrapeDecathlon(baseProduct.searchQuery);
+    if (decathlonData) scrapedItems.push(...decathlonData);
+  } catch (err) {
+    console.warn(`[Scraper] Error obteniendo datos externos para ${baseProduct.id}:`, err.message);
+  }
 
   // 2. Generar precios por tienda con variación real
-  const storePrices = generateStorePrices(baseProduct, scrapedPrices);
+  const storePrices = generateStorePrices(baseProduct, scrapedItems);
   const bestPrice   = storePrices.find(s => s.stockPill !== 'out') || storePrices[0];
   const worstPrice  = [...storePrices].reverse().find(s => s.stockPill !== 'out') || storePrices[storePrices.length - 1];
   const storesInStock = storePrices.filter(s => s.stockPill !== 'out').length;
