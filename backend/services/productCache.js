@@ -81,63 +81,13 @@ function writeDiskCache(products) {
 async function refresh(forceFullScrape = false) {
   if (isRefreshing) return;
   isRefreshing = true;
-
-  console.log(`[Cache] 🔄  Iniciando refresco de productos (${forceFullScrape ? 'FULL' : 'LIGHT'})…`);
-
+  console.log(`[Cache] 🔄  Refresco omitido — usando productos del JSON estático.`);
   try {
-    let products;
-
-    if (forceFullScrape) {
-      // Scraping completo (tarda ~15 s por los delays anti-bot)
-      products = await scraper.scrapeAll();
-      lastFullRefresh = Date.now();
-    } else {
-      // Refresco rápido: mantenemos los datos de scraping si existen
-      if (memCache) {
-        products = memCache.map(p => ({
-          ...p,
-          updatedAgo: `Hace ${Math.floor((Date.now() - lastFullRefresh) / 60000) + 1} min`
-        }));
-      } else {
-        products = scraper.getBaseProducts();
-        if (lastFullRefresh === 0) lastFullRefresh = Date.now();
-      }
-    }
-
-    // Solo actualizar si el scraping trajo datos reales con precios
-    // Si todos los productos tienen 0 tiendas con precios reales, conservar cache anterior
-    const hasRealPrices = products.some(p =>
-      p.storePrices && p.storePrices.some(s => s.url && s.url !== '#')
-    );
-
-    if (hasRealPrices || !memCache) {
-      memCache    = products;
-      lastRefresh = Date.now();
-      writeDiskCache(products);
-      console.log(`[Cache] ✅  ${products.length} productos cargados con precios reales.`);
-    } else {
-      // Scraping falló o devolvió datos sin URLs reales — conservar cache existente
-      lastRefresh = Date.now();
-      console.log(`[Cache] ⚠️  Scraping sin resultados útiles — conservando cache anterior (${memCache.length} productos).`);
+    if (!memCache) {
+      loadFromDisk();
     }
   } catch (err) {
     console.error('[Cache] ❌  Error en refresco:', err.message);
-
-    if (!memCache) {
-      // Fallback 1: caché en disco (seed incluido en repo)
-      const disk = readDiskCache();
-      if (disk) {
-        memCache        = disk.products;
-        lastRefresh     = new Date(disk.cachedAt).getTime();
-        lastFullRefresh = lastRefresh;
-        console.log(`[Cache] 💾  Usando caché seed (${disk.products.length} productos).`);
-      } else {
-        // Fallback 2: datos base sin precios reales
-        memCache    = scraper.getBaseProducts();
-        lastRefresh = Date.now();
-        console.log('[Cache] ⚠️  Usando datos base (sin scraping).');
-      }
-    }
   } finally {
     isRefreshing = false;
   }
@@ -159,13 +109,7 @@ async function init() {
     console.log(`[Cache] 💾  Caché cargada: ${disk.products.length} productos.`);
 
     // Si es muy viejo, refrescar en background sin bloquear el arranque
-    if (diskAge >= MAX_CACHE_AGE) {
-      setTimeout(() => refresh(true), 8000);
-    }
-  } else {
-    // Sin cache de ningún tipo: intentar scraping (puede fallar en producción)
-    await refresh(true);
-  }
+
 
   // 2. Programar refresco periódico inteligente
   if (refreshTimer) clearInterval(refreshTimer);
@@ -177,9 +121,7 @@ async function init() {
   }, REFRESH_INTERVAL);
 
   // 3. Si cargamos del disco pero ya tiene cierta edad, refrescamos en background
-  if (disk && diskAge > 300000) { // 5 minutos
-    setTimeout(() => refresh(true), 5000);   // 5 s después de iniciar
-  }
+
 }
 
 /* ────────────────────────────────────────────
