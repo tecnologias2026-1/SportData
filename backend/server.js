@@ -49,7 +49,7 @@ app.get('/api/health', (req, res) => {
     products:  cacheStatus,
   });
 });
-// Ruta explícita para html/catalog.html
+//                Ruta explícita para html/catalog.html
 app.get('/html/:page', (req, res) => {
   const filePath = path.join(__dirname, '..', 'html', req.params.page);
   res.sendFile(filePath, err => {
