@@ -51,6 +51,64 @@ const STORES = [
 ];
 
 /* ──────────────────────────────────────────
+   IMÁGENES DE RESPALDO POR CATEGORÍA
+────────────────────────────────────────── */
+const CATEGORY_FALLBACK_IMAGES = {
+  calzado:  'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=600&q=80',
+  ropa:     'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=600&q=80',
+  balones:  'https://images.unsplash.com/photo-1614632537190-23e4e3c5d7b6?w=600&q=80',
+  gimnasio: 'https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?w=600&q=80',
+  natacion: 'https://images.unsplash.com/photo-1530549387789-4c1017266635?w=600&q=80',
+  ciclismo: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80',
+  raquetas: 'https://images.unsplash.com/photo-1609710228159-0fa9bd7c0827?w=600&q=80',
+  boxeo:    'https://images.unsplash.com/photo-1555597673-b21d5c935865?w=600&q=80',
+  fitness:  'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=600&q=80',
+  default:  'https://images.unsplash.com/photo-1579952363873-27f3bade9f55?w=600&q=80',
+};
+
+/* ──────────────────────────────────────────
+   EXTRACCIÓN ROBUSTA DE IMAGEN
+   Prueba todos los campos conocidos de RapidAPI
+────────────────────────────────────────── */
+function extractProductImage(item, category) {
+  // Todos los campos posibles donde RapidAPI puede devolver la imagen,
+  // en orden de prioridad
+  const candidates = [
+    item.product_photo,
+    item.product_main_image_url,
+    item.product_image,
+    item.main_image,
+    item.image_url,
+    item.image,
+    item.thumbnail,
+    item.product_thumbnail,
+    item.photo,
+  ];
+
+  // Campos que pueden ser arrays
+  if (Array.isArray(item.product_photos) && item.product_photos.length > 0) {
+    candidates.push(item.product_photos[0]);
+  }
+  if (Array.isArray(item.images) && item.images.length > 0) {
+    candidates.push(typeof item.images[0] === 'string' ? item.images[0] : item.images[0]?.url);
+  }
+  if (item.media && Array.isArray(item.media) && item.media.length > 0) {
+    candidates.push(item.media[0]?.url || item.media[0]?.src);
+  }
+
+  // Retornar la primera URL válida encontrada
+  for (const candidate of candidates) {
+    if (candidate && typeof candidate === 'string' && candidate.trim().startsWith('http')) {
+      return candidate.trim();
+    }
+  }
+
+  // Sin imagen válida → usar fallback de categoría
+  const cat = (category || 'default').toLowerCase();
+  return CATEGORY_FALLBACK_IMAGES[cat] || CATEGORY_FALLBACK_IMAGES.default;
+}
+
+/* ──────────────────────────────────────────
    HELPERS
 ────────────────────────────────────────── */
 function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
@@ -184,14 +242,27 @@ async function fetchRapidSearch(query, limit = RESULTS_PER_QUERY) {
       timeout: TIMEOUT_MS,
     });
 
-    // Imprimir la estructura real para diagnosticar
-    console.log('[RapidAPI] Estructura recibida:', JSON.stringify(data).slice(0, 300));
+    // Imprimir la estructura real para diagnosticar (solo primera llamada)
+    if (process.env.DEBUG_SCRAPER) {
+      const sample = Array.isArray(data?.data?.products) && data.data.products[0];
+      if (sample) {
+        console.log('[RapidAPI] Campos de imagen disponibles en primer resultado:', {
+          product_photo:          sample.product_photo,
+          product_main_image_url: sample.product_main_image_url,
+          product_image:          sample.product_image,
+          thumbnail:              sample.thumbnail,
+          image:                  sample.image,
+          product_thumbnail:      sample.product_thumbnail,
+          // Mostrar todas las keys para diagnóstico
+          allKeys: Object.keys(sample),
+        });
+      }
+    }
 
-// Manejar múltiples estructuras posibles
-// La estructura real de esta API es: { status, data: { products: [...] } }
+    // Manejar múltiples estructuras posibles
     let results = [];
     if (Array.isArray(data))                        results = data;
-    else if (Array.isArray(data?.data?.products))   results = data.data.products;  // ✅ estructura real
+    else if (Array.isArray(data?.data?.products))   results = data.data.products;
     else if (Array.isArray(data?.data))             results = data.data;
     else if (Array.isArray(data?.products))         results = data.products;
     else if (Array.isArray(data?.results))          results = data.results;
@@ -199,6 +270,14 @@ async function fetchRapidSearch(query, limit = RESULTS_PER_QUERY) {
     else results = [];
 
     console.log(`[RapidAPI] "${query}" → ${results.length} resultados`);
+
+    // Log de imagen del primer resultado para depuración
+    if (results.length > 0) {
+      const first = results[0];
+      const imgFound = extractProductImage(first, 'default');
+      console.log(`[RapidAPI] Imagen primer resultado: ${imgFound.startsWith('https://images.unsplash') ? '⚠ FALLBACK' : '✅ ' + imgFound.slice(0, 80)}`);
+    }
+
     return results;
 
   } catch (err) {
@@ -219,7 +298,10 @@ function rapidItemToProduct(item, index) {
   const title    = item.product_title || item.title || `Producto deportivo ${index + 1}`;
   const brand    = guessBrand(title, item.product_brand || '');
   const category = guessCategory(title);
-  const image    = item.product_photo || item.thumbnail || 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=600&q=80';
+
+  // ── IMAGEN: usar extractor robusto ──────────────────────────────────────
+  const image = extractProductImage(item, category);
+
   const rating   = parseFloat(item.product_star_rating) || parseFloat((3.8 + Math.random() * 1.1).toFixed(1));
   const reviews  = parseInt(item.product_num_ratings) || Math.floor(Math.random() * 200) + 20;
   const url      = item.product_url || '#';
@@ -237,7 +319,7 @@ function rapidItemToProduct(item, index) {
     brand,
     category,
     basePrice:     priceNum,
-    image,
+    image,                    // ← imagen real del scraping o fallback de categoría
     description:   `${title}. Producto disponible en múltiples tiendas deportivas con comparación de precios en tiempo real.`,
     specs:         {},
     sizes:         buildSizes(category),
@@ -278,8 +360,8 @@ async function scrapeAll() {
   const limitPerQuery = Math.ceil(20 / SPORT_QUERIES.length) + 2;
 
   for (const query of SPORT_QUERIES) {
-const TARGET = SPORT_QUERIES.length * RESULTS_PER_QUERY;  // lo que traiga
-if (allItems.length >= TARGET) break;
+    const TARGET = SPORT_QUERIES.length * RESULTS_PER_QUERY;
+    if (allItems.length >= TARGET) break;
 
     const items = await fetchRapidSearch(query, limitPerQuery);
     for (const item of items) {
@@ -309,7 +391,11 @@ if (allItems.length >= TARGET) break;
   }).filter(Boolean);
 
   console.log(`[Scraper] ✅ ${products.length} productos listos desde RapidAPI.`);
-  
+
+  // Log resumen de imágenes
+  const withRealImg = products.filter(p => !p.image.includes('unsplash.com') || p.mlResultsCount > 0).length;
+  console.log(`[Scraper] 🖼  Imágenes: ${withRealImg}/${products.length} con imagen del scraping`);
+
   return products.length > 0 ? products : getBaseProducts();
 }
 
@@ -318,102 +404,102 @@ if (allItems.length >= TARGET) break;
 ────────────────────────────────────────── */
 const BASE_PRODUCTS_DATA = [
   { name: 'Zapatillas Running Ultraboost', brand: 'Adidas', category: 'calzado', basePrice: 89.99,
-    image: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=600&q=80',
+    image: CATEGORY_FALLBACK_IMAGES.calzado,
     description: 'Zapatillas de running con tecnología de amortiguación Boost.',
     sizes: ['38','39','40','41','42','43','44','45'],
     colors: [{ name:'Negro', hex:'#000000' },{ name:'Blanco', hex:'#FFFFFF' },{ name:'Azul', hex:'#3B82F6' }] },
   { name: 'Pelota de Fútbol Profesional', brand: 'Nike', category: 'balones', basePrice: 34.99,
-    image: 'https://images.unsplash.com/photo-1614632537190-23e4e3c5d7b6?w=600&q=80',
+    image: CATEGORY_FALLBACK_IMAGES.balones,
     description: 'Pelota oficial de fútbol con tecnología de vuelo preciso.',
     sizes: ['No. 3','No. 4','No. 5'],
     colors: [{ name:'Blanco/Negro', hex:'#FFFFFF' }] },
   { name: 'Mancuernas Ajustables 20kg', brand: 'Bowflex', category: 'gimnasio', basePrice: 149.99,
-    image: 'https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?w=600&q=80',
+    image: CATEGORY_FALLBACK_IMAGES.gimnasio,
     description: 'Set de mancuernas ajustables de 2 a 20kg.',
     sizes: ['5kg','10kg','15kg','20kg'],
     colors: [{ name:'Negro', hex:'#000000' },{ name:'Gris', hex:'#808080' }] },
   { name: 'Camiseta Deportiva Dry-Fit', brand: 'Nike', category: 'ropa', basePrice: 29.99,
-    image: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=600&q=80',
+    image: CATEGORY_FALLBACK_IMAGES.ropa,
     description: 'Camiseta técnica con tecnología Dri-FIT.',
     sizes: ['XS','S','M','L','XL','XXL'],
     colors: [{ name:'Negro', hex:'#000000' },{ name:'Azul', hex:'#3B82F6' },{ name:'Rojo', hex:'#EF4444' }] },
   { name: 'Bicicleta de Montaña 29"', brand: 'Trek', category: 'ciclismo', basePrice: 549.99,
-    image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80',
+    image: CATEGORY_FALLBACK_IMAGES.ciclismo,
     description: 'Bicicleta de montaña con cuadro de aluminio liviano.',
     sizes: ['S','M','L','XL'],
     colors: [{ name:'Negro', hex:'#000000' },{ name:'Verde', hex:'#10B981' }] },
   { name: 'Raqueta de Tenis Pro Staff', brand: 'Wilson', category: 'raquetas', basePrice: 79.99,
-    image: 'https://images.unsplash.com/photo-1609710228159-0fa9bd7c0827?w=600&q=80',
+    image: CATEGORY_FALLBACK_IMAGES.raquetas,
     description: 'Raqueta profesional con marco de grafito.',
     sizes: ['4 1/4"','4 3/8"','4 1/2"'],
     colors: [{ name:'Negro/Rojo', hex:'#cc0000' }] },
   { name: 'Guantes de Boxeo Training', brand: 'Everlast', category: 'boxeo', basePrice: 44.99,
-    image: 'https://images.unsplash.com/photo-1555597673-b21d5c935865?w=600&q=80',
+    image: CATEGORY_FALLBACK_IMAGES.boxeo,
     description: 'Guantes de boxeo con relleno de espuma de alta densidad.',
     sizes: ['10 oz','12 oz','14 oz','16 oz'],
     colors: [{ name:'Rojo', hex:'#EF4444' },{ name:'Negro', hex:'#000000' }] },
   { name: 'Esterilla de Yoga Premium', brand: 'Manduka', category: 'fitness', basePrice: 39.99,
-    image: 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=600&q=80',
+    image: CATEGORY_FALLBACK_IMAGES.fitness,
     description: 'Esterilla antideslizante de 6mm.',
     sizes: ['183cm x 61cm'],
     colors: [{ name:'Morado', hex:'#9B59B6' },{ name:'Verde', hex:'#10B981' }] },
   { name: 'Casco de Ciclismo Aero', brand: 'Giro', category: 'ciclismo', basePrice: 69.99,
-    image: 'https://images.unsplash.com/photo-1622979135225-d2ba269cf1ac?w=600&q=80',
+    image: CATEGORY_FALLBACK_IMAGES.ciclismo,
     description: 'Casco aerodinámico con ventilación optimizada.',
     sizes: ['S (51-55cm)','M (55-59cm)','L (59-63cm)'],
     colors: [{ name:'Blanco', hex:'#FFFFFF' },{ name:'Negro', hex:'#000000' }] },
   { name: 'Traje de Baño Competición', brand: 'Speedo', category: 'natacion', basePrice: 54.99,
-    image: 'https://images.unsplash.com/photo-1530549387789-4c1017266635?w=600&q=80',
+    image: CATEGORY_FALLBACK_IMAGES.natacion,
     description: 'Traje de competición con tecnología LZR Racer.',
     sizes: ['28','30','32','34','36','38'],
     colors: [{ name:'Azul', hex:'#3B82F6' },{ name:'Negro', hex:'#000000' }] },
   { name: 'Zapatillas Basketball Air', brand: 'Nike', category: 'calzado', basePrice: 119.99,
-    image: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=600&q=80',
+    image: CATEGORY_FALLBACK_IMAGES.calzado,
     description: 'Zapatillas de basketball con cámara de aire.',
     sizes: ['38','39','40','41','42','43','44','45'],
     colors: [{ name:'Blanco/Rojo', hex:'#EF4444' },{ name:'Negro', hex:'#000000' }] },
   { name: 'Pelota de Basketball NBA', brand: 'Spalding', category: 'balones', basePrice: 49.99,
-    image: 'https://images.unsplash.com/photo-1546519638405-a9f9c8e5c48f?w=600&q=80',
+    image: CATEGORY_FALLBACK_IMAGES.balones,
     description: 'Pelota oficial NBA de cuero compuesto.',
     sizes: ['Talla 7','Talla 6','Talla 5'],
     colors: [{ name:'Naranja/Negro', hex:'#F59E0B' }] },
   { name: 'Jersey Ciclismo Pro', brand: 'Hummel', category: 'ropa', basePrice: 64.99,
-    image: 'https://images.unsplash.com/photo-1534787238916-9ba6764efd4f?w=600&q=80',
+    image: CATEGORY_FALLBACK_IMAGES.ropa,
     description: 'Jersey de ciclismo con tejido transpirable.',
     sizes: ['XS','S','M','L','XL','XXL'],
     colors: [{ name:'Azul', hex:'#3B82F6' },{ name:'Negro', hex:'#000000' }] },
   { name: 'Kettlebell 16kg Hierro', brand: 'Reebok', category: 'gimnasio', basePrice: 59.99,
-    image: 'https://images.unsplash.com/photo-1517963879433-6ad2b056d712?w=600&q=80',
+    image: CATEGORY_FALLBACK_IMAGES.gimnasio,
     description: 'Kettlebell de hierro fundido con asa ergonómica.',
     sizes: ['8kg','12kg','16kg','20kg','24kg'],
     colors: [{ name:'Negro', hex:'#000000' }] },
   { name: 'Shorts Running Ultralight', brand: 'Adidas', category: 'ropa', basePrice: 24.99,
-    image: 'https://images.unsplash.com/photo-1506629082955-511b1aa562c8?w=600&q=80',
+    image: CATEGORY_FALLBACK_IMAGES.ropa,
     description: 'Shorts ultraligeros con bolsillo interior.',
     sizes: ['XS','S','M','L','XL','XXL'],
     colors: [{ name:'Negro', hex:'#000000' },{ name:'Azul', hex:'#3B82F6' }] },
   { name: 'Zapatillas Trail Running', brand: 'Salomon', category: 'calzado', basePrice: 134.99,
-    image: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=600&q=80',
+    image: CATEGORY_FALLBACK_IMAGES.calzado,
     description: 'Zapatillas trail con suela Contagrip.',
     sizes: ['38','39','40','41','42','43','44','45'],
     colors: [{ name:'Verde/Negro', hex:'#10B981' }] },
   { name: 'Balón de Voleibol', brand: 'Molten', category: 'balones', basePrice: 39.99,
-    image: 'https://images.unsplash.com/photo-1612872087720-bb876e2e67d1?w=600&q=80',
+    image: CATEGORY_FALLBACK_IMAGES.balones,
     description: 'Balón de voleibol con 18 paneles cosidos.',
     sizes: ['Talla 5 (oficial)'],
     colors: [{ name:'Azul/Amarillo', hex:'#3B82F6' }] },
   { name: 'Colchoneta Gym Plegable', brand: 'Decathlon', category: 'fitness', basePrice: 29.99,
-    image: 'https://images.unsplash.com/photo-1601422407692-ec4eeec1d9b3?w=600&q=80',
+    image: CATEGORY_FALLBACK_IMAGES.fitness,
     description: 'Colchoneta plegable de 10mm antideslizante.',
     sizes: ['180cm x 60cm','200cm x 80cm'],
     colors: [{ name:'Gris', hex:'#808080' },{ name:'Azul', hex:'#3B82F6' }] },
   { name: 'Gafas de Natación Mirror', brand: 'Arena', category: 'natacion', basePrice: 19.99,
-    image: 'https://images.unsplash.com/photo-1530549387789-4c1017266635?w=600&q=80',
+    image: CATEGORY_FALLBACK_IMAGES.natacion,
     description: 'Gafas con lentes espejadas anti-UV.',
     sizes: ['Talla única'],
     colors: [{ name:'Azul espejo', hex:'#38a8c7' },{ name:'Negro', hex:'#000000' }] },
   { name: 'Barra Olímpica 20kg', brand: 'Reebok', category: 'gimnasio', basePrice: 189.99,
-    image: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=600&q=80',
+    image: CATEGORY_FALLBACK_IMAGES.gimnasio,
     description: 'Barra olímpica de 20kg con rodamientos de precisión.',
     sizes: ['20kg/220cm'],
     colors: [{ name:'Plateado', hex:'#C0C0C0' }] },
@@ -484,4 +570,4 @@ function searchProducts(query, allProducts) {
   );
 }
 
-module.exports = { scrapeAll, searchProducts, getBaseProducts, STORES, getRapidApiKey };
+module.exports = { scrapeAll, searchProducts, getBaseProducts, STORES, getRapidApiKey, CATEGORY_FALLBACK_IMAGES };
