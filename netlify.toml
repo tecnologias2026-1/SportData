@@ -1,0 +1,17 @@
+# ============================================
+# SportData — Configuración de Netlify
+# ============================================
+
+[build]
+  publish = "."
+
+# Redirige las rutas limpias al index.html (SPA fallback)
+[[redirects]]
+  from = "/html/*"
+  to = "/html/:splat"
+  status = 200
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
