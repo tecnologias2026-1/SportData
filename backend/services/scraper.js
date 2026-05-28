@@ -187,13 +187,15 @@ async function fetchRapidSearch(query, limit = RESULTS_PER_QUERY) {
     // Imprimir la estructura real para diagnosticar
     console.log('[RapidAPI] Estructura recibida:', JSON.stringify(data).slice(0, 300));
 
-    // Manejar múltiples estructuras posibles
+// Manejar múltiples estructuras posibles
+// La estructura real de esta API es: { status, data: { products: [...] } }
     let results = [];
-    if (Array.isArray(data))              results = data;
-    else if (Array.isArray(data?.data))   results = data.data;
-    else if (Array.isArray(data?.products)) results = data.products;
-    else if (Array.isArray(data?.results))  results = data.results;
-    else if (Array.isArray(data?.items))    results = data.items;
+    if (Array.isArray(data))                        results = data;
+    else if (Array.isArray(data?.data?.products))   results = data.data.products;  // ✅ estructura real
+    else if (Array.isArray(data?.data))             results = data.data;
+    else if (Array.isArray(data?.products))         results = data.products;
+    else if (Array.isArray(data?.results))          results = data.results;
+    else if (Array.isArray(data?.items))            results = data.items;
     else results = [];
 
     console.log(`[RapidAPI] "${query}" → ${results.length} resultados`);
