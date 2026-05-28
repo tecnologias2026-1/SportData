@@ -19,20 +19,20 @@ const RAPIDAPI_HOST  = 'real-time-product-search.p.rapidapi.com';
 const RAPIDAPI_BASE  = 'https://real-time-product-search.p.rapidapi.com';
 const RESULTS_PER_QUERY = 5;
 const REQUEST_DELAY     = 600;   // ms entre llamadas
-const TIMEOUT_MS        = 15_000;
+const TIMEOUT_MS        = 60_000;
 
 /* Queries de búsqueda deportiva */
 const SPORT_QUERIES = [
-  'running shoes',
-  'soccer ball',
-  'adjustable dumbbells',
-  'sports jersey',
-  'mountain bike',
-  'tennis racket',
-  'boxing gloves',
-  'yoga mat',
-  'cycling helmet',
-  'swim goggles',
+  'sports clothing activewear',
+  'running training shoes',
+  'soccer football basketball',
+  'gym fitness equipment',
+  'cycling bike gear',
+  'tennis padel racket',
+  'boxing martial arts',
+  'swimming accessories',
+  'outdoor sports gear',
+  'yoga pilates fitness',
 ];
 
 /* ──────────────────────────────────────────
@@ -61,15 +61,15 @@ function getRapidApiKey() {
 
 function guessCategory(title = '') {
   const t = title.toLowerCase();
-  if (/shoe|sneaker|boot|zapatill|calzado/.test(t))     return 'calzado';
-  if (/shirt|jersey|short|ropa|hoodie|jacket/.test(t))  return 'ropa';
-  if (/ball|soccer|futbol|basket|voley/.test(t))        return 'balones';
-  if (/dumbbell|barbell|weight|gym|kettlebell/.test(t)) return 'gimnasio';
-  if (/swim|goggle|natacion/.test(t))                   return 'natacion';
-  if (/bike|bicycle|helmet|cycling/.test(t))            return 'ciclismo';
-  if (/tennis|racket|badminton/.test(t))                return 'raquetas';
-  if (/boxing|glove|punch/.test(t))                     return 'boxeo';
-  if (/yoga|mat|pilates/.test(t))                       return 'fitness';
+  if (/shoe|sneaker|boot|zapatill|calzado|trainer|running|footwear/.test(t))        return 'calzado';
+  if (/shirt|jersey|short|pants|legging|ropa|hoodie|jacket|top|vest|wear|apparel/.test(t)) return 'ropa';
+  if (/ball|soccer|futbol|basket|voley|football|rugby/.test(t))                     return 'balones';
+  if (/dumbbell|barbell|weight|gym|kettlebell|rack|bench|press|mancuerna/.test(t))  return 'gimnasio';
+  if (/swim|goggle|natacion|pool|wetsuit/.test(t))                                  return 'natacion';
+  if (/bike|bicycle|helmet|cycling|ciclismo|handlebar/.test(t))                     return 'ciclismo';
+  if (/tennis|racket|badminton|padel|squash/.test(t))                               return 'raquetas';
+  if (/boxing|glove|punch|muay|mma|combat/.test(t))                                 return 'boxeo';
+  if (/yoga|mat|pilates|foam|roller|resistance|band|stretch/.test(t))               return 'fitness';
   return 'fitness';
 }
 
@@ -172,13 +172,9 @@ function generatePriceHistory(anchor) {
 ────────────────────────────────────────── */
 async function fetchRapidSearch(query, limit = RESULTS_PER_QUERY) {
   const key = getRapidApiKey();
-  if (!key) {
-    console.warn('[RapidAPI] No hay RAPIDAPI_KEY configurada.');
-    return [];
-  }
+  if (!key) return [];
 
   try {
-    console.log(`[RapidAPI] Buscando: "${query}" (limit=${limit})…`);
     const { data } = await axios.get(`${RAPIDAPI_BASE}/search`, {
       params: { q: query, country: 'us', language: 'es', limit: String(limit) },
       headers: {
@@ -188,20 +184,24 @@ async function fetchRapidSearch(query, limit = RESULTS_PER_QUERY) {
       timeout: TIMEOUT_MS,
     });
 
-    // La API devuelve { data: [ { product_title, product_price, product_photo, ... } ] }
-    const results = (data && data.data) ? data.data : [];
+    // Imprimir la estructura real para diagnosticar
+    console.log('[RapidAPI] Estructura recibida:', JSON.stringify(data).slice(0, 300));
+
+    // Manejar múltiples estructuras posibles
+    let results = [];
+    if (Array.isArray(data))              results = data;
+    else if (Array.isArray(data?.data))   results = data.data;
+    else if (Array.isArray(data?.products)) results = data.products;
+    else if (Array.isArray(data?.results))  results = data.results;
+    else if (Array.isArray(data?.items))    results = data.items;
+    else results = [];
+
     console.log(`[RapidAPI] "${query}" → ${results.length} resultados`);
     return results;
 
   } catch (err) {
     const status = err.response ? err.response.status : 'timeout';
-    if (status === 403) {
-      console.error('[RapidAPI] ❌ 403 Forbidden — Verifica tu RAPIDAPI_KEY y que estés suscrito al plan correcto.');
-    } else if (status === 429) {
-      console.warn('[RapidAPI] ⚠ 429 Rate Limit — espera unos segundos antes de reintentar.');
-    } else {
-      console.warn(`[RapidAPI] Error en "${query}" (${status}): ${err.message}`);
-    }
+    console.warn(`[RapidAPI] Error en "${query}" (${status}): ${err.message}`);
     return [];
   }
 }
@@ -276,7 +276,8 @@ async function scrapeAll() {
   const limitPerQuery = Math.ceil(20 / SPORT_QUERIES.length) + 2;
 
   for (const query of SPORT_QUERIES) {
-    if (allItems.length >= 20) break;
+const TARGET = SPORT_QUERIES.length * RESULTS_PER_QUERY;  // lo que traiga
+if (allItems.length >= TARGET) break;
 
     const items = await fetchRapidSearch(query, limitPerQuery);
     for (const item of items) {
@@ -285,7 +286,7 @@ async function scrapeAll() {
         seenTitles.add(key);
         allItems.push(item);
       }
-      if (allItems.length >= 20) break;
+      if (allItems.length >= TARGET) break;
     }
 
     await sleep(REQUEST_DELAY);
@@ -306,6 +307,7 @@ async function scrapeAll() {
   }).filter(Boolean);
 
   console.log(`[Scraper] ✅ ${products.length} productos listos desde RapidAPI.`);
+  
   return products.length > 0 ? products : getBaseProducts();
 }
 
