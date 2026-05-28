@@ -142,3 +142,5 @@ El proyecto se encuentra desplegado mediante GitHub Pages, lo que permite accede
 
 Solo debes ingresar al enlace público del repositorio (GitHub Pages).
 El sistema cargará automáticamente el index.html como punto de entrada.
+
+para que funcione la base de datos se debe iniciar la pagina desde "run_server.bat" base de datos visible desde mySQL
