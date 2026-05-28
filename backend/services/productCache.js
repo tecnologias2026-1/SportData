@@ -3,13 +3,12 @@
  * SportData — Cache de Productos
  * ============================================
  * Almacena los productos scrapeados en memoria
- * y en disco (JSON). Se refresca automáticamente
- * cada REFRESH_INTERVAL minutos.
+ * y en disco (JSON). Se refresca automáticamente.
  *
- * Uso:
- *   const cache = require('./productCache');
- *   await cache.init();
- *   const products = cache.getAll();
+ * CAMBIOS v3:
+ *  - Sin productos hardcoded de ejemplo
+ *  - Primer arranque siempre hace scraping real de ML
+ *  - Variable de entorno ML_TOTAL controla cuántos productos traer
  */
 
 'use strict';
@@ -20,29 +19,24 @@ const scraper = require('./scraper');
 
 /* ── Config ─────────────────────────────── */
 const CACHE_FILE       = path.join(__dirname, '..', 'database', 'products_cache.json');
-const REFRESH_INTERVAL = 30 * 60 * 1000;   // 30 min en ms
-const MAX_CACHE_AGE    = 60 * 60 * 1000;   // 1 hora — cache "fresco"
+const REFRESH_INTERVAL = 30 * 60 * 1000;   // 30 min
+const MAX_CACHE_AGE    = 60 * 60 * 1000;   // 1 hora
 
 /* ── Estado interno ─────────────────────── */
-let memCache      = null;   // productos en memoria
-let lastRefresh   = 0;      // timestamp del último scraping
-let lastFullRefresh = 0;    // timestamp del último scraping real (externo)
-let refreshTimer  = null;   // setInterval handle
-let isRefreshing  = false;  // flag para evitar doble scraping
+let memCache        = null;
+let lastRefresh     = 0;
+let lastFullRefresh = 0;
+let refreshTimer    = null;
+let isRefreshing    = false;
 
-/* ────────────────────────────────────────────
-   LECTURA / ESCRITURA DE CACHÉ EN DISCO
-──────────────────────────────────────────── */
+/* ── Disco ──────────────────────────────── */
 function readDiskCache() {
   try {
     if (!fs.existsSync(CACHE_FILE)) return null;
-    const raw  = fs.readFileSync(CACHE_FILE, 'utf8');
-    const data = JSON.parse(raw);
-    if (!data.products || !Array.isArray(data.products)) return null;
+    const data = JSON.parse(fs.readFileSync(CACHE_FILE, 'utf8'));
+    if (!data.products || !Array.isArray(data.products) || data.products.length === 0) return null;
     return data;
-  } catch {
-    return null;
-  }
+  } catch { return null; }
 }
 
 function writeDiskCache(products) {
@@ -51,63 +45,69 @@ function writeDiskCache(products) {
     if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
     fs.writeFileSync(CACHE_FILE, JSON.stringify({
       products,
-      cachedAt:  new Date().toISOString(),
-      count:     products.length,
+      cachedAt: new Date().toISOString(),
+      count:    products.length,
     }, null, 2), 'utf8');
   } catch (err) {
     console.warn('[Cache] No se pudo escribir en disco:', err.message);
   }
 }
 
-/* ────────────────────────────────────────────
-   REFRESCO DE PRODUCTOS
-──────────────────────────────────────────── */
+/* ── Refresco ───────────────────────────── */
 async function refresh(forceFullScrape = false) {
   if (isRefreshing) return;
   isRefreshing = true;
 
-  console.log(`[Cache] 🔄  Iniciando refresco de productos (${forceFullScrape ? 'FULL' : 'LIGHT'})…`);
+  console.log(`[Cache] 🔄 Iniciando refresco (${forceFullScrape ? 'FULL SCRAPE ML' : 'LIGHT'})…`);
 
   try {
     let products;
 
     if (forceFullScrape) {
-      // Scraping completo (tarda ~15 s por los delays anti-bot)
-      products = await scraper.scrapeAll();
+      // Scraping real de MercadoLibre
+      products        = await scraper.scrapeAll();
       lastFullRefresh = Date.now();
     } else {
-      // Refresco rápido: mantenemos los datos de scraping si existen
-      if (memCache) {
-        products = memCache.map(p => ({
-          ...p,
-          updatedAgo: `Hace ${Math.floor((Date.now() - lastFullRefresh) / 60000) + 1} min`
-        }));
+      // Refresco ligero: actualiza timestamps sin volver a ML
+      if (memCache && memCache.length > 0) {
+        const minAgo = Math.floor((Date.now() - lastFullRefresh) / 60000) + 1;
+        products = memCache.map(p => ({ ...p, updatedAgo: `Hace ${minAgo} min` }));
       } else {
-        products = scraper.getBaseProducts();
-        if (lastFullRefresh === 0) lastFullRefresh = Date.now();
+        // Primera vez sin caché en memoria → hacer scraping real
+        products        = await scraper.scrapeAll();
+        lastFullRefresh = Date.now();
       }
+    }
+
+    // Rechazar cachés vacías
+    if (!products || products.length === 0) {
+      console.warn('[Cache] ⚠ Scraping devolvió 0 productos, usando fallback.');
+      products        = scraper.getBaseProducts();
+      lastFullRefresh = Date.now();
     }
 
     memCache    = products;
     lastRefresh = Date.now();
     writeDiskCache(products);
+    console.log(`[Cache] ✅ ${products.length} productos en caché.`);
 
-    console.log(`[Cache] ✅  ${products.length} productos cargados (${forceFullScrape ? 'scraping' : 'base'}).`);
   } catch (err) {
-    console.error('[Cache] ❌  Error en refresco:', err.message);
+    console.error('[Cache] ❌ Error en refresco:', err.message);
 
-    // Fallback a disco si hay caché guardada
-    if (!memCache) {
+    if (!memCache || memCache.length === 0) {
+      // Intentar disco
       const disk = readDiskCache();
-      if (disk) {
+      if (disk && disk.products.length > 0) {
         memCache    = disk.products;
         lastRefresh = new Date(disk.cachedAt).getTime();
         lastFullRefresh = lastRefresh;
-        console.log('[Cache]    Usando caché de disco como fallback.');
+        console.log(`[Cache] 💾 Usando ${disk.products.length} productos del disco como fallback.`);
       } else {
-        // Último recurso: datos base sin enriquecer
-        memCache    = scraper.getBaseProducts();
-        lastRefresh = Date.now();
+        // Último recurso
+        memCache        = scraper.getBaseProducts();
+        lastRefresh     = Date.now();
+        lastFullRefresh = Date.now();
+        console.log('[Cache] ⚠ Usando productos fallback mínimos.');
       }
     }
   } finally {
@@ -115,57 +115,43 @@ async function refresh(forceFullScrape = false) {
   }
 }
 
-/* ────────────────────────────────────────────
-   INICIALIZACIÓN
-──────────────────────────────────────────── */
+/* ── Init ───────────────────────────────── */
 async function init() {
-  // 1. Intentar cargar desde disco para responder de inmediato
-  const disk = readDiskCache();
+  const disk    = readDiskCache();
   const diskAge = disk ? Date.now() - new Date(disk.cachedAt).getTime() : Infinity;
 
-  if (disk && diskAge < MAX_CACHE_AGE) {
-    memCache    = disk.products;
-    lastRefresh = new Date(disk.cachedAt).getTime();
+  if (disk && disk.products.length > 0 && diskAge < MAX_CACHE_AGE) {
+    memCache        = disk.products;
+    lastRefresh     = new Date(disk.cachedAt).getTime();
     lastFullRefresh = lastRefresh;
-    console.log(`[Cache] 💾  Caché de disco cargada (${disk.products.length} productos, ${Math.round(diskAge / 60000)} min antigüedad).`);
+    console.log(`[Cache] 💾 Caché de disco cargada: ${disk.products.length} productos de ML (${Math.round(diskAge / 60000)} min).`);
+
+    // Refrescar en background si tiene más de 5 minutos
+    if (diskAge > 5 * 60 * 1000) {
+      setTimeout(() => refresh(true), 3000);
+    }
   } else {
-    // Si no hay disco o es muy viejo, forzamos el primer scrape real de inmediato
+    // Sin caché válida → hacer scraping inicial
+    console.log('[Cache] 🌐 Sin caché válida. Iniciando scraping de MercadoLibre…');
     await refresh(true);
   }
 
-  // 2. Programar refresco periódico inteligente
+  // Timer de refresco periódico
   if (refreshTimer) clearInterval(refreshTimer);
   refreshTimer = setInterval(() => {
-    // Si los datos reales son más viejos que MAX_CACHE_AGE, forzamos scraping
     const timeSinceFull = Date.now() - lastFullRefresh;
-    const forceFull = timeSinceFull >= MAX_CACHE_AGE;
-    refresh(forceFull);
+    refresh(timeSinceFull >= MAX_CACHE_AGE);
   }, REFRESH_INTERVAL);
-
-  // 3. Si cargamos del disco pero ya tiene cierta edad, refrescamos en background
-  if (disk && diskAge > 300000) { // 5 minutos
-    setTimeout(() => refresh(true), 5000);   // 5 s después de iniciar
-  }
 }
 
-/* ────────────────────────────────────────────
-   API PÚBLICA
-──────────────────────────────────────────── */
-function getAll() {
-  return memCache || [];
-}
-
-function getById(productId) {
-  if (!memCache) return null;
-  return memCache.find(p => p.id === productId) || null;
-}
-
-function getByCategory(category) {
+/* ── API ────────────────────────────────── */
+function getAll()              { return memCache || []; }
+function getById(id)           { return (memCache || []).find(p => p.id === id) || null; }
+function getByCategory(cat)    {
   if (!memCache) return [];
-  if (category === 'todos') return memCache;
-  return memCache.filter(p => p.category.toLowerCase() === category.toLowerCase());
+  if (cat === 'todos') return memCache;
+  return memCache.filter(p => p.category.toLowerCase() === cat.toLowerCase());
 }
-
 function search(query) {
   if (!memCache || !query) return memCache || [];
   const q = query.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
@@ -175,30 +161,19 @@ function search(query) {
     )
   );
 }
-
 function getStatus() {
-  const age = lastRefresh ? Math.round((Date.now() - lastRefresh) / 1000) : null;
   return {
-    loaded:        !!memCache,
+    loaded:        !!memCache && memCache.length > 0,
     count:         memCache ? memCache.length : 0,
     lastRefreshAt: lastRefresh ? new Date(lastRefresh).toISOString() : null,
-    ageSeconds:    age,
+    ageSeconds:    lastRefresh ? Math.round((Date.now() - lastRefresh) / 1000) : null,
     isRefreshing,
+    source:        'MercadoLibre',
   };
 }
-
-/** Fuerza un refresco manual (con scraping completo opcional) */
 async function forceRefresh(full = true) {
   await refresh(full);
   return getStatus();
 }
 
-module.exports = {
-  init,
-  getAll,
-  getById,
-  getByCategory,
-  search,
-  getStatus,
-  forceRefresh,
-};
+module.exports = { init, getAll, getById, getByCategory, search, getStatus, forceRefresh };
