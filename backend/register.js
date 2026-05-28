@@ -8,8 +8,8 @@
 (function () {
   'use strict';
 
-  // URL base de la API — en desarrollo apunta al servidor local
-  const API_BASE = 'http://localhost:3000/api/auth';
+  // URL base de la API — apuntando al despliegue en Render
+  const API_BASE = 'https://sportdata-1.onrender.com/api/auth';
 
   // ─── Init ─────────────────────────────────────────────────────────────────
   function init() {
@@ -374,7 +374,7 @@
       } catch (err) {
         showGlobalMessage(
           form.parentElement,
-          'No se pudo conectar con el servidor. Verifica que el backend esté activo en localhost:3000.',
+          'No se pudo conectar con el servidor. Verifica que el backend esté activo en https://sportdata-1.onrender.com.',
           'error'
         );
         setLoading(submitBtn, false, origText);
