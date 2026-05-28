@@ -6,7 +6,7 @@
  * Sin productos de ejemplo. Sin catálogo estático.
  *
  * Prioridad de fuentes:
- *   1. Backend local  → http://localhost:3000/api/products
+ *   1. Backend (render) → https://sportdata-1.onrender.com/api/products
  *   2. Netlify deploy → https://sportdata001.netlify.app/api/products
  *   3. Estado vacío con mensaje de error (no hay fallback falso)
  */
@@ -15,7 +15,7 @@
   'use strict';
 
   const API_ENDPOINTS = [
-    'http://localhost:3000/api/products',
+    'https://sportdata-1.onrender.com/api/products',
     'https://sportdata001.netlify.app/api/products',
   ];
   const TIMEOUT = 10000;

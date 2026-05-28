@@ -8,7 +8,7 @@
 (function () {
   'use strict';
 
-  const API_BASE = 'http://localhost:3000/api/auth';
+  const API_BASE = 'https://sportdata-1.onrender.com/api/auth';
 
   function getHomePath() {
     return window.location.pathname.includes('/html/') ? '../index.html' : 'index.html';
