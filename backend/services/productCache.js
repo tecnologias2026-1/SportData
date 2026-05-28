@@ -16,7 +16,7 @@
 
 const fs      = require('fs');
 const path    = require('path');
-const scraper = require('./scraper');
+const scraper = null;
 
 /* ── Config ─────────────────────────────── */
 // Detectar si la carpeta database/ es escribible
