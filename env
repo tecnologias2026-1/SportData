@@ -1,0 +1,20 @@
+# ============================================
+# SportData — Variables de Entorno
+# ============================================
+# IMPORTANTE: Este archivo NUNCA debe subirse
+# a GitHub. Asegúrate de tenerlo en .gitignore
+# ============================================
+
+# ── RapidAPI ─────────────────────────────────
+RAPIDAPI_KEY=f4ec935741msh6842aaa769332dep164153jsnc8ca09d9b660
+
+# ── MercadoLibre (opcional) ──────────────────
+ML_SITE=MLA
+ML_TOTAL=20
+
+# ── Servidor ─────────────────────────────────
+PORT=3000
+
+# ── JWT ──────────────────────────────────────
+JWT_SECRET=cambia_esto_por_una_frase_secreta_larga
+JWT_EXPIRES_IN=7d
